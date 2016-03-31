@@ -28,7 +28,7 @@ func main() {
 	// Routes
 	e.Get("/", hello())
 
-	fmt.Println("Server running at http://localhost:1323")
+	fmt.Println("Server running at http://localhost:4000")
 	// Start server
-	e.Run(standard.New(":1323"))
+	e.Run(standard.New(":4000"))
 }
