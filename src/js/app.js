@@ -9,6 +9,9 @@ var Top = require('./component/top.js');
 var EventCreate = require('./component/event/create.js');
 // イベント一覧ページ
 var EventList = require('./component/event/list.js');
+// イベント詳細ページ
+var EventDetail = require('./component/event/detail.js');
+
 
 
 
@@ -17,6 +20,7 @@ var EventList = require('./component/event/list.js');
 //HTML要素にコンポーネントをマウント
 m.route(document.getElementById("root"), "/", {
 	"/": Top,
+	"/event/detail/:id": EventDetail,
 	"/event/create": EventCreate,
 	"/event": EventList,
 });

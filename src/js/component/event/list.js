@@ -22,7 +22,7 @@ module.exports = {
 			<div class="container" style="padding-top:30px" id="root">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<a href="/event/1" config={m.route}>
+						<a href="/event/detail/1" config={m.route}>
 							イベント名1
 						</a>
 					</div>
@@ -42,7 +42,7 @@ module.exports = {
 
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<a href="/event/1" config={m.route}>
+						<a href="/event/detail/1" config={m.route}>
 							イベント名1
 						</a>
 
