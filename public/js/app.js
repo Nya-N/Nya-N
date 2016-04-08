@@ -2149,12 +2149,188 @@ var m = require('./mithril');
 // TOPページ
 var Top = require('./component/top.js');
 
+// イベント作成ページ
+var EventCreate = require('./component/event/create.js');
+// イベント一覧ページ
+var EventList = require('./component/event/list.js');
+// イベント詳細ページ
+var EventDetail = require('./component/event/detail.js');
+
+
+
+
+
+
 //HTML要素にコンポーネントをマウント
 m.route(document.getElementById("root"), "/", {
 	"/": Top,
+	"/event/detail/:id": EventDetail,
+	"/event/create": EventCreate,
+	"/event": EventList,
 });
 
-},{"./component/top.js":4,"./mithril":5}],3:[function(require,module,exports){
+},{"./component/event/create.js":3,"./component/event/detail.js":4,"./component/event/list.js":5,"./component/top.js":7,"./mithril":8}],3:[function(require,module,exports){
+'use strict';
+
+/*
+ * ATND イベント作成ページ
+ *
+ */
+
+var m = require('../../mithril');
+
+// navbar
+var Navbar = require('../navbar');
+
+
+module.exports = {
+	controller: function() {
+	},
+	view: function(ctrl) {
+		return {tag: "div", attrs: {}, children: [
+			/*navbar*/
+			{tag: "div", attrs: {}, children: [ m.component(Navbar) ]}, 
+
+			{tag: "div", attrs: {class:"container", style:"padding-top:30px", id:"root"}, children: [
+				{tag: "h1", attrs: {}, children: ["イベントを新規作成"]}, 
+
+			{tag: "form", attrs: {}, children: [
+				{tag: "div", attrs: {class:"form-group"}, children: [
+					{tag: "label", attrs: {for:"EventName"}, children: ["イベント名"]}, 
+					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventName", placeholder:"イベント名"}}
+				]}, 
+				{tag: "div", attrs: {class:"form-group"}, children: [
+					{tag: "label", attrs: {for:"EventDate"}, children: ["日時"]}, 
+					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventDate", placeholder:"日時"}}
+				]}, 
+				{tag: "div", attrs: {class:"form-group"}, children: [
+					{tag: "label", attrs: {for:"EventCapacity"}, children: ["定員"]}, 
+					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventCapacity", placeholder:"定員"}}
+				]}, 
+				{tag: "div", attrs: {class:"form-group"}, children: [
+					{tag: "label", attrs: {for:"EventPlace"}, children: ["開催場所"]}, 
+					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventPlace", placeholder:"開催場所"}}
+				]}, 
+				{tag: "div", attrs: {class:"form-group"}, children: [
+					{tag: "label", attrs: {for:"EventDetail"}, children: ["詳細"]}, 
+					{tag: "textarea", attrs: {class:"form-control", rows:"10"}}
+				]}, 
+
+
+				{tag: "div", attrs: {class:"form-group"}, children: [
+					{tag: "label", attrs: {for:"EventImage"}, children: ["イベント画像"]}, 
+					{tag: "input", attrs: {type:"file", id:"EventImage"}}, 
+					{tag: "p", attrs: {class:"help-block"}, children: ["イベント画像をアップロードする"]}
+				]}, 
+
+				{tag: "div", attrs: {}, children: [
+					{tag: "button", attrs: {type:"submit", class:"btn btn-lg btn-success"}, children: ["イベントを新規作成"]}
+				]}
+			]}
+
+			]}
+		]};
+	}
+};
+
+},{"../../mithril":8,"../navbar":6}],4:[function(require,module,exports){
+'use strict';
+
+/*
+ * ATND イベント詳細ページ
+ *
+ */
+
+var m = require('../../mithril');
+
+// navbar
+var Navbar = require('../navbar');
+
+
+module.exports = {
+	controller: function() {
+	},
+	view: function(ctrl) {
+		return {tag: "div", attrs: {}, children: [
+			/*navbar*/
+			{tag: "div", attrs: {}, children: [ m.component(Navbar) ]}, 
+
+			{tag: "div", attrs: {class:"container", style:"padding-top:30px", id:"root"}, children: [
+				"イベント詳細ページ"
+			]}
+		]};
+	}
+};
+
+},{"../../mithril":8,"../navbar":6}],5:[function(require,module,exports){
+'use strict';
+
+/*
+ * ATND イベント一覧
+ *
+ */
+
+var m = require('../../mithril');
+
+// navbar
+var Navbar = require('../navbar');
+
+
+module.exports = {
+	controller: function() {
+	},
+	view: function(ctrl) {
+		return {tag: "div", attrs: {}, children: [
+			/*navbar*/
+			{tag: "div", attrs: {}, children: [ m.component(Navbar) ]}, 
+
+			{tag: "div", attrs: {class:"container", style:"padding-top:30px", id:"root"}, children: [
+				{tag: "div", attrs: {class:"panel panel-default"}, children: [
+					{tag: "div", attrs: {class:"panel-heading"}, children: [
+						{tag: "a", attrs: {href:"/event/detail/1", config:m.route}, children: [
+							"イベント名1"
+						]}
+					]}, 
+					{tag: "div", attrs: {class:"panel-body"}, children: [
+						{tag: "div", attrs: {class:"pull-left"}, children: [
+							{tag: "img", attrs: {src:"img/150x150.png", height:"150", width:"150"}}
+						]}, 
+						"イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細"
+					]}, 
+					{tag: "div", attrs: {class:"panel-footer"}, children: [
+						{tag: "div", attrs: {class:"pull-right"}, children: [
+							"2016/04/09 (土) 13:30 から"
+						]}, 
+							"225/250人"
+					]}
+				]}, 
+
+				{tag: "div", attrs: {class:"panel panel-default"}, children: [
+					{tag: "div", attrs: {class:"panel-heading"}, children: [
+						{tag: "a", attrs: {href:"/event/detail/1", config:m.route}, children: [
+							"イベント名1"
+						]}
+
+					]}, 
+					{tag: "div", attrs: {class:"panel-body"}, children: [
+						{tag: "div", attrs: {class:"pull-left"}, children: [
+							{tag: "img", attrs: {src:"img/150x150.png", height:"150", width:"150"}}
+						]}, 
+						"イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細"
+					]}, 
+					{tag: "div", attrs: {class:"panel-footer"}, children: [
+						{tag: "div", attrs: {class:"pull-right"}, children: [
+							"2016/04/09 (土) 13:30 から"
+						]}, 
+							"225/250人"
+					]}
+				]}
+			]}
+		]};
+	}
+};
+
+},{"../../mithril":8,"../navbar":6}],6:[function(require,module,exports){
 'use strict';
 var m = require('../mithril');
 
@@ -2165,29 +2341,31 @@ module.exports = {
 		var active_url = m.route();
 
 		return {tag: "div", attrs: {}, children: [
-		{tag: "nav", attrs: {class:"navbar navbar-default"}, children: [
-			{tag: "div", attrs: {class:"container-fluid"}, children: [
-				{tag: "div", attrs: {class:"navbar-header"}, children: [
-					{tag: "button", attrs: {type:"button", class:"navbar-toggle collapsed", "data-toggle":"collapse", "data-target":"#bs-example-navbar-collapse-1", "aria-expanded":"false"}, children: [
-						{tag: "span", attrs: {class:"sr-only"}, children: ["Toggle navigation"]}, 
-						{tag: "span", attrs: {class:"icon-bar"}, children: [" "]}, 
-						{tag: "span", attrs: {class:"icon-bar"}, children: [" "]}, 
-						{tag: "span", attrs: {class:"icon-bar"}, children: [" "]}
+			{tag: "nav", attrs: {class:"navbar navbar-default"}, children: [
+				{tag: "div", attrs: {class:"container-fluid"}, children: [
+					{tag: "div", attrs: {class:"navbar-header"}, children: [
+						{tag: "button", attrs: {type:"button", class:"navbar-toggle collapsed", "data-toggle":"collapse", "data-target":"#bs-example-navbar-collapse-1", "aria-expanded":"false"}, children: [
+							{tag: "span", attrs: {class:"sr-only"}, children: ["Toggle navigation"]}, 
+							{tag: "span", attrs: {class:"icon-bar"}, children: [" "]}, 
+							{tag: "span", attrs: {class:"icon-bar"}, children: [" "]}, 
+							{tag: "span", attrs: {class:"icon-bar"}, children: [" "]}
+						]}, 
+						{tag: "span", attrs: {class:"navbar-brand"}, children: ["Go ATND"]}
 					]}, 
-					{tag: "span", attrs: {class:"navbar-brand"}, children: ["Go ATND"]}
-				]}, 
-				{tag: "div", attrs: {class:"collapse navbar-collapse", id:"bs-example-navbar-collapse-1"}, children: [
-					{tag: "ul", attrs: {class:"nav navbar-nav"}, children: [
-						{tag: "li", attrs: {class: active_url === "/" ? "active" : ""}, children: [{tag: "a", attrs: {href:"/", config:m.route}, children: ["TOP"]}]}
+					{tag: "div", attrs: {class:"collapse navbar-collapse", id:"bs-example-navbar-collapse-1"}, children: [
+						{tag: "ul", attrs: {class:"nav navbar-nav"}, children: [
+							{tag: "li", attrs: {class: active_url === "/" ? "active" : ""}, children: [{tag: "a", attrs: {href:"/", config:m.route}, children: ["TOP"]}]}, 
+							{tag: "li", attrs: {class: active_url === "/event" ? "active" : ""}, children: [{tag: "a", attrs: {href:"/event", config:m.route}, children: ["イベント一覧"]}]}, 
+							{tag: "li", attrs: {class: active_url === "/event/create" ? "active" : ""}, children: [{tag: "a", attrs: {href:"/event/create", config:m.route}, children: ["新しくイベントを作る"]}]}
+						]}
 					]}
 				]}
 			]}
-		]}
 		]};
 	}
 };
 
-},{"../mithril":5}],4:[function(require,module,exports){
+},{"../mithril":8}],7:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2197,7 +2375,7 @@ module.exports = {
 
 var m = require('../mithril');
 
-// ナビバー
+// navbar
 var Navbar = require('./navbar');
 
 
@@ -2206,16 +2384,33 @@ module.exports = {
 	},
 	view: function(ctrl) {
 		return {tag: "div", attrs: {}, children: [
+			/*navbar*/
 			{tag: "div", attrs: {}, children: [ m.component(Navbar) ]}, 
 
+			/*jumbotron*/
 			{tag: "div", attrs: {class:"container", style:"padding-top:30px", id:"root"}, children: [
-				"Hello World!"
+				{tag: "div", attrs: {class:"jumbotron", style:"background-color: rgba(255, 255, 255, 0.7);"}, children: [
+					{tag: "div", attrs: {class:"container"}, children: [
+						{tag: "h1", attrs: {}, children: ["Go ATND"]}, 
+						{tag: "p", attrs: {}, children: [
+							"イベントの告知・運営管理がすべて無料で出来ます。", {tag: "br", attrs: {}}, 
+							"仲間内の飲み会から勉強会まで", {tag: "br", attrs: {}}, 
+							"色んなイベントで色んな人に会いましょう。", {tag: "br", attrs: {}}
+						]}, 
+						{tag: "p", attrs: {}, children: [
+							{tag: "a", attrs: {class:"btn btn-success btn-lg", href:"/event/create", config:m.route, role:"button"}, children: [
+								{tag: "span", attrs: {class:"glyphicon glyphicon-log-in"}, children: ["　"]}, 
+								"新しいイベントを作る"
+							]}
+						]}
+					]}
+				]}
 			]}
 		]};
 	}
 };
 
-},{"../mithril":5,"./navbar":3}],5:[function(require,module,exports){
+},{"../mithril":8,"./navbar":6}],8:[function(require,module,exports){
 'use strict';
 
 /*********************************************
