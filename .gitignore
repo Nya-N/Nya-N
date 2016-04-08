@@ -2,4 +2,5 @@
 .DS_Store
 access_logs.db
 tmp/
+node_modules/
 npm-debug.log
