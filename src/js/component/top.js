@@ -30,7 +30,7 @@ module.exports = {
 							色んなイベントで色んな人に会いましょう。<br />
 						</p>
 						<p>
-							<a class="btn btn-info btn-lg" href="/event/create" config={m.route} role="button">
+							<a class="btn btn-success btn-lg" href="/event/create" config={m.route} role="button">
 								<span class="glyphicon glyphicon-log-in">　</span>
 								新しいイベントを作る
 							</a>
