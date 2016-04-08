@@ -1,7 +1,7 @@
 'use strict';
 
 /*
- * ATND TOP
+ * ATND イベント一覧
  *
  */
 
@@ -19,7 +19,6 @@ module.exports = {
 			{/*navbar*/}
 			<div>{ m.component(Navbar) }</div>
 
-			{/*jumbotron*/}
 			<div class="container" style="padding-top:30px" id="root">
 				<div class="panel panel-default">
 					<div class="panel-heading">
