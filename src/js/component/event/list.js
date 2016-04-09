@@ -27,51 +27,42 @@ module.exports = {
 		// 次へ
 		var next_id = model.next_id;
 
+		// イベント一覧
+		var events = model.events;
 		return <div>
 			{/*navbar*/}
 			<div>{ m.component(Navbar) }</div>
 
 			<div class="container" style="padding-top:30px" id="root">
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<a href="/event/detail/1" config={m.route}>
-							イベント名1
-						</a>
-					</div>
-					<div class="panel-body">
-						<div class="pull-left">
-							<img src="img/150x150.png" height="150" width="150" />
-						</div>
-						イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細
-					</div>
-					<div class="panel-footer">
-						<div class="pull-right">
-							2016/04/09 (土) 13:30 から
-						</div>
-							225/250人
-					</div>
-				</div>
+				{
+					events.map(function(event, i) {
+						return <div class="panel panel-default">
+							<div class="panel-heading">
+								{/* イベント名 */}
+								<a href={"/event/detail/" + event.id} config={m.route}>{ event.name }</a>
+							</div>
+							<div class="panel-body">
+								<div class="pull-left">
+									{/* イベント画像 */}
+									<img src={ event.image_path } height="150" width="150" />
+								</div>
+								{
+									/* イベント詳細 */
+									event.description
+								}
+							</div>
+							<div class="panel-footer">
+								<div class="pull-right">
+									{/* イベント開始時刻 */}
+									{ event.start_date + "から" }
+								</div>
+								{/* 参加人数／定員 */}
+								{ event.attend_num + " / " + event.capacity + "人"}
+							</div>
+						</div>;
 
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<a href="/event/detail/1" config={m.route}>
-							イベント名1
-						</a>
-
-					</div>
-					<div class="panel-body">
-						<div class="pull-left">
-							<img src="img/150x150.png" height="150" width="150" />
-						</div>
-						イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細
-					</div>
-					<div class="panel-footer">
-						<div class="pull-right">
-							2016/04/09 (土) 13:30 から
-						</div>
-							225/250人
-					</div>
-				</div>
+					})
+				}
 				{/* ページャー */}
 				<nav>
 					<ul class="pager">
