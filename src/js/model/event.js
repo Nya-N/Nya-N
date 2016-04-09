@@ -6,7 +6,7 @@
  */
 
 // API URL
-var api_url = "api/event/";
+var api_url = "api/event";
 
 
 var m = require('../mithril');
@@ -55,7 +55,7 @@ var Model = function (data, isInitial) {
 Model.read = function (id) {
 	return m.request({
 		method: "GET",
-		url: api_url + id,
+		url: api_url + "/" + id,
 		type: Model
 	});
 };
