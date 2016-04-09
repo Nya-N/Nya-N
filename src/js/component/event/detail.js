@@ -37,7 +37,7 @@ module.exports = {
 			// TODO: コメント一覧にモデルを移動
 
 			// コメント欄を空にする
-			self.vm.comment.clear();
+			self.vm.clear_comment();
 		};
 	},
 	view: function(ctrl) {

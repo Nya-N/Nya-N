@@ -24,4 +24,10 @@ var ViewModel = function(id) {
 	self.comment = new CommentModel();
 };
 
+// 入力されたコメントをクリア
+ViewModel.prototype.clear_comment = function() {
+	var self = this;
+	self.comment = new CommentModel();
+};
+
 module.exports = ViewModel;
