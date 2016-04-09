@@ -69,7 +69,7 @@ module.exports = {
 					<button type="button" class="btn btn-lg btn-success" data-toggle="modal" data-target="#ConfirmModal">イベントを新規作成</button>
 				</div>
 
-				{/* 確認画面モーダル */}
+				{/* BEGIN: 確認画面モーダル */}
 				<div id="ConfirmModal" class="modal fade" role="dialog">
 					<div class="modal-dialog">
 
@@ -90,6 +90,7 @@ module.exports = {
 
 					</div>
 				</div>
+				{/* END: 確認画面モーダル */}
 			</form>
 
 			</div>
