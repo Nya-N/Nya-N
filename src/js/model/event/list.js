@@ -14,6 +14,13 @@ var m = require('../../mithril');
 
 // コンストラクタ
 var Model = function (data, isInitial) {
+	// 前へ
+	this.prev_id = data.prev_id;
+	// 次へ
+	this.next_id = data.next_id;
+
+	// イベント一覧
+	this.events = data.events;
 };
 
 // サーバからJSONを読み込む
