@@ -36,7 +36,11 @@ gulp.task('msx', function() {
 gulp.task('browserify', function() {
 	return browserify(tmp_dir + appjs)
 		.bundle()
-		.pipe(plumber())
+		.on('error', function(err){   //ここからエラーだった時の記述
+			console.log(err.message);
+			console.log(err.stack);
+			this.emit('end');
+		})
 		//Pass desired output filename to vinyl-source-stream
 		.pipe(source(appjs))
 		// Start piping stream to tasks!
