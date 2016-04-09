@@ -28,6 +28,11 @@ module.exports = {
 					<input type="text" class="form-control" id="EventName" placeholder="イベント名" />
 				</div>
 				<div class="form-group">
+					<label for="EventAdmin">主催者</label>
+					<input type="text" class="form-control" id="EventAdmin" placeholder="主催者" />
+				</div>
+
+				<div class="form-group">
 					<label for="EventDate">日時</label>
 					<input type="text" class="form-control" id="EventDate" placeholder="日時" />
 				</div>
