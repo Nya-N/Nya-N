@@ -42,7 +42,11 @@ Model.prototype.save = function () {
 		event_id: this.event_id(),
 		name:     this.name(),
 		body:     this.body()
-	}});
+	}})
+	.then(function(res) {
+		// 生成されたコメントID
+		return res.id;
+	});
 };
 
 module.exports = Model;

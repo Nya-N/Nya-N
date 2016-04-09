@@ -31,13 +31,19 @@ module.exports = {
 
 			// event_id
 			self.vm.comment.event_id(self.vm.model().id);
+
 			// サーバーに保存
-			self.vm.comment.save();
+			self.vm.comment.save()
+			.then(function(id) {
+				// 生成されたコメントIDを保存
+				self.vm.comment.id(id);
 
-			// TODO: コメント一覧にモデルを移動
+				// コメント一覧に新しく追加したコメントを移動
+				self.vm.model().comments.push(self.vm.comment);
 
-			// コメント欄を空にする
-			self.vm.clear_comment();
+				// コメント欄を空にする
+				self.vm.clear_comment();
+			});
 		};
 	},
 	view: function(ctrl) {
