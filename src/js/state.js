@@ -2,12 +2,17 @@
 
 /*
  * アプリケーションの状態を管理するクラス
- * シングルトン
+ * ViewModel を生成する Singleton な Factory
  */
 
 var m = require('./mithril');
 
+// イベント一覧
 var EventListViewModel = require('./viewmodel/event/list');
+
+// イベント詳細
+var EventDetailViewModel = require('./viewmodel/event/detail');
+
 
 // コンストラクタ
 var State = function() {
@@ -22,6 +27,11 @@ State.prototype.make_event_list = function() {
 	}
 
 	return this.event_list;
+};
+
+// イベント詳細(状態を保存しない)
+State.prototype.make_event_detail = function(id) {
+	return  new EventDetailViewModel(id);
 };
 
 module.exports = new State();
