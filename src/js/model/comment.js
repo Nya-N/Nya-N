@@ -27,18 +27,6 @@ var Model = function (data, isInitial) {
 	this.body = m.prop(data.body || "");
 };
 
-// 全てのプロパティを空にする
-Model.prototype.clear = function() {
-	// コメントID
-	this.id = m.prop();
-	// イベントID
-	this.event_id = m.prop();
-	// コメントした人の名前
-	this.name = m.prop("");
-	// コメント内容
-	this.body = m.prop("");
-};
-
 // サーバからJSONを読み込む
 Model.read = function (id) {
 	return m.request({
