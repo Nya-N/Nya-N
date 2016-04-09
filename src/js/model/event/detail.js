@@ -40,8 +40,6 @@ Model.read = function (id) {
 
 // サーバにJSONを保存
 Model.prototype.save = function () {
-	var rule = this.body;
-
 	return m.request({method: "POST", url: api_url, data: {
 
 	}});
