@@ -14,6 +14,11 @@ var m = require('../../mithril');
 // コメント モデル
 var CommentModel = require('../comment');
 
+// コメント モデル
+var JoinModel = require('../join');
+
+
+
 // コンストラクタ
 var Model = function (data, isInitial) {
 	var self = this;
@@ -27,11 +32,15 @@ var Model = function (data, isInitial) {
 	self.attend_num = data.attend_num;
 	self.start_date = data.start_date;
 	self.description = data.description;
-	self.member_num = data.member_num;
 	self.comment_num = data.comment_num;
 
-	// TODO: モデルに変換する
-	self.members = data.members;
+	// 参加者一覧
+	if(data.members) {
+		self.members = [];
+		data.members.forEach(function(member) {
+			self.members.push(new JoinModel(member));
+		});
+	}
 
 	// コメント一覧
 	if(data.comments) {

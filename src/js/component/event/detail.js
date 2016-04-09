@@ -48,6 +48,31 @@ module.exports = {
 				self.vm.clear_comment();
 			});
 		};
+
+		// イベントに参加ボタンが押下された時
+		self.onsubmit_join = function(e) {
+			// TODO:入力値チェック
+
+			// event_id
+			self.vm.join.event_id(self.vm.model().id);
+
+			// サーバーに保存
+			self.vm.join.save()
+			.then(function(id) {
+				// 生成された参加IDを保存
+				self.vm.join.id(id);
+
+				// 参加者一覧に新しく参加した人を移動
+				self.vm.model().members.push(self.vm.join);
+
+				// コメント件数を +1
+				self.vm.model().attend_num += 1;
+
+				// コメント欄を空にする
+				self.vm.clear_join();
+			});
+
+		};
 	},
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
@@ -139,13 +164,13 @@ module.exports = {
 						<div class="panel panel-default">
 							<div class="panel-heading">
 									{/* 参加者数 */}
-									参加者一覧({model.member_num})
+									参加者一覧
 							</div>
 							<div class="panel-body">
 								{
 									model.members.map(function(member, i) {
 										return <span>
-											{ member.name } さん<br />
+											{ member.name() } さん<br />
 										</span>;
 									})
 								}
@@ -170,12 +195,12 @@ module.exports = {
 								<form>
 									<div class="form-group">
 										<label for="AttendName">名前</label>
-										<input type="text" class="form-control" id="AttendName" placeholder="あなたの名前" />
+										<input type="text" class="form-control" id="AttendName" placeholder="あなたの名前" onchange={ m.withAttr("value", ctrl.vm.join.name) } value={ ctrl.vm.join.name() } />
 									</div>
 								</form>
 							</div>
 							<div class="modal-footer">
-								<button type="button" class="btn btn-lg btn-success" data-dismiss="modal">参加</button>
+								<button type="button" class="btn btn-lg btn-success" data-dismiss="modal" onclick={ ctrl.onsubmit_join}>参加</button>
 								<button type="button" class="btn btn-lg btn-warning" data-dismiss="modal">閉じる</button>
 							</div>
 						</div>
