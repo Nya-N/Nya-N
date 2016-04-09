@@ -2288,13 +2288,30 @@ var state = require('../../state');
 
 module.exports = {
 	controller: function() {
+		var self = this;
+
 		// イベントID
-		this.id = m.route.param("id");
+		self.id = m.route.param("id");
 
 		// TODO: IDが存在しなかった場合のエラー処理
 
 		// ViewModel
-		this.vm = state.make_event_detail(this.id);
+		self.vm = state.make_event_detail(self.id);
+
+		// コメントの追加ボタンが押下された時
+		self.onsubmit_comment = function(e) {
+			// TODO:入力値チェック
+
+			// event_id
+			self.vm.comment.event_id(self.vm.model().id);
+			// サーバーに保存
+			self.vm.comment.save();
+
+			// TODO: コメント一覧にモデルを移動
+
+			// コメント欄を空にする
+			self.vm.comment.clear();
+		};
 	},
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
@@ -2353,17 +2370,22 @@ module.exports = {
 										return {tag: "div", attrs: {}, children: [
 											/* コメント投稿者 */
 											 comment.name, {tag: "br", attrs: {}}, 
-											 comment.comment, {tag: "hr", attrs: {}}
+											 comment.body, {tag: "hr", attrs: {}}
 										]};
 									}), 
 								
 								/* コメント投稿フォーム */
 								{tag: "form", attrs: {}, children: [
+									/* コメントの名前入力 */
 									{tag: "div", attrs: {class:"form-group"}, children: [
-										{tag: "textarea", attrs: {class:"form-control", rows:"3"}}
+										{tag: "input", attrs: {type:"text", class:"form-control", placeholder:"名前", onchange:m.withAttr("value", ctrl.vm.comment.name), value: ctrl.vm.comment.name() }}
+									]}, 
+									/* コメントの内容入力 */
+									{tag: "div", attrs: {class:"form-group"}, children: [
+										{tag: "textarea", attrs: {class:"form-control", rows:"4", onchange:m.withAttr("value", ctrl.vm.comment.body), placeholder:"コメント内容"}, children: [ ctrl.vm.comment.body() ]}
 									]}, 
 									{tag: "div", attrs: {}, children: [
-										{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success"}, children: ["コメントを投稿"]}
+										{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", onclick:ctrl.onsubmit_comment}, children: ["コメントを投稿"]}
 									]}
 								]}
 							]}
@@ -2429,7 +2451,7 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":8,"../../state":11,"../navbar":6}],5:[function(require,module,exports){
+},{"../../mithril":8,"../../state":12,"../navbar":6}],5:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2510,7 +2532,7 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":8,"../../state":11,"../navbar":6}],6:[function(require,module,exports){
+},{"../../mithril":8,"../../state":12,"../navbar":6}],6:[function(require,module,exports){
 'use strict';
 var m = require('../mithril');
 
@@ -2667,6 +2689,69 @@ module.exports = m;
 'use strict';
 
 /*
+ * イベントに付随するコメント モデル
+ *
+ */
+
+// API URL
+var api_url = "api/comment";
+
+
+var m = require('../mithril');
+
+
+// コンストラクタ
+var Model = function (data, isInitial) {
+	if( ! data) {
+		data = {};
+	}
+	// コメントID
+	this.id = m.prop(data.id);
+	// イベントID
+	this.event_id = m.prop(data.event_id);
+	// コメントした人の名前
+	this.name = m.prop(data.name || "");
+	// コメント内容
+	this.body = m.prop(data.body || "");
+};
+
+// 全てのプロパティを空にする
+Model.prototype.clear = function() {
+	// コメントID
+	this.id = m.prop();
+	// イベントID
+	this.event_id = m.prop();
+	// コメントした人の名前
+	this.name = m.prop("");
+	// コメント内容
+	this.body = m.prop("");
+};
+
+// サーバからJSONを読み込む
+Model.read = function (id) {
+	return m.request({
+		method: "GET",
+		url: api_url + '/' + id,
+		type: Model
+	});
+};
+
+// サーバにJSONを保存
+Model.prototype.save = function () {
+	return m.request({method: "POST", url: api_url, data: {
+		event_id: this.event_id(),
+		name:     this.name(),
+		body:     this.body()
+	}});
+};
+
+module.exports = Model;
+
+
+},{"../mithril":8}],10:[function(require,module,exports){
+'use strict';
+
+/*
  * イベント一覧 モデル
  *
  */
@@ -2706,8 +2791,6 @@ Model.read = function (id) {
 
 // サーバにJSONを保存
 Model.prototype.save = function () {
-	var rule = this.body;
-
 	return m.request({method: "POST", url: api_url, data: {
 
 	}});
@@ -2716,7 +2799,7 @@ Model.prototype.save = function () {
 module.exports = Model;
 
 
-},{"../../mithril":8}],10:[function(require,module,exports){
+},{"../../mithril":8}],11:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2749,8 +2832,6 @@ Model.read = function () {
 
 // サーバにJSONを保存
 Model.prototype.save = function () {
-	var rule = this.body;
-
 	return m.request({method: "POST", url: api_url, data: {
 
 	}});
@@ -2759,7 +2840,7 @@ Model.prototype.save = function () {
 module.exports = Model;
 
 
-},{"../../mithril":8}],11:[function(require,module,exports){
+},{"../../mithril":8}],12:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2798,7 +2879,7 @@ State.prototype.make_event_detail = function(id) {
 
 module.exports = new State();
 
-},{"./mithril":8,"./viewmodel/event/detail":12,"./viewmodel/event/list":13}],12:[function(require,module,exports){
+},{"./mithril":8,"./viewmodel/event/detail":13,"./viewmodel/event/list":14}],13:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2809,17 +2890,25 @@ module.exports = new State();
 
 var m = require('../../mithril');
 
-var Model = require('../../model/event/detail');
+// イベント詳細 Model
+var EventModel = require('../../model/event/detail');
+
+// コメントモデル
+var CommentModel = require('../../model/comment');
 
 // ビューモデル
 var ViewModel = function(id) {
-	// モデル
-	this.model = Model.read(id);
+	var self = this;
+	// イベント詳細 Model
+	self.model = EventModel.read(id);
+
+	// 入力したコメント
+	self.comment = new CommentModel();
 };
 
 module.exports = ViewModel;
 
-},{"../../mithril":8,"../../model/event/detail":9}],13:[function(require,module,exports){
+},{"../../mithril":8,"../../model/comment":9,"../../model/event/detail":10}],14:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2840,4 +2929,4 @@ var ViewModel = function() {
 
 module.exports = ViewModel;
 
-},{"../../mithril":8,"../../model/event/list":10}]},{},[2]);
+},{"../../mithril":8,"../../model/event/list":11}]},{},[2]);
