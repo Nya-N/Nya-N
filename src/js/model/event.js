@@ -66,8 +66,17 @@ Model.read = function (id) {
 
 // サーバにJSONを保存
 Model.prototype.save = function () {
-	return m.request({method: "POST", url: api_url, data: {
+	var self = this;
 
+	return m.request({method: "POST", url: api_url, data: {
+		id:          self.id,
+		name:        self.name,
+		admin:       self.admin,
+		place:       self.place,
+		// TODO: image_path: self.image_path
+		capacity:    self.capacity,
+		start_date:  self.start_date,
+		description: self.description,
 	}});
 };
 
