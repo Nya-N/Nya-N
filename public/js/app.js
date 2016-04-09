@@ -2185,6 +2185,15 @@ var Navbar = require('../navbar');
 
 module.exports = {
 	controller: function() {
+		// イベント作成ボタンが押下された時
+		this.onsubmit = function(e) {
+			e.preventDefault();
+
+			// TODO: イベント登録処理
+
+			// イベント詳細画面に遷移
+			m.route('/event/detail/1');
+		};
 	},
 	view: function(ctrl) {
 		return {tag: "div", attrs: {}, children: [
@@ -2199,6 +2208,11 @@ module.exports = {
 					{tag: "label", attrs: {for:"EventName"}, children: ["イベント名"]}, 
 					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventName", placeholder:"イベント名"}}
 				]}, 
+				{tag: "div", attrs: {class:"form-group"}, children: [
+					{tag: "label", attrs: {for:"EventAdmin"}, children: ["主催者"]}, 
+					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventAdmin", placeholder:"主催者"}}
+				]}, 
+
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventDate"}, children: ["日時"]}, 
 					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventDate", placeholder:"日時"}}
@@ -2224,7 +2238,29 @@ module.exports = {
 				]}, 
 
 				{tag: "div", attrs: {}, children: [
-					{tag: "button", attrs: {type:"submit", class:"btn btn-lg btn-success"}, children: ["イベントを新規作成"]}
+					{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", "data-toggle":"modal", "data-target":"#ConfirmModal"}, children: ["イベントを新規作成"]}
+				]}, 
+
+				/* 確認画面モーダル */
+				{tag: "div", attrs: {id:"ConfirmModal", class:"modal fade", role:"dialog"}, children: [
+					{tag: "div", attrs: {class:"modal-dialog"}, children: [
+
+						{tag: "div", attrs: {class:"modal-content"}, children: [
+							{tag: "div", attrs: {class:"modal-header"}, children: [
+								/* 閉じるボタン */
+								{tag: "button", attrs: {type:"button", class:"close", "data-dismiss":"modal"}, children: ["×"]}, 
+								{tag: "h4", attrs: {class:"modal-title"}, children: ["確認画面"]}
+							]}, 
+							{tag: "div", attrs: {class:"modal-body"}, children: [
+								{tag: "p", attrs: {}/* TODO: 確認事項を書く */}
+							]}, 
+							{tag: "div", attrs: {class:"modal-footer"}, children: [
+								{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", "data-dismiss":"modal", onclick:ctrl.onsubmit}, children: ["送信"]}, 
+								{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-warning", "data-dismiss":"modal"}, children: ["修正"]}
+							]}
+						]}
+
+					]}
 				]}
 			]}
 
@@ -2249,6 +2285,8 @@ var Navbar = require('../navbar');
 
 module.exports = {
 	controller: function() {
+		// イベントID
+		this.id = m.route.param("id");
 	},
 	view: function(ctrl) {
 		return {tag: "div", attrs: {}, children: [
@@ -2256,7 +2294,167 @@ module.exports = {
 			{tag: "div", attrs: {}, children: [ m.component(Navbar) ]}, 
 
 			{tag: "div", attrs: {class:"container", style:"padding-top:30px", id:"root"}, children: [
-				"イベント詳細ページ"
+				/* イベント名 */
+				{tag: "div", attrs: {class:"row"}, children: [
+					{tag: "div", attrs: {class:"col-md-12"}, children: [
+						{tag: "h1", attrs: {}, children: ["イベント1"]}
+					]}
+				]}, 
+
+				{tag: "div", attrs: {class:"row"}, children: [
+					/* BEGIN: 左本文 */
+					{tag: "div", attrs: {class:"col-md-9"}, children: [
+						/* TODO: イベント画像 */
+
+						{tag: "table", attrs: {class:"table"}, children: [
+							{tag: "tbody", attrs: {}, children: [
+								{tag: "tr", attrs: {}, children: [
+									{tag: "td", attrs: {}, children: ["日時"]}, 
+									{tag: "td", attrs: {}, children: ["2016/04/09 (土) 13:30 から"]}
+								]}, 
+								{tag: "tr", attrs: {}, children: [
+									{tag: "td", attrs: {}, children: ["主催者"]}, 
+									{tag: "td", attrs: {}, children: ["田中"]}
+								]}, 
+								{tag: "tr", attrs: {}, children: [
+									{tag: "td", attrs: {}, children: ["開催場所"]}, 
+									{tag: "td", attrs: {}, children: ["第一会議室"]}
+								]}
+							]}
+						]}, 
+
+						{tag: "div", attrs: {class:"panel panel-default"}, children: [
+							{tag: "div", attrs: {class:"panel-body"}, children: [
+								/* イベント詳細 */
+								{tag: "h2", attrs: {}, children: ["勉強会の趣旨"]}, 
+								{tag: "p", attrs: {}, children: ["Go言語をプロダクションで導入している企業による勉強会です。", {tag: "br", attrs: {}}, 
+								"導入の事例紹介やノウハウ共有ができる場にしたいと思います。"]}, 
+								{tag: "h2", attrs: {}, children: ["タイムテーブル"]}, 
+								{tag: "table", attrs: {class:"table"}, children: [
+								{tag: "tr", attrs: {}, children: [
+									{tag: "th", attrs: {}, children: ["時間"]}, 
+									{tag: "th", attrs: {}, children: ["内容"]}, 
+									{tag: "th", attrs: {}, children: ["発表者"]}
+								]}, 
+								{tag: "tr", attrs: {}, children: [
+									{tag: "td", attrs: {}, children: ["19:00 – 19:20"]}, 
+									{tag: "td", attrs: {}, children: ["開場"]}, 
+									{tag: "td", attrs: {}, children: ["-"]}
+								]}, 
+								{tag: "tr", attrs: {}, children: [
+									{tag: "td", attrs: {}, children: ["19:20 – 19:30"]}, 
+									{tag: "td", attrs: {}, children: ["挨拶＆会場説明"]}, 
+									{tag: "td", attrs: {}, children: ["-"]}
+								]}, 
+								{tag: "tr", attrs: {}, children: [
+									{tag: "td", attrs: {}, children: ["19:30 – 19:40"]}, 
+									{tag: "td", attrs: {}, children: ["自己紹介タイム"]}, 
+									{tag: "td", attrs: {}, children: ["参加者全員"]}
+								]}, 
+								{tag: "tr", attrs: {}, children: [
+									{tag: "td", attrs: {}, children: ["19:40 – 20:00"]}, 
+									{tag: "td", attrs: {}, children: ["ああああああああああについて"]}, 
+									{tag: "td", attrs: {}, children: ["株式会社ああああああああ"]}
+								]}, 
+								{tag: "tr", attrs: {}, children: [
+									{tag: "td", attrs: {}, children: ["20:00 – 20:20"]}, 
+									{tag: "td", attrs: {}, children: ["ああああああああああについて"]}, 
+									{tag: "td", attrs: {}, children: ["株式会社ああああああああ"]}
+								]}, 
+								{tag: "tr", attrs: {}, children: [
+									{tag: "td", attrs: {}, children: ["20:20 – 20:40"]}, 
+									{tag: "td", attrs: {}, children: ["ああああああああああについて"]}, 
+									{tag: "td", attrs: {}, children: ["株式会社ああああああああ"]}
+								]}, 
+								{tag: "tr", attrs: {}, children: [
+									{tag: "td", attrs: {}, children: ["20:40 – 21:00"]}, 
+									{tag: "td", attrs: {}, children: ["質疑応答タイム"]}, 
+									{tag: "td", attrs: {}, children: ["-"]}
+								]}
+								]}, 
+								{tag: "h2", attrs: {}, children: ["勉強会の対象者"]}, 
+								{tag: "p", attrs: {}, children: ["Go言語に興味があるエンジニアのかた", {tag: "br", attrs: {}}, 
+								"これからGo言語の導入を検討されているかた"]}
+							]}
+						]}, 
+
+						{tag: "div", attrs: {class:"panel panel-default"}, children: [
+							{tag: "div", attrs: {class:"panel-heading"}, children: [
+								"コメント一覧(1)"
+							]}, 
+							{tag: "div", attrs: {class:"panel-body"}, children: [
+								/* コメント一覧 */
+								"山本さん", {tag: "br", attrs: {}}, 
+								"よろしくお願いします！", 
+								{tag: "hr", attrs: {}}, 
+								/* コメント投稿フォーム */
+								{tag: "form", attrs: {}, children: [
+									{tag: "div", attrs: {class:"form-group"}, children: [
+										{tag: "textarea", attrs: {class:"form-control", rows:"3"}}
+									]}, 
+									{tag: "div", attrs: {}, children: [
+										{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success"}, children: ["コメントを投稿"]}
+									]}
+								]}
+							]}
+						]}
+					]}, 
+					/* END: 左本文 */
+
+					/* BEGIN: 右サイドバー */
+					{tag: "div", attrs: {class:"col-md-3"}, children: [
+						{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", "data-toggle":"modal", "data-target":"#AttendModal"}, children: [
+							"イベントに参加する"
+						]}, 
+						{tag: "h3", attrs: {}, children: ["参加人数 100 / 225"]}, 
+
+						{tag: "div", attrs: {class:"panel panel-default"}, children: [
+							{tag: "div", attrs: {class:"panel-heading"}, children: [
+									"参加者一覧"
+							]}, 
+							{tag: "div", attrs: {class:"panel-body"}, children: [
+								"山本 さん", {tag: "br", attrs: {}}, 
+								"田中 さん", {tag: "br", attrs: {}}, 
+								"太郎 さん", {tag: "br", attrs: {}}, 
+								"山本 さん", {tag: "br", attrs: {}}, 
+								"田中 さん", {tag: "br", attrs: {}}, 
+								"太郎 さん", {tag: "br", attrs: {}}, 
+								"山本 さん", {tag: "br", attrs: {}}, 
+								"田中 さん", {tag: "br", attrs: {}}, 
+								"太郎 さん", {tag: "br", attrs: {}}
+							]}
+						]}
+					]}
+					/* END: 右サイドバー */
+				]}, 
+
+				/* BEGIN: イベント参加 入力モーダル */
+				{tag: "div", attrs: {id:"AttendModal", class:"modal fade", role:"dialog"}, children: [
+					{tag: "div", attrs: {class:"modal-dialog"}, children: [
+
+						{tag: "div", attrs: {class:"modal-content"}, children: [
+							{tag: "div", attrs: {class:"modal-header"}, children: [
+								/* 閉じるボタン */
+								{tag: "button", attrs: {type:"button", class:"close", "data-dismiss":"modal"}, children: ["×"]}, 
+								{tag: "h4", attrs: {class:"modal-title"}, children: ["イベントに参加する"]}
+							]}, 
+							{tag: "div", attrs: {class:"modal-body"}, children: [
+								/* イベント参加に必要な各入力項目 */
+								{tag: "form", attrs: {}, children: [
+									{tag: "div", attrs: {class:"form-group"}, children: [
+										{tag: "label", attrs: {for:"AttendName"}, children: ["名前"]}, 
+										{tag: "input", attrs: {type:"text", class:"form-control", id:"AttendName", placeholder:"あなたの名前"}}
+									]}
+								]}
+							]}, 
+							{tag: "div", attrs: {class:"modal-footer"}, children: [
+								{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", "data-dismiss":"modal"}, children: ["参加"]}, 
+								{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-warning", "data-dismiss":"modal"}, children: ["閉じる"]}
+							]}
+						]}
+					]}
+				]}
+				/* END: イベント参加 入力モーダル */
 			]}
 		]};
 	}
@@ -2324,6 +2522,13 @@ module.exports = {
 						]}, 
 							"225/250人"
 					]}
+				]}, 
+				/* ページャー */
+				{tag: "nav", attrs: {}, children: [
+				  {tag: "ul", attrs: {class:"pager"}, children: [
+					{tag: "li", attrs: {class:"previous disabled"}, children: [{tag: "a", attrs: {href:"#"}, children: [{tag: "span", attrs: {"aria-hidden":"true"}, children: ["←"]}, " Older"]}]}, 
+					{tag: "li", attrs: {class:"next"}, children: [{tag: "a", attrs: {href:"#"}, children: ["Newer ", {tag: "span", attrs: {"aria-hidden":"true"}, children: ["→"]}]}]}
+				  ]}
 				]}
 			]}
 		]};
