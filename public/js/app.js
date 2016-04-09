@@ -2283,22 +2283,32 @@ var m = require('../../mithril');
 // navbar
 var Navbar = require('../navbar');
 
+// アプリケーションの状態
+var state = require('../../state');
 
 module.exports = {
 	controller: function() {
 		// イベントID
 		this.id = m.route.param("id");
+
+		// TODO: IDが存在しなかった場合のエラー処理
+
+		// ViewModel
+		this.vm = state.make_event_detail(this.id);
 	},
 	view: function(ctrl) {
+		var model = ctrl.vm.model();
+
+		// HTML
 		return {tag: "div", attrs: {}, children: [
 			/*navbar*/
 			{tag: "div", attrs: {}, children: [ m.component(Navbar) ]}, 
 
 			{tag: "div", attrs: {class:"container", style:"padding-top:30px", id:"root"}, children: [
-				/* イベント名 */
 				{tag: "div", attrs: {class:"row"}, children: [
 					{tag: "div", attrs: {class:"col-md-12"}, children: [
-						{tag: "h1", attrs: {}, children: ["イベント1"]}
+						/* イベント名 */
+						{tag: "h1", attrs: {}, children: [model.name]}
 					]}
 				]}, 
 
@@ -2311,15 +2321,15 @@ module.exports = {
 							{tag: "tbody", attrs: {}, children: [
 								{tag: "tr", attrs: {}, children: [
 									{tag: "td", attrs: {}, children: ["日時"]}, 
-									{tag: "td", attrs: {}, children: ["2016/04/09 (土) 13:30 から"]}
+									{tag: "td", attrs: {}, children: [ model.start_date + "から"]}
 								]}, 
 								{tag: "tr", attrs: {}, children: [
 									{tag: "td", attrs: {}, children: ["主催者"]}, 
-									{tag: "td", attrs: {}, children: ["田中"]}
+									{tag: "td", attrs: {}, children: [model.admin.name]}
 								]}, 
 								{tag: "tr", attrs: {}, children: [
 									{tag: "td", attrs: {}, children: ["開催場所"]}, 
-									{tag: "td", attrs: {}, children: ["第一会議室"]}
+									{tag: "td", attrs: {}, children: [model.place.name]}
 								]}
 							]}
 						]}, 
@@ -2327,67 +2337,26 @@ module.exports = {
 						{tag: "div", attrs: {class:"panel panel-default"}, children: [
 							{tag: "div", attrs: {class:"panel-body"}, children: [
 								/* イベント詳細 */
-								{tag: "h2", attrs: {}, children: ["勉強会の趣旨"]}, 
-								{tag: "p", attrs: {}, children: ["Go言語をプロダクションで導入している企業による勉強会です。", {tag: "br", attrs: {}}, 
-								"導入の事例紹介やノウハウ共有ができる場にしたいと思います。"]}, 
-								{tag: "h2", attrs: {}, children: ["タイムテーブル"]}, 
-								{tag: "table", attrs: {class:"table"}, children: [
-								{tag: "tr", attrs: {}, children: [
-									{tag: "th", attrs: {}, children: ["時間"]}, 
-									{tag: "th", attrs: {}, children: ["内容"]}, 
-									{tag: "th", attrs: {}, children: ["発表者"]}
-								]}, 
-								{tag: "tr", attrs: {}, children: [
-									{tag: "td", attrs: {}, children: ["19:00 – 19:20"]}, 
-									{tag: "td", attrs: {}, children: ["開場"]}, 
-									{tag: "td", attrs: {}, children: ["-"]}
-								]}, 
-								{tag: "tr", attrs: {}, children: [
-									{tag: "td", attrs: {}, children: ["19:20 – 19:30"]}, 
-									{tag: "td", attrs: {}, children: ["挨拶＆会場説明"]}, 
-									{tag: "td", attrs: {}, children: ["-"]}
-								]}, 
-								{tag: "tr", attrs: {}, children: [
-									{tag: "td", attrs: {}, children: ["19:30 – 19:40"]}, 
-									{tag: "td", attrs: {}, children: ["自己紹介タイム"]}, 
-									{tag: "td", attrs: {}, children: ["参加者全員"]}
-								]}, 
-								{tag: "tr", attrs: {}, children: [
-									{tag: "td", attrs: {}, children: ["19:40 – 20:00"]}, 
-									{tag: "td", attrs: {}, children: ["ああああああああああについて"]}, 
-									{tag: "td", attrs: {}, children: ["株式会社ああああああああ"]}
-								]}, 
-								{tag: "tr", attrs: {}, children: [
-									{tag: "td", attrs: {}, children: ["20:00 – 20:20"]}, 
-									{tag: "td", attrs: {}, children: ["ああああああああああについて"]}, 
-									{tag: "td", attrs: {}, children: ["株式会社ああああああああ"]}
-								]}, 
-								{tag: "tr", attrs: {}, children: [
-									{tag: "td", attrs: {}, children: ["20:20 – 20:40"]}, 
-									{tag: "td", attrs: {}, children: ["ああああああああああについて"]}, 
-									{tag: "td", attrs: {}, children: ["株式会社ああああああああ"]}
-								]}, 
-								{tag: "tr", attrs: {}, children: [
-									{tag: "td", attrs: {}, children: ["20:40 – 21:00"]}, 
-									{tag: "td", attrs: {}, children: ["質疑応答タイム"]}, 
-									{tag: "td", attrs: {}, children: ["-"]}
-								]}
-								]}, 
-								{tag: "h2", attrs: {}, children: ["勉強会の対象者"]}, 
-								{tag: "p", attrs: {}, children: ["Go言語に興味があるエンジニアのかた", {tag: "br", attrs: {}}, 
-								"これからGo言語の導入を検討されているかた"]}
+								 m.trust(model.description) 
 							]}
 						]}, 
 
 						{tag: "div", attrs: {class:"panel panel-default"}, children: [
 							{tag: "div", attrs: {class:"panel-heading"}, children: [
-								"コメント一覧(1)"
+								/* コメント数 */
+								"コメント一覧(",  model.comment_num, ")"
 							]}, 
 							{tag: "div", attrs: {class:"panel-body"}, children: [
 								/* コメント一覧 */
-								"山本さん", {tag: "br", attrs: {}}, 
-								"よろしくお願いします！", 
-								{tag: "hr", attrs: {}}, 
+								
+									model.comments.map(function(comment, i) {
+										return {tag: "div", attrs: {}, children: [
+											/* コメント投稿者 */
+											 comment.name, {tag: "br", attrs: {}}, 
+											 comment.comment, {tag: "hr", attrs: {}}
+										]};
+									}), 
+								
 								/* コメント投稿フォーム */
 								{tag: "form", attrs: {}, children: [
 									{tag: "div", attrs: {class:"form-group"}, children: [
@@ -2407,22 +2376,21 @@ module.exports = {
 						{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", "data-toggle":"modal", "data-target":"#AttendModal"}, children: [
 							"イベントに参加する"
 						]}, 
-						{tag: "h3", attrs: {}, children: ["参加人数 100 / 225"]}, 
+						{tag: "h3", attrs: {}, children: ["参加人数 ", model.attend_num, " / ", model.capacity]}, 
 
 						{tag: "div", attrs: {class:"panel panel-default"}, children: [
 							{tag: "div", attrs: {class:"panel-heading"}, children: [
-									"参加者一覧"
+									/* 参加者数 */
+									"参加者一覧(", model.member_num, ")"
 							]}, 
 							{tag: "div", attrs: {class:"panel-body"}, children: [
-								"山本 さん", {tag: "br", attrs: {}}, 
-								"田中 さん", {tag: "br", attrs: {}}, 
-								"太郎 さん", {tag: "br", attrs: {}}, 
-								"山本 さん", {tag: "br", attrs: {}}, 
-								"田中 さん", {tag: "br", attrs: {}}, 
-								"太郎 さん", {tag: "br", attrs: {}}, 
-								"山本 さん", {tag: "br", attrs: {}}, 
-								"田中 さん", {tag: "br", attrs: {}}, 
-								"太郎 さん", {tag: "br", attrs: {}}
+								
+									model.members.map(function(member, i) {
+										return {tag: "span", attrs: {}, children: [
+											 member.name, " さん", {tag: "br", attrs: {}}
+										]};
+									})
+								
 							]}
 						]}
 					]}
@@ -2461,7 +2429,7 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":8,"../navbar":6}],5:[function(require,module,exports){
+},{"../../mithril":8,"../../state":11,"../navbar":6}],5:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2491,51 +2459,44 @@ module.exports = {
 		// 次へ
 		var next_id = model.next_id;
 
+		// イベント一覧
+		var events = model.events;
+
+		// HTML
 		return {tag: "div", attrs: {}, children: [
 			/*navbar*/
 			{tag: "div", attrs: {}, children: [ m.component(Navbar) ]}, 
 
 			{tag: "div", attrs: {class:"container", style:"padding-top:30px", id:"root"}, children: [
-				{tag: "div", attrs: {class:"panel panel-default"}, children: [
-					{tag: "div", attrs: {class:"panel-heading"}, children: [
-						{tag: "a", attrs: {href:"/event/detail/1", config:m.route}, children: [
-							"イベント名1"
-						]}
-					]}, 
-					{tag: "div", attrs: {class:"panel-body"}, children: [
-						{tag: "div", attrs: {class:"pull-left"}, children: [
-							{tag: "img", attrs: {src:"img/150x150.png", height:"150", width:"150"}}
-						]}, 
-						"イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細"
-					]}, 
-					{tag: "div", attrs: {class:"panel-footer"}, children: [
-						{tag: "div", attrs: {class:"pull-right"}, children: [
-							"2016/04/09 (土) 13:30 から"
-						]}, 
-							"225/250人"
-					]}
-				]}, 
+				
+					events.map(function(event, i) {
+						return {tag: "div", attrs: {class:"panel panel-default"}, children: [
+							{tag: "div", attrs: {class:"panel-heading"}, children: [
+								/* イベント名 */
+								{tag: "a", attrs: {href:"/event/detail/" + event.id, config:m.route}, children: [ event.name]}
+							]}, 
+							{tag: "div", attrs: {class:"panel-body"}, children: [
+								{tag: "div", attrs: {class:"pull-left"}, children: [
+									/* イベント画像 */
+									{tag: "img", attrs: {src: event.image_path, height:"150", width:"150"}}
+								]}, 
+								
+									/* イベント詳細 */
+									event.description
+								
+							]}, 
+							{tag: "div", attrs: {class:"panel-footer"}, children: [
+								{tag: "div", attrs: {class:"pull-right"}, children: [
+									/* イベント開始時刻 */
+									 event.start_date + "から"
+								]}, 
+								/* 参加人数／定員 */
+								 event.attend_num + " / " + event.capacity + "人"
+							]}
+						]};
 
-				{tag: "div", attrs: {class:"panel panel-default"}, children: [
-					{tag: "div", attrs: {class:"panel-heading"}, children: [
-						{tag: "a", attrs: {href:"/event/detail/1", config:m.route}, children: [
-							"イベント名1"
-						]}
-
-					]}, 
-					{tag: "div", attrs: {class:"panel-body"}, children: [
-						{tag: "div", attrs: {class:"pull-left"}, children: [
-							{tag: "img", attrs: {src:"img/150x150.png", height:"150", width:"150"}}
-						]}, 
-						"イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細"
-					]}, 
-					{tag: "div", attrs: {class:"panel-footer"}, children: [
-						{tag: "div", attrs: {class:"pull-right"}, children: [
-							"2016/04/09 (土) 13:30 から"
-						]}, 
-							"225/250人"
-					]}
-				]}, 
+					}), 
+				
 				/* ページャー */
 				{tag: "nav", attrs: {}, children: [
 					{tag: "ul", attrs: {class:"pager"}, children: [
@@ -2549,7 +2510,7 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":8,"../../state":10,"../navbar":6}],6:[function(require,module,exports){
+},{"../../mithril":8,"../../state":11,"../navbar":6}],6:[function(require,module,exports){
 'use strict';
 var m = require('../mithril');
 
@@ -2711,6 +2672,59 @@ module.exports = m;
  */
 
 // API URL
+var api_url = "api/event/";
+
+
+var m = require('../../mithril');
+
+
+// コンストラクタ
+var Model = function (data, isInitial) {
+	this.id = data.id;
+	this.name = data.name;
+	this.admin = data.admin;
+	this.place = data.place;
+	this.image_path = data.image_path;
+	this.capacity = data.capacity;
+	this.attend_num = data.attend_num;
+	this.start_date = data.start_date;
+	this.description = data.description;
+	this.member_num = data.member_num;
+	this.comment_num = data.comment_num;
+	this.members = data.members;
+	this.comments = data.comments;
+};
+
+// サーバからJSONを読み込む
+Model.read = function (id) {
+	return m.request({
+		method: "GET",
+		url: api_url + id,
+		type: Model
+	});
+};
+
+// サーバにJSONを保存
+Model.prototype.save = function () {
+	var rule = this.body;
+
+	return m.request({method: "POST", url: api_url, data: {
+
+	}});
+};
+
+module.exports = Model;
+
+
+},{"../../mithril":8}],10:[function(require,module,exports){
+'use strict';
+
+/*
+ * イベント一覧 モデル
+ *
+ */
+
+// API URL
 var api_url = "api/event";
 
 
@@ -2745,17 +2759,22 @@ Model.prototype.save = function () {
 module.exports = Model;
 
 
-},{"../../mithril":8}],10:[function(require,module,exports){
+},{"../../mithril":8}],11:[function(require,module,exports){
 'use strict';
 
 /*
  * アプリケーションの状態を管理するクラス
- * シングルトン
+ * ViewModel を生成する Singleton な Factory
  */
 
 var m = require('./mithril');
 
+// イベント一覧
 var EventListViewModel = require('./viewmodel/event/list');
+
+// イベント詳細
+var EventDetailViewModel = require('./viewmodel/event/detail');
+
 
 // コンストラクタ
 var State = function() {
@@ -2772,9 +2791,35 @@ State.prototype.make_event_list = function() {
 	return this.event_list;
 };
 
+// イベント詳細(状態を保存しない)
+State.prototype.make_event_detail = function(id) {
+	return  new EventDetailViewModel(id);
+};
+
 module.exports = new State();
 
-},{"./mithril":8,"./viewmodel/event/list":11}],11:[function(require,module,exports){
+},{"./mithril":8,"./viewmodel/event/detail":12,"./viewmodel/event/list":13}],12:[function(require,module,exports){
+'use strict';
+
+/*
+ * ATND イベント詳細 ViewModel
+ *
+ */
+
+
+var m = require('../../mithril');
+
+var Model = require('../../model/event/detail');
+
+// ビューモデル
+var ViewModel = function(id) {
+	// モデル
+	this.model = Model.read(id);
+};
+
+module.exports = ViewModel;
+
+},{"../../mithril":8,"../../model/event/detail":9}],13:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2795,4 +2840,4 @@ var ViewModel = function() {
 
 module.exports = ViewModel;
 
-},{"../../mithril":8,"../../model/event/list":9}]},{},[2]);
+},{"../../mithril":8,"../../model/event/list":10}]},{},[2]);
