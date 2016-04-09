@@ -29,7 +29,6 @@ var Model = function (data, isInitial) {
 
 	self.id          = m.prop(data.id);
 	self.name        = m.prop(data.name        || "");
-	self.admin       = m.prop(data.admin       || "");
 	self.place       = m.prop(data.place       || "");
 	self.image_path  = m.prop(data.image_path);
 	self.capacity    = m.prop(data.capacity    || "");
@@ -37,6 +36,31 @@ var Model = function (data, isInitial) {
 	self.start_date  = m.prop(data.start_date  || "");
 	self.description = m.prop(data.description || "");
 	self.comment_num = m.prop(data.comment_num || 0);
+
+	// TODO: リファクタ
+	// 主催者
+	if(data.admin) {
+		self.admin = {
+			name: m.prop(data.admin.name),
+		};
+	}
+	else {
+		self.admin = {
+			name: m.prop(""),
+		};
+	}
+
+	// 場所
+	if(data.place) {
+		self.place = {
+			name: m.prop(data.place.name),
+		};
+	}
+	else {
+		self.place = {
+			name: m.prop(""),
+		};
+	}
 
 	// 参加者一覧
 	if(data.members) {

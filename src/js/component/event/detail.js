@@ -103,11 +103,11 @@ module.exports = {
 								</tr>
 								<tr>
 									<td>主催者</td>
-									<td>{model.admin().name}</td>
+									<td>{model.admin.name()}</td>
 								</tr>
 								<tr>
 									<td>開催場所</td>
-									<td>{model.place().name}</td>
+									<td>{model.place.name()}</td>
 								</tr>
 							</tbody>
 						</table>
