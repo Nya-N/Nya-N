@@ -2159,7 +2159,7 @@ var EventDetail = require('./component/event/detail.js');
 
 
 
-
+m.route.mode = "hash";
 
 //HTML要素にコンポーネントをマウント
 m.route(document.getElementById("root"), "/", {
@@ -2241,7 +2241,7 @@ module.exports = {
 					{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", "data-toggle":"modal", "data-target":"#ConfirmModal"}, children: ["イベントを新規作成"]}
 				]}, 
 
-				/* 確認画面モーダル */
+				/* BEGIN: 確認画面モーダル */
 				{tag: "div", attrs: {id:"ConfirmModal", class:"modal fade", role:"dialog"}, children: [
 					{tag: "div", attrs: {class:"modal-dialog"}, children: [
 
@@ -2262,6 +2262,7 @@ module.exports = {
 
 					]}
 				]}
+				/* END: 確認画面モーダル */
 			]}
 
 			]}
@@ -2468,16 +2469,28 @@ module.exports = {
  *
  */
 
+// mithril
 var m = require('../../mithril');
+
+// アプリケーションの状態
+var state = require('../../state');
 
 // navbar
 var Navbar = require('../navbar');
 
-
 module.exports = {
 	controller: function() {
+		// ViewModel
+		this.vm = state.make_event_list();
 	},
 	view: function(ctrl) {
+		var model = ctrl.vm.model();
+
+		// 前へ
+		var prev_id = model.prev_id;
+		// 次へ
+		var next_id = model.next_id;
+
 		return {tag: "div", attrs: {}, children: [
 			/*navbar*/
 			{tag: "div", attrs: {}, children: [ m.component(Navbar) ]}, 
@@ -2525,17 +2538,18 @@ module.exports = {
 				]}, 
 				/* ページャー */
 				{tag: "nav", attrs: {}, children: [
-				  {tag: "ul", attrs: {class:"pager"}, children: [
-					{tag: "li", attrs: {class:"previous disabled"}, children: [{tag: "a", attrs: {href:"#"}, children: [{tag: "span", attrs: {"aria-hidden":"true"}, children: ["←"]}, " Older"]}]}, 
-					{tag: "li", attrs: {class:"next"}, children: [{tag: "a", attrs: {href:"#"}, children: ["Newer ", {tag: "span", attrs: {"aria-hidden":"true"}, children: ["→"]}]}]}
-				  ]}
+					{tag: "ul", attrs: {class:"pager"}, children: [
+				  		/*<li class="previous disabled"><a href=""><span aria-hidden="true">&larr;</span> Older</a></li>*/
+				  		{tag: "li", attrs: {class:"previous"}, children: [{tag: "a", attrs: {href:"/event?prev_id=" + prev_id, config:m.route}, children: [{tag: "span", attrs: {"aria-hidden":"true"}, children: ["←"]}, " Older"]}]}, 
+						{tag: "li", attrs: {class:"next"}, children: [{tag: "a", attrs: {href:"/event?next_id=" + next_id, config:m.route}, children: ["Newer ", {tag: "span", attrs: {"aria-hidden":"true"}, children: ["→"]}]}]}
+				  	]}
 				]}
 			]}
 		]};
 	}
 };
 
-},{"../../mithril":8,"../navbar":6}],6:[function(require,module,exports){
+},{"../../mithril":8,"../../state":10,"../navbar":6}],6:[function(require,module,exports){
 'use strict';
 var m = require('../mithril');
 
@@ -2688,4 +2702,97 @@ m.request = function(args) {
 
 module.exports = m;
 
-},{"mithril":1}]},{},[2]);
+},{"mithril":1}],9:[function(require,module,exports){
+'use strict';
+
+/*
+ * イベント一覧 モデル
+ *
+ */
+
+// API URL
+var api_url = "api/event";
+
+
+var m = require('../../mithril');
+
+
+// コンストラクタ
+var Model = function (data, isInitial) {
+	// 前へ
+	this.prev_id = data.prev_id;
+	// 次へ
+	this.next_id = data.next_id;
+
+	// イベント一覧
+	this.events = data.events;
+};
+
+// サーバからJSONを読み込む
+Model.read = function () {
+	return m.request({method: "GET", url: api_url, type: Model});
+};
+
+// サーバにJSONを保存
+Model.prototype.save = function () {
+	var rule = this.body;
+
+	return m.request({method: "POST", url: api_url, data: {
+
+	}});
+};
+
+module.exports = Model;
+
+
+},{"../../mithril":8}],10:[function(require,module,exports){
+'use strict';
+
+/*
+ * アプリケーションの状態を管理するクラス
+ * シングルトン
+ */
+
+var m = require('./mithril');
+
+var EventListViewModel = require('./viewmodel/event/list');
+
+// コンストラクタ
+var State = function() {
+	// イベント一覧
+	this.event_list = null;
+};
+
+// イベント一覧
+State.prototype.make_event_list = function() {
+	if( ! this.event_list) {
+		this.event_list = new EventListViewModel();
+	}
+
+	return this.event_list;
+};
+
+module.exports = new State();
+
+},{"./mithril":8,"./viewmodel/event/list":11}],11:[function(require,module,exports){
+'use strict';
+
+/*
+ * ATND イベント一覧 ViewModel
+ *
+ */
+
+
+var m = require('../../mithril');
+
+var Model = require('../../model/event/list');
+
+// ビューモデル
+var ViewModel = function() {
+	// モデル
+	this.model = Model.read();
+};
+
+module.exports = ViewModel;
+
+},{"../../mithril":8,"../../model/event/list":9}]},{},[2]);
