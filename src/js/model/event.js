@@ -9,13 +9,13 @@
 var api_url = "api/event/";
 
 
-var m = require('../../mithril');
+var m = require('../mithril');
 
 // コメント モデル
-var CommentModel = require('../comment');
+var CommentModel = require('./comment');
 
 // コメント モデル
-var JoinModel = require('../join');
+var JoinModel = require('./join');
 
 
 
