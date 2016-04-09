@@ -15,7 +15,7 @@ var EventDetail = require('./component/event/detail.js');
 
 
 
-
+m.route.mode = "hash";
 
 //HTML要素にコンポーネントをマウント
 m.route(document.getElementById("root"), "/", {
