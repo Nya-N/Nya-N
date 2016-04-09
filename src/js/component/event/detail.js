@@ -121,7 +121,7 @@ module.exports = {
 										<textarea class="form-control" rows="3"></textarea>
 									</div>
 									<div>
-										<button type="submit" class="btn btn-lg btn-success">コメントを投稿</button>
+										<button type="button" class="btn btn-lg btn-success">コメントを投稿</button>
 									</div>
 								</form>
 							</div>
