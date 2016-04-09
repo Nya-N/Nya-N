@@ -13,16 +13,7 @@ var Model = require('../../model/event/list');
 // ビューモデル
 var ViewModel = function() {
 	// モデル
-	this.model = null;
+	this.model = Model.read();
 };
 
-ViewModel.prototype.init = function() {
-	var self = this;
-
-	// モデルを読み込み
-	return Model.read().then(function(model) {
-		self.model = model;
-		return model;
-	});
-};
 module.exports = ViewModel;
