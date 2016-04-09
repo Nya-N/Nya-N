@@ -15,13 +15,30 @@ var state = require('../../state');
 
 module.exports = {
 	controller: function() {
+		var self = this;
+
 		// イベントID
-		this.id = m.route.param("id");
+		self.id = m.route.param("id");
 
 		// TODO: IDが存在しなかった場合のエラー処理
 
 		// ViewModel
-		this.vm = state.make_event_detail(this.id);
+		self.vm = state.make_event_detail(self.id);
+
+		// コメントの追加ボタンが押下された時
+		self.onsubmit_comment = function(e) {
+			// TODO:入力値チェック
+
+			// event_id
+			self.vm.comment.event_id(self.vm.model().id);
+			// サーバーに保存
+			self.vm.comment.save();
+
+			// TODO: コメント一覧にモデルを移動
+
+			// コメント欄を空にする
+			self.vm.comment.clear();
+		};
 	},
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
@@ -80,17 +97,22 @@ module.exports = {
 										return <div>
 											{/* コメント投稿者 */}
 											{ comment.name }<br />
-											{ comment.comment }<hr />
+											{ comment.body }<hr />
 										</div>;
 									})
 								}
 								{/* コメント投稿フォーム */}
 								<form>
+									{/* コメントの名前入力 */}
 									<div class="form-group">
-										<textarea class="form-control" rows="3"></textarea>
+										<input type="text" class="form-control" placeholder="名前" onchange={m.withAttr("value", ctrl.vm.comment.name)} value={ ctrl.vm.comment.name() } />
+									</div>
+									{/* コメントの内容入力 */}
+									<div class="form-group">
+										<textarea class="form-control" rows="4" onchange={m.withAttr("value", ctrl.vm.comment.body)} placeholder="コメント内容">{ ctrl.vm.comment.body() }</textarea>
 									</div>
 									<div>
-										<button type="button" class="btn btn-lg btn-success">コメントを投稿</button>
+										<button type="button" class="btn btn-lg btn-success" onclick={ctrl.onsubmit_comment}>コメントを投稿</button>
 									</div>
 								</form>
 							</div>
