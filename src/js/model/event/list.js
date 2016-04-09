@@ -11,15 +11,17 @@ var api_url = "api/event";
 
 var m = require('../../mithril');
 
+
+// コンストラクタ
 var Model = function (data, isInitial) {
 };
 
-// サーバからページを読み込む
+// サーバからJSONを読み込む
 Model.read = function () {
 	return m.request({method: "GET", url: api_url, type: Model});
 };
 
-// サーバにページのコンテンツを保存
+// サーバにJSONを保存
 Model.prototype.save = function () {
 	var rule = this.body;
 
