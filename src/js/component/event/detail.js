@@ -96,8 +96,8 @@ module.exports = {
 									model.comments.map(function(comment, i) {
 										return <div>
 											{/* コメント投稿者 */}
-											{ comment.name }<br />
-											{ comment.body }<hr />
+											{ comment.name() }<br />
+											{ comment.body() }<hr />
 										</div>;
 									})
 								}
