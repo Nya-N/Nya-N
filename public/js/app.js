@@ -2304,13 +2304,47 @@ module.exports = {
 
 			// event_id
 			self.vm.comment.event_id(self.vm.model().id);
+
 			// サーバーに保存
-			self.vm.comment.save();
+			self.vm.comment.save()
+			.then(function(id) {
+				// 生成されたコメントIDを保存
+				self.vm.comment.id(id);
 
-			// TODO: コメント一覧にモデルを移動
+				// コメント一覧に新しく追加したコメントを移動
+				self.vm.model().comments.push(self.vm.comment);
 
-			// コメント欄を空にする
-			self.vm.comment.clear();
+				// コメント件数を +1
+				self.vm.model().comment_num += 1;
+
+				// コメント欄を空にする
+				self.vm.clear_comment();
+			});
+		};
+
+		// イベントに参加ボタンが押下された時
+		self.onsubmit_join = function(e) {
+			// TODO:入力値チェック
+
+			// event_id
+			self.vm.join.event_id(self.vm.model().id);
+
+			// サーバーに保存
+			self.vm.join.save()
+			.then(function(id) {
+				// 生成された参加IDを保存
+				self.vm.join.id(id);
+
+				// 参加者一覧に新しく参加した人を移動
+				self.vm.model().members.push(self.vm.join);
+
+				// コメント件数を +1
+				self.vm.model().attend_num += 1;
+
+				// コメント欄を空にする
+				self.vm.clear_join();
+			});
+
 		};
 	},
 	view: function(ctrl) {
@@ -2369,8 +2403,8 @@ module.exports = {
 									model.comments.map(function(comment, i) {
 										return {tag: "div", attrs: {}, children: [
 											/* コメント投稿者 */
-											 comment.name, {tag: "br", attrs: {}}, 
-											 comment.body, {tag: "hr", attrs: {}}
+											 comment.name(), {tag: "br", attrs: {}}, 
+											 comment.body(), {tag: "hr", attrs: {}}
 										]};
 									}), 
 								
@@ -2403,13 +2437,13 @@ module.exports = {
 						{tag: "div", attrs: {class:"panel panel-default"}, children: [
 							{tag: "div", attrs: {class:"panel-heading"}, children: [
 									/* 参加者数 */
-									"参加者一覧(", model.member_num, ")"
+									"参加者一覧"
 							]}, 
 							{tag: "div", attrs: {class:"panel-body"}, children: [
 								
 									model.members.map(function(member, i) {
 										return {tag: "span", attrs: {}, children: [
-											 member.name, " さん", {tag: "br", attrs: {}}
+											 member.name(), " さん", {tag: "br", attrs: {}}
 										]};
 									})
 								
@@ -2434,12 +2468,12 @@ module.exports = {
 								{tag: "form", attrs: {}, children: [
 									{tag: "div", attrs: {class:"form-group"}, children: [
 										{tag: "label", attrs: {for:"AttendName"}, children: ["名前"]}, 
-										{tag: "input", attrs: {type:"text", class:"form-control", id:"AttendName", placeholder:"あなたの名前"}}
+										{tag: "input", attrs: {type:"text", class:"form-control", id:"AttendName", placeholder:"あなたの名前", onchange: m.withAttr("value", ctrl.vm.join.name), value: ctrl.vm.join.name() }}
 									]}
 								]}
 							]}, 
 							{tag: "div", attrs: {class:"modal-footer"}, children: [
-								{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", "data-dismiss":"modal"}, children: ["参加"]}, 
+								{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", "data-dismiss":"modal", onclick: ctrl.onsubmit_join}, children: ["参加"]}, 
 								{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-warning", "data-dismiss":"modal"}, children: ["閉じる"]}
 							]}
 						]}
@@ -2451,7 +2485,7 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":8,"../../state":12,"../navbar":6}],5:[function(require,module,exports){
+},{"../../mithril":8,"../../state":13,"../navbar":6}],5:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2532,7 +2566,7 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":8,"../../state":12,"../navbar":6}],6:[function(require,module,exports){
+},{"../../mithril":8,"../../state":13,"../navbar":6}],6:[function(require,module,exports){
 'use strict';
 var m = require('../mithril');
 
@@ -2715,18 +2749,6 @@ var Model = function (data, isInitial) {
 	this.body = m.prop(data.body || "");
 };
 
-// 全てのプロパティを空にする
-Model.prototype.clear = function() {
-	// コメントID
-	this.id = m.prop();
-	// イベントID
-	this.event_id = m.prop();
-	// コメントした人の名前
-	this.name = m.prop("");
-	// コメント内容
-	this.body = m.prop("");
-};
-
 // サーバからJSONを読み込む
 Model.read = function (id) {
 	return m.request({
@@ -2742,7 +2764,11 @@ Model.prototype.save = function () {
 		event_id: this.event_id(),
 		name:     this.name(),
 		body:     this.body()
-	}});
+	}})
+	.then(function(res) {
+		// 生成されたコメントID
+		return res.id;
+	});
 };
 
 module.exports = Model;
@@ -2762,22 +2788,44 @@ var api_url = "api/event/";
 
 var m = require('../../mithril');
 
+// コメント モデル
+var CommentModel = require('../comment');
+
+// コメント モデル
+var JoinModel = require('../join');
+
+
 
 // コンストラクタ
 var Model = function (data, isInitial) {
-	this.id = data.id;
-	this.name = data.name;
-	this.admin = data.admin;
-	this.place = data.place;
-	this.image_path = data.image_path;
-	this.capacity = data.capacity;
-	this.attend_num = data.attend_num;
-	this.start_date = data.start_date;
-	this.description = data.description;
-	this.member_num = data.member_num;
-	this.comment_num = data.comment_num;
-	this.members = data.members;
-	this.comments = data.comments;
+	var self = this;
+
+	self.id = data.id;
+	self.name = data.name;
+	self.admin = data.admin;
+	self.place = data.place;
+	self.image_path = data.image_path;
+	self.capacity = data.capacity;
+	self.attend_num = data.attend_num;
+	self.start_date = data.start_date;
+	self.description = data.description;
+	self.comment_num = data.comment_num;
+
+	// 参加者一覧
+	if(data.members) {
+		self.members = [];
+		data.members.forEach(function(member) {
+			self.members.push(new JoinModel(member));
+		});
+	}
+
+	// コメント一覧
+	if(data.comments) {
+		self.comments = [];
+		data.comments.forEach(function(comment) {
+			self.comments.push(new CommentModel(comment));
+		});
+	}
 };
 
 // サーバからJSONを読み込む
@@ -2799,7 +2847,7 @@ Model.prototype.save = function () {
 module.exports = Model;
 
 
-},{"../../mithril":8}],11:[function(require,module,exports){
+},{"../../mithril":8,"../comment":9,"../join":12}],11:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2844,6 +2892,58 @@ module.exports = Model;
 'use strict';
 
 /*
+ * イベントに付随する参加者 モデル
+ *
+ */
+
+// API URL
+var api_url = "api/join";
+
+
+var m = require('../mithril');
+
+
+// コンストラクタ
+var Model = function (data, isInitial) {
+	if( ! data) {
+		data = {};
+	}
+	// JOIN ID
+	this.id = m.prop(data.id);
+	// イベントID
+	this.event_id = m.prop(data.event_id);
+	// 参加者の名前
+	this.name = m.prop(data.name || "");
+};
+
+// サーバからJSONを読み込む
+Model.read = function (id) {
+	return m.request({
+		method: "GET",
+		url: api_url + '/' + id,
+		type: Model
+	});
+};
+
+// サーバにJSONを保存
+Model.prototype.save = function () {
+	return m.request({method: "POST", url: api_url, data: {
+		event_id: this.event_id(),
+		name:     this.name(),
+	}})
+	.then(function(res) {
+		// 生成されたコメントID
+		return res.id;
+	});
+};
+
+module.exports = Model;
+
+
+},{"../mithril":8}],13:[function(require,module,exports){
+'use strict';
+
+/*
  * アプリケーションの状態を管理するクラス
  * ViewModel を生成する Singleton な Factory
  */
@@ -2879,7 +2979,7 @@ State.prototype.make_event_detail = function(id) {
 
 module.exports = new State();
 
-},{"./mithril":8,"./viewmodel/event/detail":13,"./viewmodel/event/list":14}],13:[function(require,module,exports){
+},{"./mithril":8,"./viewmodel/event/detail":14,"./viewmodel/event/list":15}],14:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2896,6 +2996,11 @@ var EventModel = require('../../model/event/detail');
 // コメントモデル
 var CommentModel = require('../../model/comment');
 
+// コメントモデル
+var JoinModel = require('../../model/join');
+
+
+
 // ビューモデル
 var ViewModel = function(id) {
 	var self = this;
@@ -2904,11 +3009,26 @@ var ViewModel = function(id) {
 
 	// 入力したコメント
 	self.comment = new CommentModel();
+
+	// 入力した参加登録
+	self.join = new JoinModel();
+};
+
+// 入力されたコメントをクリア
+ViewModel.prototype.clear_comment = function() {
+	var self = this;
+	self.comment = new CommentModel();
+};
+
+// 入力された参加登録をクリア
+ViewModel.prototype.clear_join = function() {
+	var self = this;
+	self.join = new JoinModel();
 };
 
 module.exports = ViewModel;
 
-},{"../../mithril":8,"../../model/comment":9,"../../model/event/detail":10}],14:[function(require,module,exports){
+},{"../../mithril":8,"../../model/comment":9,"../../model/event/detail":10,"../../model/join":12}],15:[function(require,module,exports){
 'use strict';
 
 /*
