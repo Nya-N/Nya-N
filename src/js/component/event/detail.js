@@ -30,7 +30,7 @@ module.exports = {
 			// TODO:入力値チェック
 
 			// event_id
-			self.vm.comment.event_id(self.vm.model().id);
+			self.vm.comment.event_id(self.vm.model().id());
 
 			// サーバーに保存
 			self.vm.comment.save()
@@ -42,7 +42,7 @@ module.exports = {
 				self.vm.model().comments.push(self.vm.comment);
 
 				// コメント件数を +1
-				self.vm.model().comment_num += 1;
+				self.vm.model().comment_num(self.vm.model().comment_num() + 1);
 
 				// コメント欄を空にする
 				self.vm.clear_comment();
@@ -54,7 +54,7 @@ module.exports = {
 			// TODO:入力値チェック
 
 			// event_id
-			self.vm.join.event_id(self.vm.model().id);
+			self.vm.join.event_id(self.vm.model().id());
 
 			// サーバーに保存
 			self.vm.join.save()
@@ -66,7 +66,7 @@ module.exports = {
 				self.vm.model().members.push(self.vm.join);
 
 				// コメント件数を +1
-				self.vm.model().attend_num += 1;
+				self.vm.model().attend_num(self.vm.model().attend_num() + 1);
 
 				// コメント欄を空にする
 				self.vm.clear_join();
@@ -86,7 +86,7 @@ module.exports = {
 				<div class="row">
 					<div class="col-md-12">
 						{/* イベント名 */}
-						<h1>{model.name}</h1>
+						<h1>{model.name()}</h1>
 					</div>
 				</div>
 
@@ -99,15 +99,15 @@ module.exports = {
 							<tbody>
 								<tr>
 									<td>日時</td>
-									<td>{ model.start_date + "から"}</td>
+									<td>{ model.start_date() + "から"}</td>
 								</tr>
 								<tr>
 									<td>主催者</td>
-									<td>{model.admin.name}</td>
+									<td>{model.admin().name}</td>
 								</tr>
 								<tr>
 									<td>開催場所</td>
-									<td>{model.place.name}</td>
+									<td>{model.place().name}</td>
 								</tr>
 							</tbody>
 						</table>
@@ -115,14 +115,14 @@ module.exports = {
 						<div class="panel panel-default">
 							<div class="panel-body">
 								{/* イベント詳細 */}
-								{ m.trust(model.description) }
+								{ m.trust(model.description()) }
 							</div>
 						</div>
 
 						<div class="panel panel-default">
 							<div class="panel-heading">
 								{/* コメント数 */}
-								コメント一覧({ model.comment_num })
+								コメント一覧({ model.comment_num() })
 							</div>
 							<div class="panel-body">
 								{/* コメント一覧 */}
@@ -159,7 +159,7 @@ module.exports = {
 						<button type="button" class="btn btn-lg btn-success" data-toggle="modal" data-target="#AttendModal">
 							イベントに参加する
 						</button>
-						<h3>参加人数 {model.attend_num} / {model.capacity}</h3>
+						<h3>参加人数 {model.attend_num()} / {model.capacity()}</h3>
 
 						<div class="panel panel-default">
 							<div class="panel-heading">

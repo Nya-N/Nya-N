@@ -23,16 +23,20 @@ var JoinModel = require('./join');
 var Model = function (data, isInitial) {
 	var self = this;
 
-	self.id = data.id;
-	self.name = data.name;
-	self.admin = data.admin;
-	self.place = data.place;
-	self.image_path = data.image_path;
-	self.capacity = data.capacity;
-	self.attend_num = data.attend_num;
-	self.start_date = data.start_date;
-	self.description = data.description;
-	self.comment_num = data.comment_num;
+	if( ! data) {
+		data = {};
+	}
+
+	self.id          = m.prop(data.id);
+	self.name        = m.prop(data.name        || "");
+	self.admin       = m.prop(data.admin       || "");
+	self.place       = m.prop(data.place       || "");
+	self.image_path  = m.prop(data.image_path);
+	self.capacity    = m.prop(data.capacity    || "");
+	self.attend_num  = m.prop(data.attend_num  || 0);
+	self.start_date  = m.prop(data.start_date  || "");
+	self.description = m.prop(data.description || "");
+	self.comment_num = m.prop(data.comment_num || 0);
 
 	// 参加者一覧
 	if(data.members) {
