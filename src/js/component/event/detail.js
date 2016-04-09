@@ -41,6 +41,9 @@ module.exports = {
 				// コメント一覧に新しく追加したコメントを移動
 				self.vm.model().comments.push(self.vm.comment);
 
+				// コメント件数を +1
+				self.vm.model().comment_num += 1;
+
 				// コメント欄を空にする
 				self.vm.clear_comment();
 			});
