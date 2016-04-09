@@ -30,7 +30,7 @@ module.exports = {
 				</div>
 
 				<div class="row">
-					{/* 左本文 */}
+					{/* BEGIN: 左本文 */}
 					<div class="col-md-9">
 						{/* TODO: イベント画像 */}
 
@@ -127,10 +127,11 @@ module.exports = {
 							</div>
 						</div>
 					</div>
+					{/* END: 左本文 */}
 
-					{/* 右サイドバー */}
+					{/* BEGIN: 右サイドバー */}
 					<div class="col-md-3">
-						<button type="submit" class="btn btn-lg btn-success">
+						<button type="button" class="btn btn-lg btn-success" data-toggle="modal" data-target="#AttendModal">
 							イベントに参加する
 						</button>
 						<h3>参加人数 100 / 225</h3>
@@ -152,7 +153,36 @@ module.exports = {
 							</div>
 						</div>
 					</div>
+					{/* END: 右サイドバー */}
 				</div>
+
+				{/* BEGIN: イベント参加 入力モーダル */}
+				<div id="AttendModal" class="modal fade" role="dialog">
+					<div class="modal-dialog">
+
+						<div class="modal-content">
+							<div class="modal-header">
+								{/* 閉じるボタン */}
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+								<h4 class="modal-title">イベントに参加する</h4>
+							</div>
+							<div class="modal-body">
+								{/* イベント参加に必要な各入力項目 */}
+								<form>
+									<div class="form-group">
+										<label for="AttendName">名前</label>
+										<input type="text" class="form-control" id="AttendName" placeholder="あなたの名前" />
+									</div>
+								</form>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-lg btn-success" data-dismiss="modal">参加</button>
+								<button type="button" class="btn btn-lg btn-warning" data-dismiss="modal">閉じる</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				{/* END: イベント参加 入力モーダル */}
 			</div>
 		</div>;
 	}
