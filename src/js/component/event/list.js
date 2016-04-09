@@ -29,6 +29,8 @@ module.exports = {
 
 		// イベント一覧
 		var events = model.events;
+
+		// HTML
 		return <div>
 			{/*navbar*/}
 			<div>{ m.component(Navbar) }</div>
