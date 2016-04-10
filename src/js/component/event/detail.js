@@ -9,9 +9,6 @@
 var m = require('../../mithril');
 
 
-// mithril-validator
-require('mithril-validator')(m);
-
 // navbar
 var NavbarComponent = require('../navbar');
 
