@@ -1,3 +1,4 @@
+/* global $ */
 'use strict';
 
 /*
@@ -13,6 +14,13 @@ var state = require('../../state');
 // navbar
 var Navbar = require('../navbar');
 
+// form input
+var FormInputComponent = require('../form/input');
+
+// form textarea
+var FormTextAreaComponent = require('../form/textarea');
+
+
 
 
 module.exports = {
@@ -21,6 +29,68 @@ module.exports = {
 		// ViewModel
 		self.vm = state.make_event_create();
 
+		self.validator = new m.validator({
+			name: function (name) {
+				if (!name) {
+					return "イベント名を入力してください";
+				}
+				if(name.length > 50) {
+					return "イベント名は50文字以内でお願いします";
+				}
+			},
+			admin: function (admin) {
+				if (!admin.name()) {
+					return "主催者を入力してください";
+				}
+				if(admin.name().length > 20) {
+					return "主催者は20文字以内でお願いします";
+				}
+			},
+			start_date: function (start_date) {
+				if (!start_date) {
+					return "日時を入力してください";
+				}
+			},
+			capacity: function (capacity) {
+				if (!capacity) {
+					return "定員を入力してください";
+				}
+				if (!capacity.match(/^[0-9]+$/)) {
+					return "定員を半角数字で入力してください";
+				}
+
+			},
+			place: function (place) {
+				if (!place.name()) {
+					return "場所を入力してください";
+				}
+				if(place.name().length > 50) {
+					return "場所は50文字以内でお願いします";
+				}
+			},
+			description: function (description) {
+				if (!description) {
+					return "詳細を入力してください";
+				}
+				if(description.length > 5000) {
+					return "詳細は5000文字以内でお願いします";
+				}
+			},
+		});
+
+		// イベント作成ボタンの確認が押下された時
+		self.onconfirm = function(e) {
+			// 入力値チェック
+			self.validator.validate(self.vm.model);
+
+			if (self.validator.hasErrors()) {
+				return;
+			}
+
+			// 確認画面モーダルを表示
+			$('#ConfirmModal').modal('show');
+
+		};
 		// イベント作成ボタンが押下された時
 		self.onsubmit = function(e) {
 			// イベント登録
@@ -50,28 +120,59 @@ module.exports = {
 			<form>
 				<div class="form-group">
 					<label for="EventName">イベント名</label>
-					<input type="text" class="form-control" id="EventName" placeholder="イベント名" onchange={m.withAttr("value", model.name)} value={model.name()} />
+					{ m.component(FormInputComponent, {
+						prop:  ctrl.vm.model.name,
+						error: ctrl.validator.hasError('name'),
+						placeholder: "イベント名",
+					}) }
+
 				</div>
 				<div class="form-group">
 					<label for="EventAdmin">主催者</label>
-					<input type="text" class="form-control" id="EventAdmin" placeholder="主催者" onchange={m.withAttr("value", model.admin.name)} value={model.admin.name()} />
+					{ m.component(FormInputComponent, {
+						prop:  ctrl.vm.model.admin.name,
+						error: ctrl.validator.hasError('admin'),
+						placeholder: "主催者",
+					}) }
+
 				</div>
 
 				<div class="form-group">
 					<label for="EventDate">日時</label>
-					<input type="text" class="form-control" id="EventDate" placeholder="日時" onchange={m.withAttr("value", model.start_date)} value={model.start_date()} />
+					{ m.component(FormInputComponent, {
+						prop:  ctrl.vm.model.start_date,
+						error: ctrl.validator.hasError('start_date'),
+						placeholder: "日時",
+					}) }
+
 				</div>
 				<div class="form-group">
 					<label for="EventCapacity">定員</label>
-					<input type="text" class="form-control" id="EventCapacity" placeholder="定員" onchange={m.withAttr("value", model.capacity)} value={model.capacity()} />
+					{ m.component(FormInputComponent, {
+						prop:  ctrl.vm.model.capacity,
+						error: ctrl.validator.hasError('capacity'),
+						placeholder: "定員",
+					}) }
+
 				</div>
 				<div class="form-group">
 					<label for="EventPlace">開催場所</label>
-					<input type="text" class="form-control" id="EventPlace" placeholder="開催場所" onchange={m.withAttr("value", model.place.name)} value={model.place.name()} />
+					{ m.component(FormInputComponent, {
+						prop:  ctrl.vm.model.place.name,
+						error: ctrl.validator.hasError('place'),
+						placeholder: "開催場所",
+					}) }
+
 				</div>
 				<div class="form-group">
 					<label for="EventDetail">詳細</label>
-					<textarea class="form-control" rows="10" id="EventDetail" placeholder="詳細" onchange={m.withAttr("value", model.description)} value={model.description()}></textarea>
+					{ m.component(FormTextAreaComponent, {
+						prop:  ctrl.vm.model.description,
+						error: ctrl.validator.hasError('description'),
+						placeholder: "詳細",
+						rows: 10,
+					}) }
+
 				</div>
 
 				<div class="form-group">
@@ -81,7 +182,7 @@ module.exports = {
 				</div>
 
 				<div>
-					<button type="button" class="btn btn-lg btn-success" data-toggle="modal" data-target="#ConfirmModal">イベントを新規作成</button>
+					<button type="button" class="btn btn-lg btn-success" onclick={ ctrl.onconfirm }>イベントを新規作成</button>
 				</div>
 
 				{/* BEGIN: 確認画面モーダル */}
