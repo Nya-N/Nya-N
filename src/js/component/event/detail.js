@@ -1,3 +1,4 @@
+/* global $ */
 'use strict';
 
 /*
@@ -60,6 +61,16 @@ module.exports = {
 				}
 			}
 		});
+		self.join_validator = new m.validator({
+			name: function (name) {
+				if (!name) {
+					return "名前を入力してください";
+				}
+				if(name.length > 20) {
+					return "名前は20文字以内でお願いします";
+				}
+			}
+		});
 
 		// コメントの追加ボタンが押下された時
 		self.onsubmit_comment = function(e) {
@@ -92,7 +103,12 @@ module.exports = {
 
 		// イベントに参加ボタンが押下された時
 		self.onsubmit_join = function(e) {
-			// TODO:入力値チェック
+			// 入力値チェック
+			self.join_validator.validate(self.vm.join);
+
+			if (self.join_validator.hasErrors()) {
+				return;
+			}
 
 			// event_id
 			self.vm.join.event_id(self.vm.model().id());
@@ -111,6 +127,9 @@ module.exports = {
 
 				// コメント欄を空にする
 				self.vm.clear_join();
+
+				// モーダルを閉じる
+				$('#AttendModal').modal('hide');
 			}, ErrorComponent.handleErrorToViewModel(self.vm));
 		};
 	},
@@ -237,14 +256,17 @@ module.exports = {
 							<div class="modal-body">
 								{/* イベント参加に必要な各入力項目 */}
 								<form>
-									<div class="form-group">
-										<label for="AttendName">名前</label>
-										<input type="text" class="form-control" id="AttendName" placeholder="あなたの名前" onchange={ m.withAttr("value", ctrl.vm.join.name) } value={ ctrl.vm.join.name() } />
-									</div>
+									{/* 名前入力 */}
+									<label for="AttendName">名前</label>
+									{ m.component(FormInputComponent, {
+										prop:  ctrl.vm.join.name,
+										error: ctrl.join_validator.hasError('name'),
+										placeholder: "名前",
+									}) }
 								</form>
 							</div>
 							<div class="modal-footer">
-								<button type="button" class="btn btn-lg btn-success" data-dismiss="modal" onclick={ ctrl.onsubmit_join}>参加</button>
+								<button type="button" class="btn btn-lg btn-success" onclick={ ctrl.onsubmit_join}>参加</button>
 								<button type="button" class="btn btn-lg btn-warning" data-dismiss="modal">閉じる</button>
 							</div>
 						</div>
