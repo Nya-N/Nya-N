@@ -23,10 +23,17 @@ module.exports = {
 
 		// イベント作成ボタンが押下された時
 		self.onsubmit = function(e) {
-			// TODO: イベント登録処理
+			// イベント登録
+			self.vm.model.save()
+			.then(function(id) {
+				// TODO: イベント一覧をクリア
 
-			// イベント詳細画面に遷移
-			m.route('/event/detail/1');
+				// 入力された内容をクリア
+				self.vm.clear();
+
+				// イベント詳細画面に遷移
+				m.route('/event/detail/' + id);
+			});
 		};
 	},
 	view: function(ctrl) {

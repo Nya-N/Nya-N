@@ -100,7 +100,11 @@ Model.prototype.save = function () {
 		place:       self.place.name(),
 		description: self.description(),
 		// TODO: image_path: self.image_path
-	}});
+	}})
+	.then(function(res) {
+		// 生成されたイベントID
+		return res.id;
+	});
 };
 
 module.exports = Model;
