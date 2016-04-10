@@ -2169,7 +2169,67 @@ m.route(document.getElementById("root"), "/", {
 	"/event": EventList,
 });
 
-},{"./component/event/create.js":3,"./component/event/detail.js":4,"./component/event/list.js":5,"./component/top.js":7,"./mithril":8}],3:[function(require,module,exports){
+},{"./component/event/create.js":4,"./component/event/detail.js":5,"./component/event/list.js":6,"./component/top.js":8,"./mithril":9}],3:[function(require,module,exports){
+/* global $ */
+'use strict';
+
+/*
+ * エラーが発生した時のモーダル コンポーネント
+ */
+
+// error_code => エラーメッセージ
+var error_code_to_message = {
+	1:   "アプリケーションが更新されました。ブラウザのリロードをおねがいします。",
+	100: "満員になってしまいました。"
+};
+
+var m = require('../mithril');
+
+module.exports = {
+	// ErrorCode を ViewModelに引き渡すメソッド
+	handleErrorToViewModel: function(vm) {
+		// TODO: vm の型チェック
+
+		return function(ErrorObject) {
+			// ViewModel にエラーコードを保存
+			vm.error_code = Number(ErrorObject.message);
+		};
+	},
+	controller: function(vm) {
+		// 呼び出し元のViewModel
+		this.vm = vm;
+	},
+	view: function(ctrl, vm) {
+		// エラーコードがセットされていればエラーモーダルを表示する
+		if(ctrl.vm.error_code) {
+			$('#ErrorModal').modal('show');
+		}
+
+		return {tag: "div", attrs: {id:"ErrorModal", class:"modal fade", role:"dialog"}, children: [
+			/* BEGIN: エラーの表示モーダル */
+			{tag: "div", attrs: {class:"modal-dialog"}, children: [
+
+				{tag: "div", attrs: {class:"modal-content"}, children: [
+					{tag: "div", attrs: {class:"modal-header"}, children: [
+						/* 閉じるボタン */
+						{tag: "button", attrs: {type:"button", class:"close", "data-dismiss":"modal"}, children: ["×"]}, 
+						{tag: "h4", attrs: {}, children: ["エラー"]}
+					]}, 
+					{tag: "div", attrs: {class:"modal-body"}, children: [
+						/* エラーメッセージ */
+						 vm.error_code in error_code_to_message ? error_code_to_message[vm.error_code] : "エラーが発生しました。エラーコード: " + vm.error_code
+					]}, 
+					{tag: "div", attrs: {class:"modal-footer"}, children: [
+						{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-info", "data-dismiss":"modal"}, children: ["閉じる"]}
+					]}
+				]}
+			]}
+			/* END: エラーの表示モーダル */
+		]};
+	}
+};
+
+},{"../mithril":9}],4:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2195,10 +2255,17 @@ module.exports = {
 
 		// イベント作成ボタンが押下された時
 		self.onsubmit = function(e) {
-			// TODO: イベント登録処理
+			// イベント登録
+			self.vm.model.save()
+			.then(function(id) {
+				// TODO: イベント一覧をクリア
 
-			// イベント詳細画面に遷移
-			m.route('/event/detail/1');
+				// 入力された内容をクリア
+				self.vm.clear();
+
+				// イベント詳細画面に遷移
+				m.route('/event/detail/' + id);
+			});
 		};
 	},
 	view: function(ctrl) {
@@ -2260,7 +2327,34 @@ module.exports = {
 								{tag: "h4", attrs: {class:"modal-title"}, children: ["確認画面"]}
 							]}, 
 							{tag: "div", attrs: {class:"modal-body"}, children: [
-								{tag: "p", attrs: {}/* TODO: 確認事項を書く */}
+								/* モーダル本文 */
+								{tag: "form", attrs: {}, children: [
+									{tag: "div", attrs: {class:"form-group"}, children: [
+										{tag: "label", attrs: {}, children: ["イベント名"]}, 
+										{tag: "div", attrs: {class:"form-control-static"}, children: [ model.name() ]}
+									]}, 
+									{tag: "div", attrs: {class:"form-group"}, children: [
+										{tag: "label", attrs: {}, children: ["主催者"]}, 
+										{tag: "div", attrs: {class:"form-control-static"}, children: [ model.admin.name() ]}
+									]}, 
+
+									{tag: "div", attrs: {class:"form-group"}, children: [
+										{tag: "label", attrs: {}, children: ["日時"]}, 
+										{tag: "div", attrs: {class:"form-control-static"}, children: [ model.start_date() ]}
+									]}, 
+									{tag: "div", attrs: {class:"form-group"}, children: [
+										{tag: "label", attrs: {}, children: ["定員"]}, 
+										{tag: "div", attrs: {class:"form-control-static"}, children: [ model.capacity() ]}
+									]}, 
+									{tag: "div", attrs: {class:"form-group"}, children: [
+										{tag: "label", attrs: {}, children: ["開催場所"]}, 
+										{tag: "div", attrs: {class:"form-control-static"}, children: [ model.place.name() ]}
+									]}, 
+									{tag: "div", attrs: {class:"form-group"}, children: [
+										{tag: "label", attrs: {}, children: ["詳細"]}, 
+										{tag: "div", attrs: {class:"form-control-static"}, children: [ model.description() ]}
+									]}
+								]}
 							]}, 
 							{tag: "div", attrs: {class:"modal-footer"}, children: [
 								{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", "data-dismiss":"modal", onclick:ctrl.onsubmit}, children: ["送信"]}, 
@@ -2278,7 +2372,7 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":8,"../../state":13,"../navbar":6}],4:[function(require,module,exports){
+},{"../../mithril":9,"../../state":14,"../navbar":7}],5:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2289,7 +2383,10 @@ module.exports = {
 var m = require('../../mithril');
 
 // navbar
-var Navbar = require('../navbar');
+var NavbarComponent = require('../navbar');
+
+// error
+var ErrorComponent = require('../error');
 
 // アプリケーションの状態
 var state = require('../../state');
@@ -2351,8 +2448,7 @@ module.exports = {
 
 				// コメント欄を空にする
 				self.vm.clear_join();
-			});
-
+			}, ErrorComponent.handleErrorToViewModel(self.vm));
 		};
 	},
 	view: function(ctrl) {
@@ -2361,7 +2457,7 @@ module.exports = {
 		// HTML
 		return {tag: "div", attrs: {}, children: [
 			/*navbar*/
-			{tag: "div", attrs: {}, children: [ m.component(Navbar) ]}, 
+			{tag: "div", attrs: {}, children: [ m.component(NavbarComponent) ]}, 
 
 			{tag: "div", attrs: {class:"container", style:"padding-top:30px", id:"root"}, children: [
 				{tag: "div", attrs: {class:"row"}, children: [
@@ -2486,14 +2582,17 @@ module.exports = {
 							]}
 						]}
 					]}
-				]}
+				]}, 
 				/* END: イベント参加 入力モーダル */
+
+				/* エラーモーダル */
+				 m.component(ErrorComponent, ctrl.vm) 
 			]}
 		]};
 	}
 };
 
-},{"../../mithril":8,"../../state":13,"../navbar":6}],5:[function(require,module,exports){
+},{"../../mithril":9,"../../state":14,"../error":3,"../navbar":7}],6:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2574,7 +2673,7 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":8,"../../state":13,"../navbar":6}],6:[function(require,module,exports){
+},{"../../mithril":9,"../../state":14,"../navbar":7}],7:[function(require,module,exports){
 'use strict';
 var m = require('../mithril');
 
@@ -2609,7 +2708,7 @@ module.exports = {
 	}
 };
 
-},{"../mithril":8}],7:[function(require,module,exports){
+},{"../mithril":9}],8:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2654,7 +2753,7 @@ module.exports = {
 	}
 };
 
-},{"../mithril":8,"./navbar":6}],8:[function(require,module,exports){
+},{"../mithril":9,"./navbar":7}],9:[function(require,module,exports){
 'use strict';
 
 /*********************************************
@@ -2685,7 +2784,8 @@ var unwrapSuccess = function(res) {
 
 	// 新しいAPIのバージョンがリリースされてれば
 	if(res.version > version) {
-		throw new Error();
+		// バージョンアップエラー番号
+		throw new Error(1);
 	}
 
 	// response の中身がサーバから受け取るデータの本質
@@ -2714,20 +2814,19 @@ m.request = function(args) {
 			loaders[i].style.display = "none";
 		}
 		return value;
-	}, function(error) {
+	}, function(ErrorObject) {
 		// 通信失敗時はローディング画面を隠す
 		for (var i = 0; i < loaders.length; i++) {
 			loaders[i].style.display = "none";
 		}
 
-		// エラー画面に遷移
-		m.route('/error');
+		throw ErrorObject;
 	});
 };
 
 module.exports = m;
 
-},{"mithril":1}],9:[function(require,module,exports){
+},{"mithril":1}],10:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2782,7 +2881,7 @@ Model.prototype.save = function () {
 module.exports = Model;
 
 
-},{"../mithril":8}],10:[function(require,module,exports){
+},{"../mithril":9}],11:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2878,21 +2977,24 @@ Model.prototype.save = function () {
 	var self = this;
 
 	return m.request({method: "POST", url: api_url, data: {
-		id:          self.id(),
 		name:        self.name(),
-		admin:       self.admin(),
-		place:       self.place(),
-		// TODO: image_path: self.image_path
-		capacity:    self.capacity(),
+		admin:       self.admin.name(),
 		start_date:  self.start_date(),
+		capacity:    self.capacity(),
+		place:       self.place.name(),
 		description: self.description(),
-	}});
+		// TODO: image_path: self.image_path
+	}})
+	.then(function(res) {
+		// 生成されたイベントID
+		return res.id;
+	});
 };
 
 module.exports = Model;
 
 
-},{"../mithril":8,"./comment":9,"./join":12}],11:[function(require,module,exports){
+},{"../mithril":9,"./comment":10,"./join":13}],12:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2933,7 +3035,7 @@ Model.prototype.save = function () {
 module.exports = Model;
 
 
-},{"../../mithril":8}],12:[function(require,module,exports){
+},{"../../mithril":9}],13:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2985,7 +3087,7 @@ Model.prototype.save = function () {
 module.exports = Model;
 
 
-},{"../mithril":8}],13:[function(require,module,exports){
+},{"../mithril":9}],14:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3037,7 +3139,7 @@ State.prototype.make_event_create = function() {
 
 module.exports = new State();
 
-},{"./mithril":8,"./viewmodel/event/create":14,"./viewmodel/event/detail":15,"./viewmodel/event/list":16}],14:[function(require,module,exports){
+},{"./mithril":9,"./viewmodel/event/create":15,"./viewmodel/event/detail":16,"./viewmodel/event/list":17}],15:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3068,7 +3170,7 @@ ViewModel.prototype.clear = function() {
 
 module.exports = ViewModel;
 
-},{"../../mithril":8,"../../model/event":10}],15:[function(require,module,exports){
+},{"../../mithril":9,"../../model/event":11}],16:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3101,6 +3203,9 @@ var ViewModel = function(id) {
 
 	// 入力した参加登録
 	self.join = new JoinModel();
+
+	// エラーが発生した時のエラーコード
+	self.error_code = null;
 };
 
 // 入力されたコメントをクリア
@@ -3117,7 +3222,7 @@ ViewModel.prototype.clear_join = function() {
 
 module.exports = ViewModel;
 
-},{"../../mithril":8,"../../model/comment":9,"../../model/event":10,"../../model/join":12}],16:[function(require,module,exports){
+},{"../../mithril":9,"../../model/comment":10,"../../model/event":11,"../../model/join":13}],17:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3138,4 +3243,4 @@ var ViewModel = function() {
 
 module.exports = ViewModel;
 
-},{"../../mithril":8,"../../model/event/list":11}]},{},[2]);
+},{"../../mithril":9,"../../model/event/list":12}]},{},[2]);
