@@ -8,7 +8,10 @@
 var m = require('../../mithril');
 
 // navbar
-var Navbar = require('../navbar');
+var NavbarComponent = require('../navbar');
+
+// error
+var ErrorComponent = require('../error');
 
 // アプリケーションの状態
 var state = require('../../state');
@@ -70,8 +73,7 @@ module.exports = {
 
 				// コメント欄を空にする
 				self.vm.clear_join();
-			});
-
+			}, ErrorComponent.handleErrorToViewModel(self.vm));
 		};
 	},
 	view: function(ctrl) {
@@ -80,7 +82,7 @@ module.exports = {
 		// HTML
 		return <div>
 			{/*navbar*/}
-			<div>{ m.component(Navbar) }</div>
+			<div>{ m.component(NavbarComponent) }</div>
 
 			<div class="container" style="padding-top:30px" id="root">
 				<div class="row">
@@ -207,6 +209,9 @@ module.exports = {
 					</div>
 				</div>
 				{/* END: イベント参加 入力モーダル */}
+
+				{/* エラーモーダル */}
+				{ m.component(ErrorComponent, ctrl.vm) }
 			</div>
 		</div>;
 	}
