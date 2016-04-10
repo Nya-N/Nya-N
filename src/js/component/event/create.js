@@ -88,7 +88,34 @@ module.exports = {
 								<h4 class="modal-title">確認画面</h4>
 							</div>
 							<div class="modal-body">
-								<p>{/* TODO: 確認事項を書く */}</p>
+								{/* モーダル本文 */}
+								<form>
+									<div class="form-group">
+										<label>イベント名</label>
+										<div class="form-control-static">{ model.name() }</div>
+									</div>
+									<div class="form-group">
+										<label>主催者</label>
+										<div class="form-control-static">{ model.admin.name() }</div>
+									</div>
+
+									<div class="form-group">
+										<label>日時</label>
+										<div class="form-control-static">{ model.start_date() }</div>
+									</div>
+									<div class="form-group">
+										<label>定員</label>
+										<div class="form-control-static">{ model.capacity() }</div>
+									</div>
+									<div class="form-group">
+										<label>開催場所</label>
+										<div class="form-control-static">{ model.place.name() }</div>
+									</div>
+									<div class="form-group">
+										<label>詳細</label>
+										<div class="form-control-static">{ model.description() }</div>
+									</div>
+								</form>
 							</div>
 							<div class="modal-footer">
 								<button type="button" class="btn btn-lg btn-success" data-dismiss="modal"  onclick={ctrl.onsubmit}>送信</button>

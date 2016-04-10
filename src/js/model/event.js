@@ -93,14 +93,13 @@ Model.prototype.save = function () {
 	var self = this;
 
 	return m.request({method: "POST", url: api_url, data: {
-		id:          self.id(),
 		name:        self.name(),
-		admin:       self.admin(),
-		place:       self.place(),
-		// TODO: image_path: self.image_path
-		capacity:    self.capacity(),
+		admin:       self.admin.name(),
 		start_date:  self.start_date(),
+		capacity:    self.capacity(),
+		place:       self.place.name(),
 		description: self.description(),
+		// TODO: image_path: self.image_path
 	}});
 };
 
