@@ -7,11 +7,24 @@
 
 var m = require('../../mithril');
 
+
+// mithril-validator
+require('mithril-validator')(m);
+
 // navbar
 var NavbarComponent = require('../navbar');
 
 // error
 var ErrorComponent = require('../error');
+
+// form input
+var FormInputComponent = require('../form/input');
+
+// form textarea
+var FormTextAreaComponent = require('../form/textarea');
+
+
+
 
 // アプリケーションの状態
 var state = require('../../state');
@@ -28,9 +41,34 @@ module.exports = {
 		// ViewModel
 		self.vm = state.make_event_detail(self.id);
 
+		// Validator
+		self.comment_validator = new m.validator({
+			name: function (name) {
+				if (!name) {
+					return "名前を入力してください";
+				}
+				if(name.length > 20) {
+					return "名前は20文字以内でお願いします";
+				}
+			},
+			body: function (body) {
+				if (!body) {
+					return "コメントを入力してください";
+				}
+				if(body.length > 500) {
+					return "コメントは500文字以内でお願いします";
+				}
+			}
+		});
+
 		// コメントの追加ボタンが押下された時
 		self.onsubmit_comment = function(e) {
-			// TODO:入力値チェック
+			// 入力値チェック
+			self.comment_validator.validate(self.vm.comment);
+
+			if (self.comment_validator.hasErrors()) {
+				return;
+			}
 
 			// event_id
 			self.vm.comment.event_id(self.vm.model().id());
@@ -78,7 +116,6 @@ module.exports = {
 	},
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
-
 		// HTML
 		return <div>
 			{/*navbar*/}
@@ -140,13 +177,18 @@ module.exports = {
 								{/* コメント投稿フォーム */}
 								<form>
 									{/* コメントの名前入力 */}
-									<div class="form-group">
-										<input type="text" class="form-control" placeholder="名前" onchange={m.withAttr("value", ctrl.vm.comment.name)} value={ ctrl.vm.comment.name() } />
-									</div>
+									{ m.component(FormInputComponent, {
+										prop:  ctrl.vm.comment.name,
+										error: ctrl.comment_validator.hasError('name'),
+										placeholder: "名前",
+									}) }
 									{/* コメントの内容入力 */}
-									<div class="form-group">
-										<textarea class="form-control" rows="4" onchange={m.withAttr("value", ctrl.vm.comment.body)} placeholder="コメント内容">{ ctrl.vm.comment.body() }</textarea>
-									</div>
+									{ m.component(FormTextAreaComponent, {
+										prop:  ctrl.vm.comment.body,
+										error: ctrl.comment_validator.hasError('body'),
+										placeholder: "コメント内容",
+										rows: 4,
+									}) }
 									<div>
 										<button type="button" class="btn btn-lg btn-success" onclick={ctrl.onsubmit_comment}>コメントを投稿</button>
 									</div>
