@@ -30,6 +30,9 @@ var ViewModel = function(id) {
 
 	// 入力した参加登録
 	self.join = new JoinModel();
+
+	// エラーが発生した時のエラーコード
+	self.error_code = null;
 };
 
 // 入力されたコメントをクリア
