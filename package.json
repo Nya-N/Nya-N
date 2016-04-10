@@ -27,6 +27,7 @@
   },
   "repository": {},
   "dependencies": {
-    "mithril": "~0.2.2-rc.1"
+    "mithril": "~0.2.2-rc.1",
+    "mithril-validator": "^1.1.0"
   }
 }
