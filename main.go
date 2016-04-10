@@ -7,6 +7,13 @@ import (
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/echo/engine/standard"
 	"fmt"
+	"github.com/jinzhu/gorm"
+	"github.com/syo-sa1982/GoNTAkun/resources"
+)
+
+var (
+	db   gorm.DB
+	resource resources.Resource
 )
 
 func hello() echo.HandlerFunc  {
@@ -15,19 +22,22 @@ func hello() echo.HandlerFunc  {
 	}
 }
 
-func main() {
-	fmt.Println("main")
-	// Echo instance
-	e := echo.New()
+func rooter(e *echo.Echo) (*echo.Echo){
 	fmt.Println(e)
-
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-
 	// Routes
 	e.Get("/", hello())
+	e.Get("/event", resource.GetEvents)
+	e.Get("/event/:id", resource.GetEvent)
 
+	return e
+}
+
+func main() {
+	fmt.Println("main")
+	e := rooter(echo.New())
 	fmt.Println("Server running at http://localhost:4000")
 	// Start server
 	e.Run(standard.New(":4000"))
