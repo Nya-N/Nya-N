@@ -28,7 +28,8 @@ var unwrapSuccess = function(res) {
 
 	// 新しいAPIのバージョンがリリースされてれば
 	if(res.version > version) {
-		throw new Error();
+		// バージョンアップエラー番号
+		throw new Error(1);
 	}
 
 	// response の中身がサーバから受け取るデータの本質
@@ -57,14 +58,13 @@ m.request = function(args) {
 			loaders[i].style.display = "none";
 		}
 		return value;
-	}, function(error) {
+	}, function(ErrorObject) {
 		// 通信失敗時はローディング画面を隠す
 		for (var i = 0; i < loaders.length; i++) {
 			loaders[i].style.display = "none";
 		}
 
-		// エラー画面に遷移
-		m.route('/error');
+		throw ErrorObject;
 	});
 };
 
