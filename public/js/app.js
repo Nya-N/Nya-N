@@ -2179,16 +2179,22 @@ m.route(document.getElementById("root"), "/", {
 
 var m = require('../../mithril');
 
+// アプリケーションの状態
+var state = require('../../state');
+
 // navbar
 var Navbar = require('../navbar');
 
 
+
 module.exports = {
 	controller: function() {
-		// イベント作成ボタンが押下された時
-		this.onsubmit = function(e) {
-			e.preventDefault();
+		var self = this;
+		// ViewModel
+		self.vm = state.make_event_create();
 
+		// イベント作成ボタンが押下された時
+		self.onsubmit = function(e) {
 			// TODO: イベント登録処理
 
 			// イベント詳細画面に遷移
@@ -2196,6 +2202,8 @@ module.exports = {
 		};
 	},
 	view: function(ctrl) {
+		var model = ctrl.vm.model;
+
 		return {tag: "div", attrs: {}, children: [
 			/*navbar*/
 			{tag: "div", attrs: {}, children: [ m.component(Navbar) ]}, 
@@ -2203,33 +2211,33 @@ module.exports = {
 			{tag: "div", attrs: {class:"container", style:"padding-top:30px", id:"root"}, children: [
 				{tag: "h1", attrs: {}, children: ["イベントを新規作成"]}, 
 
+			/* イベント登録フォーム */
 			{tag: "form", attrs: {}, children: [
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventName"}, children: ["イベント名"]}, 
-					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventName", placeholder:"イベント名"}}
+					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventName", placeholder:"イベント名", onchange:m.withAttr("value", model.name), value:model.name()}}
 				]}, 
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventAdmin"}, children: ["主催者"]}, 
-					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventAdmin", placeholder:"主催者"}}
+					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventAdmin", placeholder:"主催者", onchange:m.withAttr("value", model.admin.name), value:model.admin.name()}}
 				]}, 
 
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventDate"}, children: ["日時"]}, 
-					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventDate", placeholder:"日時"}}
+					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventDate", placeholder:"日時", onchange:m.withAttr("value", model.start_date), value:model.start_date()}}
 				]}, 
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventCapacity"}, children: ["定員"]}, 
-					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventCapacity", placeholder:"定員"}}
+					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventCapacity", placeholder:"定員", onchange:m.withAttr("value", model.capacity), value:model.capacity()}}
 				]}, 
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventPlace"}, children: ["開催場所"]}, 
-					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventPlace", placeholder:"開催場所"}}
+					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventPlace", placeholder:"開催場所", onchange:m.withAttr("value", model.place.name), value:model.place.name()}}
 				]}, 
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventDetail"}, children: ["詳細"]}, 
-					{tag: "textarea", attrs: {class:"form-control", rows:"10"}}
+					{tag: "textarea", attrs: {class:"form-control", rows:"10", id:"EventDetail", placeholder:"詳細", onchange:m.withAttr("value", model.description), value:model.description()}}
 				]}, 
-
 
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventImage"}, children: ["イベント画像"]}, 
@@ -2270,7 +2278,7 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":8,"../navbar":6}],4:[function(require,module,exports){
+},{"../../mithril":8,"../../state":13,"../navbar":6}],4:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2303,7 +2311,7 @@ module.exports = {
 			// TODO:入力値チェック
 
 			// event_id
-			self.vm.comment.event_id(self.vm.model().id);
+			self.vm.comment.event_id(self.vm.model().id());
 
 			// サーバーに保存
 			self.vm.comment.save()
@@ -2315,7 +2323,7 @@ module.exports = {
 				self.vm.model().comments.push(self.vm.comment);
 
 				// コメント件数を +1
-				self.vm.model().comment_num += 1;
+				self.vm.model().comment_num(self.vm.model().comment_num() + 1);
 
 				// コメント欄を空にする
 				self.vm.clear_comment();
@@ -2327,7 +2335,7 @@ module.exports = {
 			// TODO:入力値チェック
 
 			// event_id
-			self.vm.join.event_id(self.vm.model().id);
+			self.vm.join.event_id(self.vm.model().id());
 
 			// サーバーに保存
 			self.vm.join.save()
@@ -2339,7 +2347,7 @@ module.exports = {
 				self.vm.model().members.push(self.vm.join);
 
 				// コメント件数を +1
-				self.vm.model().attend_num += 1;
+				self.vm.model().attend_num(self.vm.model().attend_num() + 1);
 
 				// コメント欄を空にする
 				self.vm.clear_join();
@@ -2359,7 +2367,7 @@ module.exports = {
 				{tag: "div", attrs: {class:"row"}, children: [
 					{tag: "div", attrs: {class:"col-md-12"}, children: [
 						/* イベント名 */
-						{tag: "h1", attrs: {}, children: [model.name]}
+						{tag: "h1", attrs: {}, children: [model.name()]}
 					]}
 				]}, 
 
@@ -2372,15 +2380,15 @@ module.exports = {
 							{tag: "tbody", attrs: {}, children: [
 								{tag: "tr", attrs: {}, children: [
 									{tag: "td", attrs: {}, children: ["日時"]}, 
-									{tag: "td", attrs: {}, children: [ model.start_date + "から"]}
+									{tag: "td", attrs: {}, children: [ model.start_date() + "から"]}
 								]}, 
 								{tag: "tr", attrs: {}, children: [
 									{tag: "td", attrs: {}, children: ["主催者"]}, 
-									{tag: "td", attrs: {}, children: [model.admin.name]}
+									{tag: "td", attrs: {}, children: [model.admin.name()]}
 								]}, 
 								{tag: "tr", attrs: {}, children: [
 									{tag: "td", attrs: {}, children: ["開催場所"]}, 
-									{tag: "td", attrs: {}, children: [model.place.name]}
+									{tag: "td", attrs: {}, children: [model.place.name()]}
 								]}
 							]}
 						]}, 
@@ -2388,14 +2396,14 @@ module.exports = {
 						{tag: "div", attrs: {class:"panel panel-default"}, children: [
 							{tag: "div", attrs: {class:"panel-body"}, children: [
 								/* イベント詳細 */
-								 m.trust(model.description) 
+								 m.trust(model.description()) 
 							]}
 						]}, 
 
 						{tag: "div", attrs: {class:"panel panel-default"}, children: [
 							{tag: "div", attrs: {class:"panel-heading"}, children: [
 								/* コメント数 */
-								"コメント一覧(",  model.comment_num, ")"
+								"コメント一覧(",  model.comment_num(), ")"
 							]}, 
 							{tag: "div", attrs: {class:"panel-body"}, children: [
 								/* コメント一覧 */
@@ -2432,7 +2440,7 @@ module.exports = {
 						{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", "data-toggle":"modal", "data-target":"#AttendModal"}, children: [
 							"イベントに参加する"
 						]}, 
-						{tag: "h3", attrs: {}, children: ["参加人数 ", model.attend_num, " / ", model.capacity]}, 
+						{tag: "h3", attrs: {}, children: ["参加人数 ", model.attend_num(), " / ", model.capacity()]}, 
 
 						{tag: "div", attrs: {class:"panel panel-default"}, children: [
 							{tag: "div", attrs: {class:"panel-heading"}, children: [
@@ -2778,21 +2786,21 @@ module.exports = Model;
 'use strict';
 
 /*
- * イベント一覧 モデル
+ * イベント詳細 モデル
  *
  */
 
 // API URL
-var api_url = "api/event/";
+var api_url = "api/event";
 
 
-var m = require('../../mithril');
-
-// コメント モデル
-var CommentModel = require('../comment');
+var m = require('../mithril');
 
 // コメント モデル
-var JoinModel = require('../join');
+var CommentModel = require('./comment');
+
+// コメント モデル
+var JoinModel = require('./join');
 
 
 
@@ -2800,16 +2808,44 @@ var JoinModel = require('../join');
 var Model = function (data, isInitial) {
 	var self = this;
 
-	self.id = data.id;
-	self.name = data.name;
-	self.admin = data.admin;
-	self.place = data.place;
-	self.image_path = data.image_path;
-	self.capacity = data.capacity;
-	self.attend_num = data.attend_num;
-	self.start_date = data.start_date;
-	self.description = data.description;
-	self.comment_num = data.comment_num;
+	if( ! data) {
+		data = {};
+	}
+
+	self.id          = m.prop(data.id);
+	self.name        = m.prop(data.name        || "");
+	self.place       = m.prop(data.place       || "");
+	self.image_path  = m.prop(data.image_path);
+	self.capacity    = m.prop(data.capacity    || "");
+	self.attend_num  = m.prop(data.attend_num  || 0);
+	self.start_date  = m.prop(data.start_date  || "");
+	self.description = m.prop(data.description || "");
+	self.comment_num = m.prop(data.comment_num || 0);
+
+	// TODO: リファクタ
+	// 主催者
+	if(data.admin) {
+		self.admin = {
+			name: m.prop(data.admin.name),
+		};
+	}
+	else {
+		self.admin = {
+			name: m.prop(""),
+		};
+	}
+
+	// 場所
+	if(data.place) {
+		self.place = {
+			name: m.prop(data.place.name),
+		};
+	}
+	else {
+		self.place = {
+			name: m.prop(""),
+		};
+	}
 
 	// 参加者一覧
 	if(data.members) {
@@ -2832,22 +2868,31 @@ var Model = function (data, isInitial) {
 Model.read = function (id) {
 	return m.request({
 		method: "GET",
-		url: api_url + id,
+		url: api_url + "/" + id,
 		type: Model
 	});
 };
 
 // サーバにJSONを保存
 Model.prototype.save = function () {
-	return m.request({method: "POST", url: api_url, data: {
+	var self = this;
 
+	return m.request({method: "POST", url: api_url, data: {
+		id:          self.id(),
+		name:        self.name(),
+		admin:       self.admin(),
+		place:       self.place(),
+		// TODO: image_path: self.image_path
+		capacity:    self.capacity(),
+		start_date:  self.start_date(),
+		description: self.description(),
 	}});
 };
 
 module.exports = Model;
 
 
-},{"../../mithril":8,"../comment":9,"../join":12}],11:[function(require,module,exports){
+},{"../mithril":8,"./comment":9,"./join":12}],11:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2956,11 +3001,15 @@ var EventListViewModel = require('./viewmodel/event/list');
 // イベント詳細
 var EventDetailViewModel = require('./viewmodel/event/detail');
 
+// イベント作成
+var EventCreateViewModel = require('./viewmodel/event/create');
 
 // コンストラクタ
 var State = function() {
 	// イベント一覧
 	this.event_list = null;
+	// イベント登録フォーム
+	this.event_create = null;
 };
 
 // イベント一覧
@@ -2977,9 +3026,49 @@ State.prototype.make_event_detail = function(id) {
 	return  new EventDetailViewModel(id);
 };
 
+// イベント作成
+State.prototype.make_event_create = function() {
+	if( ! this.event_create) {
+		this.event_create = new EventCreateViewModel();
+	}
+
+	return this.event_create;
+};
+
 module.exports = new State();
 
-},{"./mithril":8,"./viewmodel/event/detail":14,"./viewmodel/event/list":15}],14:[function(require,module,exports){
+},{"./mithril":8,"./viewmodel/event/create":14,"./viewmodel/event/detail":15,"./viewmodel/event/list":16}],14:[function(require,module,exports){
+'use strict';
+
+/*
+ * ATND イベント作成 ViewModel
+ *
+ */
+
+
+var m = require('../../mithril');
+
+// イベント詳細 Model
+var EventModel = require('../../model/event');
+
+
+// ビューモデル
+var ViewModel = function(id) {
+	var self = this;
+
+	// 入力したイベントデータ
+	self.model = new EventModel();
+};
+
+// 入力されたイベントデータをクリア
+ViewModel.prototype.clear = function() {
+	var self = this;
+	self.model = new EventModel();
+};
+
+module.exports = ViewModel;
+
+},{"../../mithril":8,"../../model/event":10}],15:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2991,7 +3080,7 @@ module.exports = new State();
 var m = require('../../mithril');
 
 // イベント詳細 Model
-var EventModel = require('../../model/event/detail');
+var EventModel = require('../../model/event');
 
 // コメントモデル
 var CommentModel = require('../../model/comment');
@@ -3028,7 +3117,7 @@ ViewModel.prototype.clear_join = function() {
 
 module.exports = ViewModel;
 
-},{"../../mithril":8,"../../model/comment":9,"../../model/event/detail":10,"../../model/join":12}],15:[function(require,module,exports){
+},{"../../mithril":8,"../../model/comment":9,"../../model/event":10,"../../model/join":12}],16:[function(require,module,exports){
 'use strict';
 
 /*

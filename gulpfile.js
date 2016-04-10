@@ -25,18 +25,25 @@ var msx        = require("gulp-msx");
 var rename     = require('gulp-rename');
 var plumber    = require('gulp-plumber');
 var runSequence= require('run-sequence');
+var notify     = require('gulp-notify');
+
 
 gulp.task('msx', function() {
 	return gulp.src(source_dir)
-	.pipe(plumber())
-	.pipe(msx()) 
+	.pipe(plumber({errorHandler: notify.onError('<%= error.message %>')}))
+	.pipe(msx())
 	.pipe(gulp.dest(tmp_dir));
 });
 
 gulp.task('browserify', function() {
 	return browserify(tmp_dir + appjs)
 		.bundle()
-		.pipe(plumber())
+		.on('error', function(err){   //ここからエラーだった時の記述
+			// デスクトップ通知
+			var error_handle = notify.onError('<%= error.message %>');
+			error_handle(err);
+			this.emit('end');
+		})
 		//Pass desired output filename to vinyl-source-stream
 		.pipe(source(appjs))
 		// Start piping stream to tasks!

@@ -9,7 +9,7 @@
 var m = require('../../mithril');
 
 // イベント詳細 Model
-var EventModel = require('../../model/event/detail');
+var EventModel = require('../../model/event');
 
 // コメントモデル
 var CommentModel = require('../../model/comment');
