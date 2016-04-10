@@ -1,4 +1,105 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function (plugin) {
+  /* istanbul ignore next: differing implementations */
+  if (typeof module !== 'undefined' && module !== null && module.exports) {
+    module.exports = plugin
+  } else if (typeof define === 'function' && define.amd) {
+    define(['mithril'], plugin)
+  } else if (typeof window !== 'undefined') {
+    plugin(m)
+  }
+})(function MithrilValidator (m) {
+  if (m.validator) {
+    return m
+  }
+
+  /**
+   * Validates mithril models and objects through validation functions
+   * mapped to specific model properties.
+   *
+   * Example
+   *
+   *     Validator({
+   *       name: function (name) {
+   *         if (!name) {
+   *           return "Name is required."
+   *         }
+   *       }
+   *     }).validate({})
+   *
+   * @param  {Object} validations Map consisting of model properties to validation functions
+   *
+   * @return {Validator}
+   */
+  function Validator (validations) {
+    this.errors = {}
+    this.validations = validations
+  }
+
+  /**
+   * Returns length of error map
+   *
+   * @return {Number}
+   */
+  Validator.prototype.hasErrors = function () {
+    return Object.keys(this.errors).length
+  }
+
+  /**
+   * Returns the element associated with the specified key
+   *
+   * @param  {String}  key
+   * @return {Boolean}
+   */
+  Validator.prototype.hasError = function (key) {
+    return this.errors[key]
+  }
+
+  /**
+   * Removes all of the elements from the error list
+   */
+  Validator.prototype.clearErrors = function () {
+    this.errors = {}
+  }
+
+  /**
+   * Validates the specified model against the validations mapping in this instance.
+   *
+   * Each (shallow) property is iterated over and cross-checked against the given model for value,
+   * then the validation function is invoked passing the model as context and value as the first argument.
+   *
+   * On a truthy result from a validation function the result is placed on the error object with the
+   * property name as the identifier.
+   *
+   * @param  {Object} model       Key-value map of property to `m.prop` values
+   *
+   * @return {Validator}
+   */
+  Validator.prototype.validate = function (model) {
+    var self = this
+
+    this.clearErrors()
+
+    Object.keys(this.validations).forEach(function (key, index) {
+      validator = self.validations[key]
+      value = model[key] ? (typeof model[key] === 'function' ? model[key]() : model[key]) : undefined
+      result = validator.bind(model)(value)
+
+      if (result) {
+        self.errors[key] = result
+      }
+    })
+
+    return this
+  }
+
+  // Export
+  m.validator = Validator
+
+  // Return patched mithril
+  return m
+})
+},{}],2:[function(require,module,exports){
 ;(function (global, factory) { // eslint-disable-line
 	"use strict"
 	/* eslint-disable no-undef */
@@ -2141,7 +2242,7 @@
 	return m
 })
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 'use strict';
 
 var m = require('./mithril');
@@ -2169,7 +2270,7 @@ m.route(document.getElementById("root"), "/", {
 	"/event": EventList,
 });
 
-},{"./component/event/create.js":4,"./component/event/detail.js":5,"./component/event/list.js":6,"./component/top.js":8,"./mithril":9}],3:[function(require,module,exports){
+},{"./component/event/create.js":5,"./component/event/detail.js":6,"./component/event/list.js":7,"./component/top.js":11,"./mithril":12}],4:[function(require,module,exports){
 /* global $ */
 'use strict';
 
@@ -2229,7 +2330,8 @@ module.exports = {
 	}
 };
 
-},{"../mithril":9}],4:[function(require,module,exports){
+},{"../mithril":12}],5:[function(require,module,exports){
+/* global $ */
 'use strict';
 
 /*
@@ -2245,6 +2347,13 @@ var state = require('../../state');
 // navbar
 var Navbar = require('../navbar');
 
+// form input
+var FormInputComponent = require('../form/input');
+
+// form textarea
+var FormTextAreaComponent = require('../form/textarea');
+
+
 
 
 module.exports = {
@@ -2253,6 +2362,68 @@ module.exports = {
 		// ViewModel
 		self.vm = state.make_event_create();
 
+		self.validator = new m.validator({
+			name: function (name) {
+				if (!name) {
+					return "イベント名を入力してください";
+				}
+				if(name.length > 50) {
+					return "イベント名は50文字以内でお願いします";
+				}
+			},
+			admin: function (admin) {
+				if (!admin.name()) {
+					return "主催者を入力してください";
+				}
+				if(admin.name().length > 20) {
+					return "主催者は20文字以内でお願いします";
+				}
+			},
+			start_date: function (start_date) {
+				if (!start_date) {
+					return "日時を入力してください";
+				}
+			},
+			capacity: function (capacity) {
+				if (!capacity) {
+					return "定員を入力してください";
+				}
+				if (!capacity.match(/^[0-9]+$/)) {
+					return "定員を半角数字で入力してください";
+				}
+
+			},
+			place: function (place) {
+				if (!place.name()) {
+					return "場所を入力してください";
+				}
+				if(place.name().length > 50) {
+					return "場所は50文字以内でお願いします";
+				}
+			},
+			description: function (description) {
+				if (!description) {
+					return "詳細を入力してください";
+				}
+				if(description.length > 5000) {
+					return "詳細は5000文字以内でお願いします";
+				}
+			},
+		});
+
+		// イベント作成ボタンの確認が押下された時
+		self.onconfirm = function(e) {
+			// 入力値チェック
+			self.validator.validate(self.vm.model);
+
+			if (self.validator.hasErrors()) {
+				return;
+			}
+
+			// 確認画面モーダルを表示
+			$('#ConfirmModal').modal('show');
+
+		};
 		// イベント作成ボタンが押下された時
 		self.onsubmit = function(e) {
 			// イベント登録
@@ -2282,28 +2453,59 @@ module.exports = {
 			{tag: "form", attrs: {}, children: [
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventName"}, children: ["イベント名"]}, 
-					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventName", placeholder:"イベント名", onchange:m.withAttr("value", model.name), value:model.name()}}
+					 m.component(FormInputComponent, {
+						prop:  ctrl.vm.model.name,
+						error: ctrl.validator.hasError('name'),
+						placeholder: "イベント名",
+					}) 
+
 				]}, 
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventAdmin"}, children: ["主催者"]}, 
-					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventAdmin", placeholder:"主催者", onchange:m.withAttr("value", model.admin.name), value:model.admin.name()}}
+					 m.component(FormInputComponent, {
+						prop:  ctrl.vm.model.admin.name,
+						error: ctrl.validator.hasError('admin'),
+						placeholder: "主催者",
+					}) 
+
 				]}, 
 
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventDate"}, children: ["日時"]}, 
-					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventDate", placeholder:"日時", onchange:m.withAttr("value", model.start_date), value:model.start_date()}}
+					 m.component(FormInputComponent, {
+						prop:  ctrl.vm.model.start_date,
+						error: ctrl.validator.hasError('start_date'),
+						placeholder: "日時",
+					}) 
+
 				]}, 
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventCapacity"}, children: ["定員"]}, 
-					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventCapacity", placeholder:"定員", onchange:m.withAttr("value", model.capacity), value:model.capacity()}}
+					 m.component(FormInputComponent, {
+						prop:  ctrl.vm.model.capacity,
+						error: ctrl.validator.hasError('capacity'),
+						placeholder: "定員",
+					}) 
+
 				]}, 
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventPlace"}, children: ["開催場所"]}, 
-					{tag: "input", attrs: {type:"text", class:"form-control", id:"EventPlace", placeholder:"開催場所", onchange:m.withAttr("value", model.place.name), value:model.place.name()}}
+					 m.component(FormInputComponent, {
+						prop:  ctrl.vm.model.place.name,
+						error: ctrl.validator.hasError('place'),
+						placeholder: "開催場所",
+					}) 
+
 				]}, 
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventDetail"}, children: ["詳細"]}, 
-					{tag: "textarea", attrs: {class:"form-control", rows:"10", id:"EventDetail", placeholder:"詳細", onchange:m.withAttr("value", model.description), value:model.description()}}
+					 m.component(FormTextAreaComponent, {
+						prop:  ctrl.vm.model.description,
+						error: ctrl.validator.hasError('description'),
+						placeholder: "詳細",
+						rows: 10,
+					}) 
+
 				]}, 
 
 				{tag: "div", attrs: {class:"form-group"}, children: [
@@ -2313,7 +2515,7 @@ module.exports = {
 				]}, 
 
 				{tag: "div", attrs: {}, children: [
-					{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", "data-toggle":"modal", "data-target":"#ConfirmModal"}, children: ["イベントを新規作成"]}
+					{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", onclick: ctrl.onconfirm}, children: ["イベントを新規作成"]}
 				]}, 
 
 				/* BEGIN: 確認画面モーダル */
@@ -2372,7 +2574,8 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":9,"../../state":14,"../navbar":7}],5:[function(require,module,exports){
+},{"../../mithril":12,"../../state":17,"../form/input":8,"../form/textarea":9,"../navbar":10}],6:[function(require,module,exports){
+/* global $ */
 'use strict';
 
 /*
@@ -2382,11 +2585,21 @@ module.exports = {
 
 var m = require('../../mithril');
 
+
 // navbar
 var NavbarComponent = require('../navbar');
 
 // error
 var ErrorComponent = require('../error');
+
+// form input
+var FormInputComponent = require('../form/input');
+
+// form textarea
+var FormTextAreaComponent = require('../form/textarea');
+
+
+
 
 // アプリケーションの状態
 var state = require('../../state');
@@ -2403,9 +2616,44 @@ module.exports = {
 		// ViewModel
 		self.vm = state.make_event_detail(self.id);
 
+		// Validator
+		self.comment_validator = new m.validator({
+			name: function (name) {
+				if (!name) {
+					return "名前を入力してください";
+				}
+				if(name.length > 20) {
+					return "名前は20文字以内でお願いします";
+				}
+			},
+			body: function (body) {
+				if (!body) {
+					return "コメントを入力してください";
+				}
+				if(body.length > 500) {
+					return "コメントは500文字以内でお願いします";
+				}
+			}
+		});
+		self.join_validator = new m.validator({
+			name: function (name) {
+				if (!name) {
+					return "名前を入力してください";
+				}
+				if(name.length > 20) {
+					return "名前は20文字以内でお願いします";
+				}
+			}
+		});
+
 		// コメントの追加ボタンが押下された時
 		self.onsubmit_comment = function(e) {
-			// TODO:入力値チェック
+			// 入力値チェック
+			self.comment_validator.validate(self.vm.comment);
+
+			if (self.comment_validator.hasErrors()) {
+				return;
+			}
 
 			// event_id
 			self.vm.comment.event_id(self.vm.model().id());
@@ -2429,7 +2677,12 @@ module.exports = {
 
 		// イベントに参加ボタンが押下された時
 		self.onsubmit_join = function(e) {
-			// TODO:入力値チェック
+			// 入力値チェック
+			self.join_validator.validate(self.vm.join);
+
+			if (self.join_validator.hasErrors()) {
+				return;
+			}
 
 			// event_id
 			self.vm.join.event_id(self.vm.model().id());
@@ -2448,12 +2701,14 @@ module.exports = {
 
 				// コメント欄を空にする
 				self.vm.clear_join();
+
+				// モーダルを閉じる
+				$('#AttendModal').modal('hide');
 			}, ErrorComponent.handleErrorToViewModel(self.vm));
 		};
 	},
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
-
 		// HTML
 		return {tag: "div", attrs: {}, children: [
 			/*navbar*/
@@ -2515,13 +2770,18 @@ module.exports = {
 								/* コメント投稿フォーム */
 								{tag: "form", attrs: {}, children: [
 									/* コメントの名前入力 */
-									{tag: "div", attrs: {class:"form-group"}, children: [
-										{tag: "input", attrs: {type:"text", class:"form-control", placeholder:"名前", onchange:m.withAttr("value", ctrl.vm.comment.name), value: ctrl.vm.comment.name() }}
-									]}, 
+									 m.component(FormInputComponent, {
+										prop:  ctrl.vm.comment.name,
+										error: ctrl.comment_validator.hasError('name'),
+										placeholder: "名前",
+									}), 
 									/* コメントの内容入力 */
-									{tag: "div", attrs: {class:"form-group"}, children: [
-										{tag: "textarea", attrs: {class:"form-control", rows:"4", onchange:m.withAttr("value", ctrl.vm.comment.body), placeholder:"コメント内容"}, children: [ ctrl.vm.comment.body() ]}
-									]}, 
+									 m.component(FormTextAreaComponent, {
+										prop:  ctrl.vm.comment.body,
+										error: ctrl.comment_validator.hasError('body'),
+										placeholder: "コメント内容",
+										rows: 4,
+									}), 
 									{tag: "div", attrs: {}, children: [
 										{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", onclick:ctrl.onsubmit_comment}, children: ["コメントを投稿"]}
 									]}
@@ -2570,14 +2830,17 @@ module.exports = {
 							{tag: "div", attrs: {class:"modal-body"}, children: [
 								/* イベント参加に必要な各入力項目 */
 								{tag: "form", attrs: {}, children: [
-									{tag: "div", attrs: {class:"form-group"}, children: [
-										{tag: "label", attrs: {for:"AttendName"}, children: ["名前"]}, 
-										{tag: "input", attrs: {type:"text", class:"form-control", id:"AttendName", placeholder:"あなたの名前", onchange: m.withAttr("value", ctrl.vm.join.name), value: ctrl.vm.join.name() }}
-									]}
+									/* 名前入力 */
+									{tag: "label", attrs: {}, children: ["名前"]}, 
+									 m.component(FormInputComponent, {
+										prop:  ctrl.vm.join.name,
+										error: ctrl.join_validator.hasError('name'),
+										placeholder: "名前",
+									}) 
 								]}
 							]}, 
 							{tag: "div", attrs: {class:"modal-footer"}, children: [
-								{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", "data-dismiss":"modal", onclick: ctrl.onsubmit_join}, children: ["参加"]}, 
+								{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", onclick: ctrl.onsubmit_join}, children: ["参加"]}, 
 								{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-warning", "data-dismiss":"modal"}, children: ["閉じる"]}
 							]}
 						]}
@@ -2592,7 +2855,7 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":9,"../../state":14,"../error":3,"../navbar":7}],6:[function(require,module,exports){
+},{"../../mithril":12,"../../state":17,"../error":4,"../form/input":8,"../form/textarea":9,"../navbar":10}],7:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2673,7 +2936,66 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":9,"../../state":14,"../navbar":7}],7:[function(require,module,exports){
+},{"../../mithril":12,"../../state":17,"../navbar":10}],8:[function(require,module,exports){
+'use strict';
+
+/*
+ * input タグ
+ *
+ */
+
+var m = require('../../mithril');
+
+module.exports = {
+	controller: function() {},
+	view: function(ctrl, args) {
+		// プロパティ
+		var prop = args.prop;
+		// エラーメッセージ
+		var error = args.error;
+		// placeholder
+		var placeholder = args.placeholder;
+
+		return {tag: "div", attrs: {class: error ? "form-group has-error has-feedback" : "form-group"}, children: [
+			{tag: "input", attrs: {type:"text", class:"form-control", placeholder: placeholder, onchange:m.withAttr("value", prop), value: prop() }}, 
+			 error ? {tag: "span", attrs: {class:"glyphicon glyphicon-remove form-control-feedback", "aria-hidden":"true"}} : "", 
+			{tag: "span", attrs: {class:"help-block"}, children: [ error ]}
+		]};
+	}
+};
+
+},{"../../mithril":12}],9:[function(require,module,exports){
+'use strict';
+
+/*
+ * textarea タグ
+ *
+ */
+
+var m = require('../../mithril');
+
+module.exports = {
+	controller: function() {},
+	view: function(ctrl, args) {
+		// プロパティ
+		var prop = args.prop;
+		// エラーメッセージ
+		var error = args.error;
+		// placeholder
+		var placeholder = args.placeholder;
+		// rows
+		var rows = args.rows || 4;
+
+
+		return {tag: "div", attrs: {class: error ? "form-group has-error has-feedback" : "form-group"}, children: [
+			{tag: "textarea", attrs: {class:"form-control", rows:rows, onchange:m.withAttr("value", prop), placeholder: placeholder }, children: [ prop() ]}, 
+			 error ? {tag: "span", attrs: {class:"glyphicon glyphicon-remove form-control-feedback", "aria-hidden":"true"}} : "", 
+			{tag: "span", attrs: {class:"help-block"}, children: [ error ]}
+		]};
+	}
+};
+
+},{"../../mithril":12}],10:[function(require,module,exports){
 'use strict';
 var m = require('../mithril');
 
@@ -2708,7 +3030,7 @@ module.exports = {
 	}
 };
 
-},{"../mithril":9}],8:[function(require,module,exports){
+},{"../mithril":12}],11:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2753,7 +3075,7 @@ module.exports = {
 	}
 };
 
-},{"../mithril":9,"./navbar":7}],9:[function(require,module,exports){
+},{"../mithril":12,"./navbar":10}],12:[function(require,module,exports){
 'use strict';
 
 /*********************************************
@@ -2764,6 +3086,11 @@ module.exports = {
 var version = 1;
 
 var m = require('mithril');
+
+/*********************************************
+ * mithril-validator
+ *********************************************/
+require('mithril-validator')(m);
 
 /*********************************************
  * m.request 拡張
@@ -2826,7 +3153,7 @@ m.request = function(args) {
 
 module.exports = m;
 
-},{"mithril":1}],10:[function(require,module,exports){
+},{"mithril":2,"mithril-validator":1}],13:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2881,7 +3208,7 @@ Model.prototype.save = function () {
 module.exports = Model;
 
 
-},{"../mithril":9}],11:[function(require,module,exports){
+},{"../mithril":12}],14:[function(require,module,exports){
 'use strict';
 
 /*
@@ -2994,7 +3321,7 @@ Model.prototype.save = function () {
 module.exports = Model;
 
 
-},{"../mithril":9,"./comment":10,"./join":13}],12:[function(require,module,exports){
+},{"../mithril":12,"./comment":13,"./join":16}],15:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3035,7 +3362,7 @@ Model.prototype.save = function () {
 module.exports = Model;
 
 
-},{"../../mithril":9}],13:[function(require,module,exports){
+},{"../../mithril":12}],16:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3087,7 +3414,7 @@ Model.prototype.save = function () {
 module.exports = Model;
 
 
-},{"../mithril":9}],14:[function(require,module,exports){
+},{"../mithril":12}],17:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3139,7 +3466,7 @@ State.prototype.make_event_create = function() {
 
 module.exports = new State();
 
-},{"./mithril":9,"./viewmodel/event/create":15,"./viewmodel/event/detail":16,"./viewmodel/event/list":17}],15:[function(require,module,exports){
+},{"./mithril":12,"./viewmodel/event/create":18,"./viewmodel/event/detail":19,"./viewmodel/event/list":20}],18:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3170,7 +3497,7 @@ ViewModel.prototype.clear = function() {
 
 module.exports = ViewModel;
 
-},{"../../mithril":9,"../../model/event":11}],16:[function(require,module,exports){
+},{"../../mithril":12,"../../model/event":14}],19:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3222,7 +3549,7 @@ ViewModel.prototype.clear_join = function() {
 
 module.exports = ViewModel;
 
-},{"../../mithril":9,"../../model/comment":10,"../../model/event":11,"../../model/join":13}],17:[function(require,module,exports){
+},{"../../mithril":12,"../../model/comment":13,"../../model/event":14,"../../model/join":16}],20:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3243,4 +3570,4 @@ var ViewModel = function() {
 
 module.exports = ViewModel;
 
-},{"../../mithril":9,"../../model/event/list":12}]},{},[2]);
+},{"../../mithril":12,"../../model/event/list":15}]},{},[3]);
