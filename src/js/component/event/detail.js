@@ -257,7 +257,7 @@ module.exports = {
 								{/* イベント参加に必要な各入力項目 */}
 								<form>
 									{/* 名前入力 */}
-									<label for="AttendName">名前</label>
+									<label>名前</label>
 									{ m.component(FormInputComponent, {
 										prop:  ctrl.vm.join.name,
 										error: ctrl.join_validator.hasError('name'),
