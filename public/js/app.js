@@ -2696,15 +2696,62 @@ module.exports = {
 				// 参加者一覧に新しく参加した人を移動
 				self.vm.model().members.push(self.vm.join);
 
-				// コメント件数を +1
+				// 参加者数を +1
 				self.vm.model().attend_num(self.vm.model().attend_num() + 1);
 
-				// コメント欄を空にする
+				// 参加者名の入力欄を空にする
 				self.vm.clear_join();
 
 				// モーダルを閉じる
 				$('#AttendModal').modal('hide');
 			}, ErrorComponent.handleErrorToViewModel(self.vm));
+		};
+
+		// イベントの削除の確認ボタンが押された時
+		self.onconfirm_destroy = function(e) {
+				// 確認モーダルを表示
+				$('#DeleteModal').modal('show');
+		};
+
+		// イベントの削除ボタンが押された時
+		self.onsubmit_destroy = function(e) {
+				self.vm.model().destroy()
+				.then(function() {
+					// TODO: イベントリストのViewModelキャッシュを更新
+
+					// イベント一覧に遷移
+					m.route('/event');
+				});
+		};
+
+		self.ondestroy_comment_function = function(model, i) {
+			// コメントの削除ボタンが押された時
+			return function(e) {
+				// サーバー上から削除
+				model.destroy()
+				.then(function() {
+					// コメント件数を -1
+					self.vm.model().comment_num(self.vm.model().comment_num() - 1);
+
+					// viewmodelからも削除
+					self.vm.model().comments.splice(i, 1);
+				});
+			};
+		};
+
+		self.ondestroy_member_function = function(model, i) {
+			// 参加者の削除ボタンが押された時
+			return function(e) {
+				// サーバー上から削除
+				model.destroy()
+				.then(function() {
+					// 参加者件数を -1
+					self.vm.model().attend_num(self.vm.model().attend_num() - 1);
+
+					// viewmodelからも削除
+					self.vm.model().members.splice(i, 1);
+				});
+			};
 		};
 	},
 	view: function(ctrl) {
@@ -2761,8 +2808,13 @@ module.exports = {
 								
 									model.comments.map(function(comment, i) {
 										return {tag: "div", attrs: {}, children: [
+											/* 削除ボタン */
+											{tag: "div", attrs: {class:"pull-right", onclick: ctrl.ondestroy_comment_function(comment, i) }, children: [
+												{tag: "span", attrs: {class:"glyphicon glyphicon-remove-sign"}}
+											]}, 
 											/* コメント投稿者 */
 											 comment.name(), {tag: "br", attrs: {}}, 
+											/* コメント本文 */
 											 comment.body(), {tag: "hr", attrs: {}}
 										]};
 									}), 
@@ -2804,15 +2856,26 @@ module.exports = {
 									"参加者一覧"
 							]}, 
 							{tag: "div", attrs: {class:"panel-body"}, children: [
+								/* 参加者が一人もいなければ"なし"と表示 */
+								 model.members.length === 0 ? "なし" : "", 
 								
 									model.members.map(function(member, i) {
 										return {tag: "span", attrs: {}, children: [
+											/* 削除ボタン */
+											{tag: "div", attrs: {class:"pull-right", onclick: ctrl.ondestroy_member_function(member, i) }, children: [
+												{tag: "span", attrs: {class:"glyphicon glyphicon-remove-circle"}}
+											]}, 
+
 											 member.name(), " さん", {tag: "br", attrs: {}}
 										]};
 									})
 								
 							]}
-						]}
+						]}, 
+
+						{tag: "button", attrs: {type:"button", class:"btn btn-sm btn-warning"}, children: ["イベントを編集"]}, 
+						{tag: "button", attrs: {type:"button", class:"btn btn-sm btn-danger", onclick: ctrl.onconfirm_destroy}, children: ["イベントを削除"]}
+
 					]}
 					/* END: 右サイドバー */
 				]}, 
@@ -2847,6 +2910,30 @@ module.exports = {
 					]}
 				]}, 
 				/* END: イベント参加 入力モーダル */
+
+				/* BEGIN: イベント削除 確認モーダル */
+				{tag: "div", attrs: {id:"DeleteModal", class:"modal fade", role:"dialog"}, children: [
+					{tag: "div", attrs: {class:"modal-dialog"}, children: [
+
+						{tag: "div", attrs: {class:"modal-content"}, children: [
+							{tag: "div", attrs: {class:"modal-header"}, children: [
+								/* 閉じるボタン */
+								{tag: "button", attrs: {type:"button", class:"close", "data-dismiss":"modal"}, children: ["×"]}, 
+								{tag: "h4", attrs: {class:"modal-title"}, children: ["イベントを削除します"]}
+							]}, 
+							{tag: "div", attrs: {class:"modal-body"}, children: [
+							"「",  model.name(), "」を削除します。", {tag: "br", attrs: {}}, 
+							"本当によろしいですか？"
+							]}, 
+							{tag: "div", attrs: {class:"modal-footer"}, children: [
+								{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-danger", "data-dismiss":"modal", onclick: ctrl.onsubmit_destroy}, children: ["削除"]}, 
+								{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", "data-dismiss":"modal"}, children: ["閉じる"]}
+							]}
+						]}
+					]}
+				]}, 
+				/* END: イベント参加 入力モーダル */
+
 
 				/* エラーモーダル */
 				 m.component(ErrorComponent, ctrl.vm) 
@@ -3205,6 +3292,16 @@ Model.prototype.save = function () {
 	});
 };
 
+// サーバからJSONを破棄
+Model.prototype.destroy = function () {
+	return m.request({
+		method: "DELETE",
+		url: api_url + "/" + this.id(),
+		data: {}
+	});
+};
+
+
 module.exports = Model;
 
 
@@ -3318,6 +3415,15 @@ Model.prototype.save = function () {
 	});
 };
 
+// サーバからJSONを破棄
+Model.prototype.destroy = function () {
+	return m.request({
+		method: "DELETE",
+		url: api_url + "/" + this.id(),
+		data: {}
+	});
+};
+
 module.exports = Model;
 
 
@@ -3408,6 +3514,15 @@ Model.prototype.save = function () {
 	.then(function(res) {
 		// 生成されたコメントID
 		return res.id;
+	});
+};
+
+// サーバからJSONを破棄
+Model.prototype.destroy = function () {
+	return m.request({
+		method: "DELETE",
+		url: api_url + "/" + this.id(),
+		data: {}
 	});
 };
 
