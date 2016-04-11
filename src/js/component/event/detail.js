@@ -119,15 +119,30 @@ module.exports = {
 				// 参加者一覧に新しく参加した人を移動
 				self.vm.model().members.push(self.vm.join);
 
-				// コメント件数を +1
+				// 参加者数を +1
 				self.vm.model().attend_num(self.vm.model().attend_num() + 1);
 
-				// コメント欄を空にする
+				// 参加者名の入力欄を空にする
 				self.vm.clear_join();
 
 				// モーダルを閉じる
 				$('#AttendModal').modal('hide');
 			}, ErrorComponent.handleErrorToViewModel(self.vm));
+		};
+
+		self.ondestroy_comment_function = function(model, i) {
+			// コメントの削除ボタンが押された時
+			return function(e) {
+				// サーバー上から削除
+				model.destroy()
+				.then(function() {
+					// コメント件数を -1
+					self.vm.model().comment_num(self.vm.model().comment_num() - 1);
+
+					// viewmodelからも削除
+					self.vm.model().comments.splice(i, 1);
+				});
+			};
 		};
 	},
 	view: function(ctrl) {
@@ -184,8 +199,12 @@ module.exports = {
 								{
 									model.comments.map(function(comment, i) {
 										return <div>
+											<div class="pull-right" onclick={ ctrl.ondestroy_comment_function(comment, i) }>
+												<span class="glyphicon glyphicon-remove-sign"></span>
+											</div>
 											{/* コメント投稿者 */}
 											{ comment.name() }<br />
+											{/* コメント本文 */}
 											{ comment.body() }<hr />
 										</div>;
 									})
