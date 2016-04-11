@@ -130,6 +130,23 @@ module.exports = {
 			}, ErrorComponent.handleErrorToViewModel(self.vm));
 		};
 
+		// イベントの削除の確認ボタンが押された時
+		self.onconfirm_destroy = function(e) {
+				// 確認モーダルを表示
+				$('#DeleteModal').modal('show');
+		};
+
+		// イベントの削除ボタンが押された時
+		self.onsubmit_destroy = function(e) {
+				self.vm.model().destroy()
+				.then(function() {
+					// TODO: イベントリストのViewModelキャッシュを更新
+
+					// イベント一覧に遷移
+					m.route('/event');
+				});
+		};
+
 		self.ondestroy_comment_function = function(model, i) {
 			// コメントの削除ボタンが押された時
 			return function(e) {
@@ -278,6 +295,10 @@ module.exports = {
 								}
 							</div>
 						</div>
+
+						<button type="button" class="btn btn-sm btn-warning">イベントを編集</button>
+						<button type="button" class="btn btn-sm btn-danger" onclick={ ctrl.onconfirm_destroy }>イベントを削除</button>
+
 					</div>
 					{/* END: 右サイドバー */}
 				</div>
@@ -312,6 +333,30 @@ module.exports = {
 					</div>
 				</div>
 				{/* END: イベント参加 入力モーダル */}
+
+				{/* BEGIN: イベント削除 確認モーダル */}
+				<div id="DeleteModal" class="modal fade" role="dialog">
+					<div class="modal-dialog">
+
+						<div class="modal-content">
+							<div class="modal-header">
+								{/* 閉じるボタン */}
+								<button type="button" class="close" data-dismiss="modal">&times;</button>
+								<h4 class="modal-title">イベントを削除します</h4>
+							</div>
+							<div class="modal-body">
+							「{ model.name() }」を削除します。<br />
+							本当によろしいですか？
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-lg btn-danger" data-dismiss="modal" onclick={ ctrl.onsubmit_destroy }>削除</button>
+								<button type="button" class="btn btn-lg btn-success" data-dismiss="modal">閉じる</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				{/* END: イベント参加 入力モーダル */}
+
 
 				{/* エラーモーダル */}
 				{ m.component(ErrorComponent, ctrl.vm) }
