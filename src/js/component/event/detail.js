@@ -262,6 +262,8 @@ module.exports = {
 									参加者一覧
 							</div>
 							<div class="panel-body">
+								{/* 参加者が一人もいなければ"なし"と表示 */}
+								{ model.members.length === 0 ? "なし" : "" }
 								{
 									model.members.map(function(member, i) {
 										return <span>
