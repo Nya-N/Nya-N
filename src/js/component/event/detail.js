@@ -144,6 +144,21 @@ module.exports = {
 				});
 			};
 		};
+
+		self.ondestroy_member_function = function(model, i) {
+			// 参加者の削除ボタンが押された時
+			return function(e) {
+				// サーバー上から削除
+				model.destroy()
+				.then(function() {
+					// 参加者件数を -1
+					self.vm.model().attend_num(self.vm.model().attend_num() - 1);
+
+					// viewmodelからも削除
+					self.vm.model().members.splice(i, 1);
+				});
+			};
+		};
 	},
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
@@ -199,6 +214,7 @@ module.exports = {
 								{
 									model.comments.map(function(comment, i) {
 										return <div>
+											{/* 削除ボタン */}
 											<div class="pull-right" onclick={ ctrl.ondestroy_comment_function(comment, i) }>
 												<span class="glyphicon glyphicon-remove-sign"></span>
 											</div>
@@ -249,6 +265,11 @@ module.exports = {
 								{
 									model.members.map(function(member, i) {
 										return <span>
+											{/* 削除ボタン */}
+											<div class="pull-right" onclick={ ctrl.ondestroy_member_function(member, i) }>
+												<span class="glyphicon glyphicon-remove-circle"></span>
+											</div>
+
 											{ member.name() } さん<br />
 										</span>;
 									})
