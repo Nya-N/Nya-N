@@ -49,5 +49,15 @@ Model.prototype.save = function () {
 	});
 };
 
+// サーバからJSONを破棄
+Model.prototype.destroy = function () {
+	return m.request({
+		method: "DELETE",
+		url: api_url + "/" + this.id(),
+		data: {}
+	});
+};
+
+
 module.exports = Model;
 
