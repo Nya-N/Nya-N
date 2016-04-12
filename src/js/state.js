@@ -22,6 +22,8 @@ var State = function() {
 	this.event_list = null;
 	// イベント登録フォーム
 	this.event_create = null;
+	// イベント詳細
+	this.event_detail = null;
 };
 
 // イベント一覧
@@ -33,9 +35,16 @@ State.prototype.make_event_list = function() {
 	return this.event_list;
 };
 
-// イベント詳細(状態を保存しない)
+// イベント詳細
 State.prototype.make_event_detail = function(id) {
-	return  new EventDetailViewModel(id);
+	var id = Number(id);
+	// キャッシュしてた ViewModel と同じ id ならば使い回す
+	if(this.event_detail && id === this.event_detail.model().id()) {
+		return this.event_detail;
+	}
+
+	this.event_detail = new EventDetailViewModel(id);
+	return this.event_detail;
 };
 
 // イベント作成
