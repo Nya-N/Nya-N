@@ -1,0 +1,13 @@
+driver: mysql
+development:
+  user: root
+  password: ""
+  db: gonta
+production:
+  user: root
+  password: ""
+  db: gonta
+test:
+  user: root
+  password: ""
+  db: gonta_test
