@@ -146,6 +146,11 @@ module.exports = {
 					m.route('/event');
 				});
 		};
+		// イベントの編集ボタンが押された時
+		self.onedit = function(e) {
+			m.route('/event/edit/' + self.vm.model().id());
+		};
+
 
 		self.ondestroy_comment_function = function(model, i) {
 			// コメントの削除ボタンが押された時
@@ -296,7 +301,7 @@ module.exports = {
 							</div>
 						</div>
 
-						<button type="button" class="btn btn-sm btn-warning">イベントを編集</button>
+						<button type="button" class="btn btn-sm btn-warning" onclick={ ctrl.onedit }>イベントを編集</button>
 						<button type="button" class="btn btn-sm btn-danger" onclick={ ctrl.onconfirm_destroy }>イベントを削除</button>
 
 					</div>
