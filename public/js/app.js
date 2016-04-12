@@ -2256,6 +2256,9 @@ var EventCreate = require('./component/event/create.js');
 var EventList = require('./component/event/list.js');
 // イベント詳細ページ
 var EventDetail = require('./component/event/detail.js');
+// イベント編集ページ
+var EventEdit = require('./component/event/edit.js');
+
 
 
 
@@ -2267,10 +2270,11 @@ m.route(document.getElementById("root"), "/", {
 	"/": Top,
 	"/event/detail/:id": EventDetail,
 	"/event/create": EventCreate,
+	"/event/edit/:id": EventEdit,
 	"/event": EventList,
 });
 
-},{"./component/event/create.js":5,"./component/event/detail.js":6,"./component/event/list.js":7,"./component/top.js":11,"./mithril":12}],4:[function(require,module,exports){
+},{"./component/event/create.js":5,"./component/event/detail.js":6,"./component/event/edit.js":7,"./component/event/list.js":8,"./component/top.js":12,"./mithril":13}],4:[function(require,module,exports){
 /* global $ */
 'use strict';
 
@@ -2330,7 +2334,7 @@ module.exports = {
 	}
 };
 
-},{"../mithril":12}],5:[function(require,module,exports){
+},{"../mithril":13}],5:[function(require,module,exports){
 /* global $ */
 'use strict';
 
@@ -2388,7 +2392,7 @@ module.exports = {
 				if (!capacity) {
 					return "定員を入力してください";
 				}
-				if (!capacity.match(/^[0-9]+$/)) {
+				if (!capacity.toString().match(/^[0-9]+$/)) {
 					return "定員を半角数字で入力してください";
 				}
 
@@ -2554,7 +2558,7 @@ module.exports = {
 									]}, 
 									{tag: "div", attrs: {class:"form-group"}, children: [
 										{tag: "label", attrs: {}, children: ["詳細"]}, 
-										{tag: "div", attrs: {class:"form-control-static"}, children: [ model.description() ]}
+										{tag: "div", attrs: {class:"form-control-static"}, children: [ m.trust(model.description()) ]}
 									]}
 								]}
 							]}, 
@@ -2574,7 +2578,7 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":12,"../../state":17,"../form/input":8,"../form/textarea":9,"../navbar":10}],6:[function(require,module,exports){
+},{"../../mithril":13,"../../state":18,"../form/input":9,"../form/textarea":10,"../navbar":11}],6:[function(require,module,exports){
 /* global $ */
 'use strict';
 
@@ -2723,6 +2727,11 @@ module.exports = {
 					m.route('/event');
 				});
 		};
+		// イベントの編集ボタンが押された時
+		self.onedit = function(e) {
+			m.route('/event/edit/' + self.vm.model().id());
+		};
+
 
 		self.ondestroy_comment_function = function(model, i) {
 			// コメントの削除ボタンが押された時
@@ -2873,7 +2882,7 @@ module.exports = {
 							]}
 						]}, 
 
-						{tag: "button", attrs: {type:"button", class:"btn btn-sm btn-warning"}, children: ["イベントを編集"]}, 
+						{tag: "button", attrs: {type:"button", class:"btn btn-sm btn-warning", onclick: ctrl.onedit}, children: ["イベントを編集"]}, 
 						{tag: "button", attrs: {type:"button", class:"btn btn-sm btn-danger", onclick: ctrl.onconfirm_destroy}, children: ["イベントを削除"]}
 
 					]}
@@ -2942,7 +2951,254 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":12,"../../state":17,"../error":4,"../form/input":8,"../form/textarea":9,"../navbar":10}],7:[function(require,module,exports){
+},{"../../mithril":13,"../../state":18,"../error":4,"../form/input":9,"../form/textarea":10,"../navbar":11}],7:[function(require,module,exports){
+/* global $ */
+'use strict';
+
+/*
+ * ATND イベント作成ページ
+ *
+ */
+
+var m = require('../../mithril');
+
+// アプリケーションの状態
+var state = require('../../state');
+
+// navbar
+var Navbar = require('../navbar');
+
+// form input
+var FormInputComponent = require('../form/input');
+
+// form textarea
+var FormTextAreaComponent = require('../form/textarea');
+
+
+
+
+module.exports = {
+	controller: function() {
+		var self = this;
+
+		// イベントID
+		self.id = m.route.param("id");
+
+		// TODO: IDが存在しなかった場合のエラー処理
+
+		// ViewModel
+		self.vm = state.make_event_detail(self.id);
+
+		self.validator = new m.validator({
+			name: function (name) {
+				if (!name) {
+					return "イベント名を入力してください";
+				}
+				if(name.length > 50) {
+					return "イベント名は50文字以内でお願いします";
+				}
+			},
+			admin: function (admin) {
+				if (!admin.name()) {
+					return "主催者を入力してください";
+				}
+				if(admin.name().length > 20) {
+					return "主催者は20文字以内でお願いします";
+				}
+			},
+			start_date: function (start_date) {
+				if (!start_date) {
+					return "日時を入力してください";
+				}
+			},
+			capacity: function (capacity) {
+				if (!capacity) {
+					return "定員を入力してください";
+				}
+				if (!capacity.toString().match(/^[0-9]+$/)) {
+					return "定員を半角数字で入力してください";
+				}
+
+			},
+			place: function (place) {
+				if (!place.name()) {
+					return "場所を入力してください";
+				}
+				if(place.name().length > 50) {
+					return "場所は50文字以内でお願いします";
+				}
+			},
+			description: function (description) {
+				if (!description) {
+					return "詳細を入力してください";
+				}
+				if(description.length > 5000) {
+					return "詳細は5000文字以内でお願いします";
+				}
+			},
+		});
+
+		// イベント作成ボタンの確認が押下された時
+		self.onconfirm = function(e) {
+			// 入力値チェック
+			self.validator.validate(self.vm.model());
+
+			if (self.validator.hasErrors()) {
+				return;
+			}
+
+			// 確認画面モーダルを表示
+			$('#ConfirmModal').modal('show');
+
+		};
+		// イベント作成ボタンが押下された時
+		self.onsubmit = function(e) {
+			// イベント登録
+			self.vm.model().save()
+			.then(function(id) {
+				// TODO: イベント一覧をクリア
+
+				// イベント詳細画面に遷移
+				m.route('/event/detail/' + id);
+			});
+		};
+	},
+	view: function(ctrl) {
+		var model = ctrl.vm.model();
+
+		return {tag: "div", attrs: {}, children: [
+			/*navbar*/
+			{tag: "div", attrs: {}, children: [ m.component(Navbar) ]}, 
+
+			{tag: "div", attrs: {class:"container", style:"padding-top:30px", id:"root"}, children: [
+				{tag: "h1", attrs: {}, children: ["イベント編集"]}, 
+
+			/* イベント編集フォーム */
+			{tag: "form", attrs: {}, children: [
+				{tag: "div", attrs: {class:"form-group"}, children: [
+					{tag: "label", attrs: {for:"EventName"}, children: ["イベント名"]}, 
+					 m.component(FormInputComponent, {
+						prop:  model.name,
+						error: ctrl.validator.hasError('name'),
+						placeholder: "イベント名",
+					}) 
+
+				]}, 
+				{tag: "div", attrs: {class:"form-group"}, children: [
+					{tag: "label", attrs: {for:"EventAdmin"}, children: ["主催者"]}, 
+					 m.component(FormInputComponent, {
+						prop:  model.admin.name,
+						error: ctrl.validator.hasError('admin'),
+						placeholder: "主催者",
+					}) 
+
+				]}, 
+
+				{tag: "div", attrs: {class:"form-group"}, children: [
+					{tag: "label", attrs: {for:"EventDate"}, children: ["日時"]}, 
+					 m.component(FormInputComponent, {
+						prop:  model.start_date,
+						error: ctrl.validator.hasError('start_date'),
+						placeholder: "日時",
+					}) 
+
+				]}, 
+				{tag: "div", attrs: {class:"form-group"}, children: [
+					{tag: "label", attrs: {for:"EventCapacity"}, children: ["定員"]}, 
+					 m.component(FormInputComponent, {
+						prop:  model.capacity,
+						error: ctrl.validator.hasError('capacity'),
+						placeholder: "定員",
+					}) 
+
+				]}, 
+				{tag: "div", attrs: {class:"form-group"}, children: [
+					{tag: "label", attrs: {for:"EventPlace"}, children: ["開催場所"]}, 
+					 m.component(FormInputComponent, {
+						prop:  model.place.name,
+						error: ctrl.validator.hasError('place'),
+						placeholder: "開催場所",
+					}) 
+
+				]}, 
+				{tag: "div", attrs: {class:"form-group"}, children: [
+					{tag: "label", attrs: {for:"EventDetail"}, children: ["詳細"]}, 
+					 m.component(FormTextAreaComponent, {
+						prop:  model.description,
+						error: ctrl.validator.hasError('description'),
+						placeholder: "詳細",
+						rows: 10,
+					}) 
+
+				]}, 
+
+				{tag: "div", attrs: {class:"form-group"}, children: [
+					{tag: "label", attrs: {for:"EventImage"}, children: ["イベント画像"]}, 
+					{tag: "input", attrs: {type:"file", id:"EventImage"}}, 
+					{tag: "p", attrs: {class:"help-block"}, children: ["イベント画像をアップロードする"]}
+				]}, 
+
+				{tag: "div", attrs: {}, children: [
+					{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", onclick: ctrl.onconfirm}, children: ["編集"]}
+				]}, 
+
+				/* BEGIN: 確認画面モーダル */
+				{tag: "div", attrs: {id:"ConfirmModal", class:"modal fade", role:"dialog"}, children: [
+					{tag: "div", attrs: {class:"modal-dialog"}, children: [
+
+						{tag: "div", attrs: {class:"modal-content"}, children: [
+							{tag: "div", attrs: {class:"modal-header"}, children: [
+								/* 閉じるボタン */
+								{tag: "button", attrs: {type:"button", class:"close", "data-dismiss":"modal"}, children: ["×"]}, 
+								{tag: "h4", attrs: {class:"modal-title"}, children: ["確認画面"]}
+							]}, 
+							{tag: "div", attrs: {class:"modal-body"}, children: [
+								/* モーダル本文 */
+								{tag: "form", attrs: {}, children: [
+									{tag: "div", attrs: {class:"form-group"}, children: [
+										{tag: "label", attrs: {}, children: ["イベント名"]}, 
+										{tag: "div", attrs: {class:"form-control-static"}, children: [ model.name() ]}
+									]}, 
+									{tag: "div", attrs: {class:"form-group"}, children: [
+										{tag: "label", attrs: {}, children: ["主催者"]}, 
+										{tag: "div", attrs: {class:"form-control-static"}, children: [ model.admin.name() ]}
+									]}, 
+
+									{tag: "div", attrs: {class:"form-group"}, children: [
+										{tag: "label", attrs: {}, children: ["日時"]}, 
+										{tag: "div", attrs: {class:"form-control-static"}, children: [ model.start_date() ]}
+									]}, 
+									{tag: "div", attrs: {class:"form-group"}, children: [
+										{tag: "label", attrs: {}, children: ["定員"]}, 
+										{tag: "div", attrs: {class:"form-control-static"}, children: [ model.capacity() ]}
+									]}, 
+									{tag: "div", attrs: {class:"form-group"}, children: [
+										{tag: "label", attrs: {}, children: ["開催場所"]}, 
+										{tag: "div", attrs: {class:"form-control-static"}, children: [ model.place.name() ]}
+									]}, 
+									{tag: "div", attrs: {class:"form-group"}, children: [
+										{tag: "label", attrs: {}, children: ["詳細"]}, 
+										{tag: "div", attrs: {class:"form-control-static"}, children: [ m.trust(model.description()) ]}
+									]}
+								]}
+							]}, 
+							{tag: "div", attrs: {class:"modal-footer"}, children: [
+								{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-success", "data-dismiss":"modal", onclick:ctrl.onsubmit}, children: ["送信"]}, 
+								{tag: "button", attrs: {type:"button", class:"btn btn-lg btn-warning", "data-dismiss":"modal"}, children: ["修正"]}
+							]}
+						]}
+
+					]}
+				]}
+				/* END: 確認画面モーダル */
+			]}
+
+			]}
+		]};
+	}
+};
+
+},{"../../mithril":13,"../../state":18,"../form/input":9,"../form/textarea":10,"../navbar":11}],8:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3023,7 +3279,7 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":12,"../../state":17,"../navbar":10}],8:[function(require,module,exports){
+},{"../../mithril":13,"../../state":18,"../navbar":11}],9:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3051,7 +3307,7 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":12}],9:[function(require,module,exports){
+},{"../../mithril":13}],10:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3082,7 +3338,7 @@ module.exports = {
 	}
 };
 
-},{"../../mithril":12}],10:[function(require,module,exports){
+},{"../../mithril":13}],11:[function(require,module,exports){
 'use strict';
 var m = require('../mithril');
 
@@ -3117,7 +3373,7 @@ module.exports = {
 	}
 };
 
-},{"../mithril":12}],11:[function(require,module,exports){
+},{"../mithril":13}],12:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3162,7 +3418,7 @@ module.exports = {
 	}
 };
 
-},{"../mithril":12,"./navbar":10}],12:[function(require,module,exports){
+},{"../mithril":13,"./navbar":11}],13:[function(require,module,exports){
 'use strict';
 
 /*********************************************
@@ -3240,7 +3496,7 @@ m.request = function(args) {
 
 module.exports = m;
 
-},{"mithril":2,"mithril-validator":1}],13:[function(require,module,exports){
+},{"mithril":2,"mithril-validator":1}],14:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3305,7 +3561,7 @@ Model.prototype.destroy = function () {
 module.exports = Model;
 
 
-},{"../mithril":12}],14:[function(require,module,exports){
+},{"../mithril":13}],15:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3427,7 +3683,7 @@ Model.prototype.destroy = function () {
 module.exports = Model;
 
 
-},{"../mithril":12,"./comment":13,"./join":16}],15:[function(require,module,exports){
+},{"../mithril":13,"./comment":14,"./join":17}],16:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3468,7 +3724,7 @@ Model.prototype.save = function () {
 module.exports = Model;
 
 
-},{"../../mithril":12}],16:[function(require,module,exports){
+},{"../../mithril":13}],17:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3529,7 +3785,7 @@ Model.prototype.destroy = function () {
 module.exports = Model;
 
 
-},{"../mithril":12}],17:[function(require,module,exports){
+},{"../mithril":13}],18:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3554,6 +3810,8 @@ var State = function() {
 	this.event_list = null;
 	// イベント登録フォーム
 	this.event_create = null;
+	// イベント詳細
+	this.event_detail = null;
 };
 
 // イベント一覧
@@ -3565,9 +3823,16 @@ State.prototype.make_event_list = function() {
 	return this.event_list;
 };
 
-// イベント詳細(状態を保存しない)
+// イベント詳細
 State.prototype.make_event_detail = function(id) {
-	return  new EventDetailViewModel(id);
+	var id = Number(id);
+	// キャッシュしてた ViewModel と同じ id ならば使い回す
+	if(this.event_detail && id === this.event_detail.model().id()) {
+		return this.event_detail;
+	}
+
+	this.event_detail = new EventDetailViewModel(id);
+	return this.event_detail;
 };
 
 // イベント作成
@@ -3581,7 +3846,7 @@ State.prototype.make_event_create = function() {
 
 module.exports = new State();
 
-},{"./mithril":12,"./viewmodel/event/create":18,"./viewmodel/event/detail":19,"./viewmodel/event/list":20}],18:[function(require,module,exports){
+},{"./mithril":13,"./viewmodel/event/create":19,"./viewmodel/event/detail":20,"./viewmodel/event/list":21}],19:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3612,7 +3877,7 @@ ViewModel.prototype.clear = function() {
 
 module.exports = ViewModel;
 
-},{"../../mithril":12,"../../model/event":14}],19:[function(require,module,exports){
+},{"../../mithril":13,"../../model/event":15}],20:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3664,7 +3929,7 @@ ViewModel.prototype.clear_join = function() {
 
 module.exports = ViewModel;
 
-},{"../../mithril":12,"../../model/comment":13,"../../model/event":14,"../../model/join":16}],20:[function(require,module,exports){
+},{"../../mithril":13,"../../model/comment":14,"../../model/event":15,"../../model/join":17}],21:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3685,4 +3950,4 @@ var ViewModel = function() {
 
 module.exports = ViewModel;
 
-},{"../../mithril":12,"../../model/event/list":15}]},{},[3]);
+},{"../../mithril":13,"../../model/event/list":16}]},{},[3]);
