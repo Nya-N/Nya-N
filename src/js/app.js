@@ -11,6 +11,9 @@ var EventCreate = require('./component/event/create.js');
 var EventList = require('./component/event/list.js');
 // イベント詳細ページ
 var EventDetail = require('./component/event/detail.js');
+// イベント編集ページ
+var EventEdit = require('./component/event/edit.js');
+
 
 
 
@@ -22,5 +25,6 @@ m.route(document.getElementById("root"), "/", {
 	"/": Top,
 	"/event/detail/:id": EventDetail,
 	"/event/create": EventCreate,
+	"/event/edit/:id": EventEdit,
 	"/event": EventList,
 });
