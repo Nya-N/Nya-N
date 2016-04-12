@@ -55,7 +55,7 @@ module.exports = {
 				if (!capacity) {
 					return "定員を入力してください";
 				}
-				if (!capacity.match(/^[0-9]+$/)) {
+				if (!capacity.toString().match(/^[0-9]+$/)) {
 					return "定員を半角数字で入力してください";
 				}
 
@@ -221,7 +221,7 @@ module.exports = {
 									</div>
 									<div class="form-group">
 										<label>詳細</label>
-										<div class="form-control-static">{ model.description() }</div>
+										<div class="form-control-static">{ m.trust(model.description()) }</div>
 									</div>
 								</form>
 							</div>
