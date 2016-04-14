@@ -29,7 +29,7 @@ func rooter(e *echo.Echo) (*echo.Echo){
 	e.Use(middleware.Recover())
 	// Routes
 	e.Get("/", hello())
-	e.Get("/event", resource.GetEvents)
+	e.Get("/event", resource.GetEvents())
 	e.Get("/event/:id", resource.GetEvent)
 
 	return e
