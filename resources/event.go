@@ -28,7 +28,10 @@ func (resource *Resource) GetEvents() echo.HandlerFunc {
 	}
 }
 
-func (resource *Resource) GetEvent(c echo.Context) error {
-	id := c.Param("id")
-	return c.String(http.StatusOK, id)
+func (resource *Resource) GetEvent() echo.HandlerFunc {
+
+	return func(c echo.Context) error {
+		id := c.Param("id")
+		return c.String(http.StatusOK, id)
+	}
 }

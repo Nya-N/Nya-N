@@ -29,7 +29,7 @@ func rooter(e *echo.Echo) (*echo.Echo){
 	// Routes
 	e.Get("/api/event", resource.GetEvents())
 //	e.Post("/api/event", resource.CreateEvent)
-//	e.Get("/api/event/:id", resource.GetEvent)
+	e.Get("/api/event/:id", resource.GetEvent())
 
 	return e
 }
