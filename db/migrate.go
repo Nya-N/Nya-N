@@ -27,6 +27,46 @@ var Events = []model.Event{
 		StartDate: time.Now(),
 		Description: "イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細",
 	},
+	model.Event{
+		ID: 3,
+		Name: "イベント名2",
+		ImagePath: "img/150x150.png",
+		Capacity: 250,
+		StartDate: time.Now(),
+		Description: "イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細",
+	},
+	model.Event{
+		ID: 4,
+		Name: "イベント名2",
+		ImagePath: "img/150x150.png",
+		Capacity: 250,
+		StartDate: time.Now(),
+		Description: "イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細",
+	},
+	model.Event{
+		ID: 5,
+		Name: "イベント名2",
+		ImagePath: "img/150x150.png",
+		Capacity: 250,
+		StartDate: time.Now(),
+		Description: "イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細",
+	},
+	model.Event{
+		ID: 6,
+		Name: "イベント名2",
+		ImagePath: "img/150x150.png",
+		Capacity: 250,
+		StartDate: time.Now(),
+		Description: "イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細",
+	},
+	model.Event{
+		ID: 7,
+		Name: "イベント名2",
+		ImagePath: "img/150x150.png",
+		Capacity: 250,
+		StartDate: time.Now(),
+		Description: "イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細",
+	},
 }
 
 
