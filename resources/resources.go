@@ -10,14 +10,14 @@ type Resource struct {
 }
 
 type APIFormat struct {
-	Status string ``
-	Version int
-	ErrorCode int
-	Response interface{}
+	Status string `json:"status"`
+	Version int `json:"version"`
+	ErrorCode int `json:"error_code"`
+	Response interface{} `json:"response"`
 }
 
 type EventListAPI struct {
-	PrevId int
-	NextId int
-	Events []model.Event
+	PrevId int `json:"prev_id"`
+	NextId int `json:"next_id"`
+	Events []model.Event `json:"events"`
 }
