@@ -7,33 +7,36 @@ import (
 	"strconv"
 )
 
-func (resource *Resource) GetEvents(c echo.Context) error {
+func (resource *Resource) GetEvents() echo.HandlerFunc {
 
-	var (
-		db = resource.DB
-		events = []model.Event{}
-	)
-	prev_id, _ := strconv.Atoi(c.QueryParam("prev_id"))
-	next_id, _ := strconv.Atoi(c.QueryParam("next_id"))
+	return func(c echo.Context) error {
 
-	db.Model(events).Find(&events)
+		var (
+			db = resource.DB
+			events = []model.Event{}
+		)
+		prev_id, _ := strconv.Atoi(c.QueryParam("prev_id"))
+		next_id, _ := strconv.Atoi(c.QueryParam("next_id"))
 
-	log.Println(events)
-	log.Println(prev_id)
-	log.Println(next_id)
+		db.Model(events).Find(&events)
 
-	api := EventListAPI{
-		prev_id,
-		next_id,
-		events,
+		log.Println(events)
+		log.Println(prev_id)
+		log.Println(next_id)
+
+		api := EventListAPI{
+			prev_id,
+			next_id,
+			events,
+		}
+		log.Println(api)
+		//
+		//	if err := c.Bind(api); err != nil {
+		//		return err
+		//	}
+
+		return c.JSON(http.StatusOK, &api)
 	}
-	log.Println(api)
-//
-//	if err := c.Bind(api); err != nil {
-//		return err
-//	}
-
-	return c.JSON(http.StatusOK, &api)
 }
 
 func (resource *Resource) GetEvent() echo.HandlerFunc {
