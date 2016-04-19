@@ -7,8 +7,6 @@ import (
 	"strconv"
 )
 
-
-
 func (resource *Resource) GetEvents(c echo.Context) error {
 
 	var (
@@ -29,14 +27,13 @@ func (resource *Resource) GetEvents(c echo.Context) error {
 		next_id,
 		events,
 	}
-
 	log.Println(api)
+//
+//	if err := c.Bind(api); err != nil {
+//		return err
+//	}
 
-	if err := c.Bind(api); err != nil {
-		return err
-	}
-
-	return c.JSON(http.StatusCreated, api)
+	return c.JSON(http.StatusOK, &api)
 }
 
 func (resource *Resource) GetEvent() echo.HandlerFunc {
