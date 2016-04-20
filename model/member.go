@@ -4,11 +4,11 @@ import (
 )
 
 type Member struct {
-	ID int
-	Name string `sql:"size:255"`
-	Status int
+	ID int `json:"id"`
+	Name string `sql:"size:255" json:"name"`
+	Status int `json:"status"`
 
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt *time.Time
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at"`
 }

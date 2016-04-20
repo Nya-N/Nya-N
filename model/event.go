@@ -6,7 +6,7 @@ type Event struct {
 	Name string `sql:"size:255" json:"name"`
 	ImagePath string `sql:"size:255" json:"image_path"`
 	Capacity int `json:"capacity"`
-//	Members []Member `json:"members"`
+	Members []Member `json:"members"`
 	StartDate time.Time `json:"start_date"`
 	Place string `sql:"size:255" json:"place"`
 	Description string `sql:"size:255" json:"description"`
