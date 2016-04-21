@@ -21,3 +21,6 @@ type EventListAPI struct {
 	NextId int `json:"next_id"`
 	Events []model.Event `json:"events"`
 }
+
+type EvenAPI struct {
+}

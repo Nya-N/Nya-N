@@ -30,10 +30,6 @@ func (resource *Resource) GetEvents() echo.HandlerFunc {
 
 		db.Model(events).Offset((current - 1) * 3).Limit(viewCount).Find(&events)
 
-		log.Println(events)
-		log.Println(prev_id)
-		log.Println(next_id)
-
 		response := EventListAPI{ prev_id, next_id, events}
 		api := APIFormat{"success", 1, 0, response}
 
