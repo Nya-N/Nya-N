@@ -22,5 +22,4 @@ type EventListAPI struct {
 	Events []model.Event `json:"events"`
 }
 
-type EventAPI struct {
-}
+

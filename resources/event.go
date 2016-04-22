@@ -42,7 +42,21 @@ func (resource *Resource) GetEvents() echo.HandlerFunc {
 func (resource *Resource) GetEvent() echo.HandlerFunc {
 
 	return func(c echo.Context) error {
+
+		var (
+			db = resource.DB
+			event = model.Event{}
+		)
+
 		id := c.Param("id")
-		return c.String(http.StatusOK, id)
+
+
+		db.Model(event).Where(id).Find(&event)
+
+		api := APIFormat{"success", 1, 0, event}
+
+		log.Println(event)
+
+		return c.JSON(http.StatusOK, &api)
 	}
 }
