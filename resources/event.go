@@ -27,7 +27,6 @@ func (resource *Resource) GetEvents() echo.HandlerFunc {
 		prev_id = current - 1
 		next_id = current + 1
 
-
 		db.Model(events).Offset((current - 1) * 3).Limit(viewCount).Find(&events)
 
 		response := EventListAPI{ prev_id, next_id, events}
@@ -48,15 +47,8 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 			event = model.Event{}
 		)
 
-		id := c.Param("id")
-
-
-		db.Model(event).Where(id).Find(&event)
-
+		db.Model(event).Where(c.Param("id")).Find(&event)
 		api := APIFormat{"success", 1, 0, event}
-
-		log.Println(event)
-
 		return c.JSON(http.StatusOK, &api)
 	}
 }
