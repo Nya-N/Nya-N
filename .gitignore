@@ -1,4 +1,5 @@
 .idea/*
+*/.idea/*
 .DS_Store
 access_logs.db
 tmp/
