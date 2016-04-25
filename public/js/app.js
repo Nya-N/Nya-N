@@ -2583,7 +2583,7 @@ module.exports = {
 							]}, 
 							{tag: "div", attrs: {class:"modal-body"}, children: [
 								/* モーダル本文 */
-								{tag: "form", attrs: {method:"POST"}, children: [
+								{tag: "form", attrs: {}, children: [
 									{tag: "div", attrs: {class:"form-group"}, children: [
 										{tag: "label", attrs: {}, children: ["イベント名"]}, 
 										{tag: "div", attrs: {class:"form-control-static"}, children: [ model.name() ]}
