@@ -56,12 +56,15 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 func (resource *Resource) CreateEvent() echo.HandlerFunc {
 
 	return func(c echo.Context) error {
-		log.Println(c)
+		log.Println(c.QueryParams())
+		log.Println(c.FormParams())
+		log.Println(c.Request().URL())
+		log.Println(c.Request().Header().Keys())
+		log.Println(c.Request().Body())
 //		var (
 //			db = resource.DB
 //			event = model.Event{}
 //		)
-		log.Println("aaaa")
 		response := model.Event{ID:1}
 		api := APIFormat{"success", 1, 0, response}
 		return c.JSON(http.StatusOK, &api)
