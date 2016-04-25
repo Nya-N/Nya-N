@@ -197,7 +197,7 @@ module.exports = {
 							</div>
 							<div class="modal-body">
 								{/* モーダル本文 */}
-								<form method="POST">
+								<form>
 									<div class="form-group">
 										<label>イベント名</label>
 										<div class="form-control-static">{ model.name() }</div>
