@@ -5,6 +5,7 @@ import (
 	"github.com/syo-sa1982/GoNTAkun/model"
 	"log"
 	"strconv"
+	"encoding/json"
 )
 
 func (resource *Resource) GetEvents() echo.HandlerFunc {
@@ -53,14 +54,29 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 	}
 }
 
+
+type EventReqest struct {
+	Name        string `json:"name"`
+	Admin       string `json:"admin"`
+	StartDate   string `json:"start_date"`
+	Capacity    int    `json:"capacity"`
+	Place       string `json:"name"`
+	Description string `json:"name"`
+
+}
+
 func (resource *Resource) CreateEvent() echo.HandlerFunc {
 
 	return func(c echo.Context) error {
-		log.Println(c.QueryParams())
-		log.Println(c.FormParams())
-		log.Println(c.Request().URL())
-		log.Println(c.Request().Header().Keys())
-		log.Println(c.Request().Body())
+		body := c.Request().Body()
+		// ここからどうやってjsonにすればいい？
+		log.Println(body)
+		log.Println(&body)
+
+		// 動かん
+		// dec := json.NewDecoder(&body)
+		// log.Println(dec)
+
 //		var (
 //			db = resource.DB
 //			event = model.Event{}
