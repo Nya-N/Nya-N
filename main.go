@@ -7,7 +7,7 @@ import (
 	"github.com/labstack/echo/engine/standard"
 	"fmt"
 	"github.com/jinzhu/gorm"
-	"github.com/syo-sa1982/GoNTAkun/resources"
+	"./resources"
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
 	"os"
