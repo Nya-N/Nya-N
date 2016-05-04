@@ -22,4 +22,11 @@ type EventListAPI struct {
 	Events []model.Event `json:"events"`
 }
 
-
+type EventRequest struct {
+	Name        string `json:"name"`
+	Admin       string `json:"admin"`
+	StartDate   string `json:"start_date"`
+	Capacity    int    `json:"capacity"`
+	Place       string `json:"place"`
+	Description string `json:"description"`
+}

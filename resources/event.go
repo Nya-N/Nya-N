@@ -53,25 +53,32 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 	}
 }
 
-
-type EventReqest struct {
-	Name        string `json:"name"`
-	Admin       string `json:"admin"`
-	StartDate   string `json:"start_date"`
-	Capacity    int    `json:"capacity"`
-	Place       string `json:"name"`
-	Description string `json:"name"`
-
-}
-
 func (resource *Resource) CreateEvent() echo.HandlerFunc {
 
 	return func(c echo.Context) error {
-		u := new(EventReqest)
+
+		var (
+			db = resource.DB
+		)
+
+		u := new(EventRequest)
 
 		if err := c.Bind(u); err != nil {
 			return err
 		}
-		return c.JSON(http.StatusOK, u)
+
+//		requestApi := c.JSON(http.StatusOK, u)
+		log.Println("てすと")
+		log.Println(u)
+
+		event := model.Event{ Name:u.Name, Capacity:u.Capacity, Place:u.Place }
+		db.Create(&event)
+
+		log.Println(event)
+
+		responseApi := map[string]int{"ID": event.ID}
+
+		api := APIFormat{"success", 1, 0, responseApi}
+		return c.JSON(http.StatusOK, &api)
 	}
 }
