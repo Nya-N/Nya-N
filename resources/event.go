@@ -82,3 +82,25 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 		return c.JSON(http.StatusOK, &api)
 	}
 }
+
+func (resource *Resource) UpdateEvent() echo.HandlerFunc {
+
+	return func(c echo.Context) error {
+
+//		responseApi := map[string]int{"ID": event.ID}
+
+		api := APIFormat{"success", 1, 0}
+		return c.JSON(http.StatusOK, &api)
+	}
+}
+
+func (resource *Resource) DeleteEvent() echo.HandlerFunc {
+
+	return func(c echo.Context) error {
+
+//		responseApi := map[string]int{"ID": event.ID}
+
+		api := APIFormat{"success", 1, 0}
+		return c.JSON(http.StatusOK, &api)
+	}
+}

@@ -30,6 +30,8 @@ func rooter(e *echo.Echo) (*echo.Echo){
 	e.Get("/api/event", resource.GetEvents())
 	e.Post("/api/event", resource.CreateEvent())
 	e.Get("/api/event/:id", resource.GetEvent())
+	e.Put("/api/event/:id", resource.UpdateEvent())
+	e.Delete("/api/event/:id", resource.DeleteEvent())
 
 	e.Static("/", "public")
 
