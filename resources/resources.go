@@ -23,6 +23,7 @@ type EventListAPI struct {
 }
 
 type EventRequest struct {
+	ID          int    `json:"id"`
 	Name        string `json:"name"`
 	Admin       string `json:"admin"`
 	StartDate   string `json:"start_date"`

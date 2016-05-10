@@ -67,10 +67,6 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 			return err
 		}
 
-//		requestApi := c.JSON(http.StatusOK, u)
-		log.Println("てすと")
-		log.Println(u)
-
 		event := model.Event{ Name:u.Name, Capacity:u.Capacity, Place:u.Place }
 		db.Create(&event)
 
@@ -89,7 +85,8 @@ func (resource *Resource) UpdateEvent() echo.HandlerFunc {
 
 //		responseApi := map[string]int{"ID": event.ID}
 
-		api := APIFormat{"success", 1, 0}
+		api := APIFormat{"success", 1, 0, "hoge"}
+
 		return c.JSON(http.StatusOK, &api)
 	}
 }
@@ -100,7 +97,7 @@ func (resource *Resource) DeleteEvent() echo.HandlerFunc {
 
 //		responseApi := map[string]int{"ID": event.ID}
 
-		api := APIFormat{"success", 1, 0}
+		api := APIFormat{"success", 1, 0, "hoge"}
 		return c.JSON(http.StatusOK, &api)
 	}
 }
