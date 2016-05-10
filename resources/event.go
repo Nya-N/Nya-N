@@ -83,9 +83,24 @@ func (resource *Resource) UpdateEvent() echo.HandlerFunc {
 
 	return func(c echo.Context) error {
 
+		var (
+			db = resource.DB
+			event = model.Event{}
+		)
+
+		u := new(EventRequest)
+
+		if err := c.Bind(u); err != nil {
+			return err
+		}
+
+		reqEvent := model.Event{ ID:u.ID, Name:u.Name, Capacity:u.Capacity, Place:u.Place }
+
+		log.Println(reqEvent)
 //		responseApi := map[string]int{"ID": event.ID}
 
-		api := APIFormat{"success", 1, 0, "hoge"}
+		db.Model(event).Where(c.Param("id")).Find(&event)
+		api := APIFormat{"success", 1, 0, event}
 
 		return c.JSON(http.StatusOK, &api)
 	}
