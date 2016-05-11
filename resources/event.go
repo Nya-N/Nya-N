@@ -112,9 +112,9 @@ func (resource *Resource) DeleteEvent() echo.HandlerFunc {
 
 	return func(c echo.Context) error {
 
-//		responseApi := map[string]int{"ID": event.ID}
+		responseApi := map[string]string{"ID": c.Param("id")}
 
-		api := APIFormat{"success", 1, 0, "hoge"}
+		api := APIFormat{"success", 1, 0, responseApi}
 		return c.JSON(http.StatusOK, &api)
 	}
 }
