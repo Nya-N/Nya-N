@@ -94,12 +94,14 @@ func (resource *Resource) UpdateEvent() echo.HandlerFunc {
 			return err
 		}
 
-		reqEvent := model.Event{ ID:u.ID, Name:u.Name, Capacity:u.Capacity, Place:u.Place }
-
-		log.Println(reqEvent)
-//		responseApi := map[string]int{"ID": event.ID}
-
 		db.Model(event).Where(c.Param("id")).Find(&event)
+
+		event.Name      = u.Name
+		event.Capacity  = u.Capacity
+		event.Place     = u.Place
+
+		db.Model(event).Update(&event)
+
 		api := APIFormat{"success", 1, 0, event}
 
 		return c.JSON(http.StatusOK, &api)
