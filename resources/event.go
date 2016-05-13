@@ -112,7 +112,14 @@ func (resource *Resource) DeleteEvent() echo.HandlerFunc {
 
 	return func(c echo.Context) error {
 
+		var (
+			db = resource.DB
+			event = model.Event{}
+		)
 		responseApi := map[string]string{"ID": c.Param("id")}
+
+		db.Model(event).Where(c.Param("id")).Delete(&event)
+
 
 		api := APIFormat{"success", 1, 0, responseApi}
 		return c.JSON(http.StatusOK, &api)
