@@ -30,3 +30,9 @@ type EventRequest struct {
 	Place       string `json:"place"`
 	Description string `json:"description"`
 }
+
+type CommentRequest struct {
+	EventID int    `json:"event_id"`
+	Name    string `json:"name"`
+	Body    string `json:"body"`
+}
