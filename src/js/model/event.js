@@ -96,7 +96,7 @@ Model.prototype.save = function () {
 		name:        self.name(),
 		admin:       self.admin.name(),
 		start_date:  self.start_date(),
-		capacity:    self.capacity(),
+		capacity:    Number(self.capacity()), // int
 		place:       self.place.name(),
 		description: self.description(),
 		// TODO: image_path: self.image_path
