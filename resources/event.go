@@ -72,7 +72,7 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 
 		log.Println(event)
 
-		responseApi := map[string]int{"ID": event.ID}
+		responseApi := map[string]int{"id": event.ID}
 
 		api := APIFormat{"success", 1, 0, responseApi}
 		return c.JSON(http.StatusOK, &api)
