@@ -37,4 +37,10 @@ func main() {
 		db.DropTable(&model.Event{})
 	}
 	db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").CreateTable(&model.Event{})
+
+	log.Println("Comment")
+	if db.HasTable(&model.Comment{}) {
+		db.DropTable(&model.Comment{})
+	}
+	db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").CreateTable(&model.Comment{})
 }
