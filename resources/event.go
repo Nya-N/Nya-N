@@ -66,8 +66,12 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 		if err := c.Bind(u); err != nil {
 			return err
 		}
+		adminMember := model.Member{Name:u.Admin, Status:1 }
+		db.Create(&adminMember)
 
-		event := model.Event{ Name:u.Name, Capacity:u.Capacity, Place:u.Place }
+		event := model.Event{
+			Name:u.Name, Capacity:u.Capacity, Place:u.Place, Members: []model.Member{adminMember},
+		}
 		db.Create(&event)
 
 		log.Println(event)
