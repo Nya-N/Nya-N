@@ -70,7 +70,11 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 		db.Create(&adminMember)
 
 		event := model.Event{
-			Name:u.Name, Capacity:u.Capacity, Place:u.Place, Members: []model.Member{adminMember},
+			Name:u.Name,
+			Capacity:u.Capacity,
+			Place: u.Place,
+			Members: []model.Member{adminMember},
+			Comment:[]model.Comment{},
 		}
 		db.Create(&event)
 
