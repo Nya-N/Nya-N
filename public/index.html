@@ -22,39 +22,6 @@
 		z-index: 10000;
 	}
 	</style>
-	<script>
-		var ErrorReport = {};
-		ErrorReport.reportInterVal = 1000;
-		ErrorReport.previousErrorSendTime = 0;
-
-		ErrorReport.send = function(msg, url, line, column, err) {
-			var currentTime = Date.now();
-			if ((currentTime - this.previousErrorSendTime) < this.reportInterval) return;
-			previousErrorSendTime = currentTime;
-
-			var http = new XMLHttpRequest();
-			http.open('POST', "/");
-			http.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-			var data = 'message=' + encodeURIComponent(msg);
-			if (url) {
-				data += '&url=' + encodeURIComponent(url);
-			}
-			if (line) {
-				data += '&line=' + encodeURIComponent(line);
-			}
-			if (column) {
-				data += '&column=' + encodeURIComponent(column);
-			}
-			if (err && err.stack) {
-				data += ('&stack=' + encodeURIComponent(err.stack));
-			}
-			http.send(data);
-
-			return true;
-		};
-
-		window.onerror = ErrorReport.send;
-	</script>
 </head>
 <body>
 	<div id="root"></div>
@@ -66,6 +33,7 @@
 			</div>
 		</div>
 	</div>
+
 	<!-- Twitter Bootstrap -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/js/bootstrap.min.js"></script>
