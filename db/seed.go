@@ -28,6 +28,10 @@ var events = []model.Event{
 			{Name:"お前",Status:0},
 			{Name:"やつ",Status:0},
 		},
+		Comments: []model.Comment{
+			{Name:"俺",Body:"私だ"},
+			{Name:"ナイフパーティのうるさい方",Body:"お前だったのか"},
+		},
 		StartDate: time.Now(),
 		Description: "イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細",
 	},
@@ -40,6 +44,10 @@ var events = []model.Event{
 			{Name:"誰",Status:0},
 			{Name:"お前",Status:0},
 			{Name:"やつ",Status:0},
+		},
+		Comments: []model.Comment{
+			{Name:"俺",Body:"私だ"},
+			{Name:"ナイフパーティのうるさい方",Body:"お前だったのか"},
 		},
 		StartDate: time.Now(),
 		Description: "イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細",
@@ -54,6 +62,10 @@ var events = []model.Event{
 			{Name:"お前",Status:0},
 			{Name:"やつ",Status:0},
 		},
+		Comments: []model.Comment{
+			{Name:"俺",Body:"私だ"},
+			{Name:"ナイフパーティのうるさい方",Body:"お前だったのか"},
+		},
 		StartDate: time.Now(),
 		Description: "イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細",
 	},
@@ -66,6 +78,10 @@ var events = []model.Event{
 			{Name:"誰",Status:0},
 			{Name:"お前",Status:0},
 			{Name:"やつ",Status:0},
+		},
+		Comments: []model.Comment{
+			{Name:"俺",Body:"私だ"},
+			{Name:"ナイフパーティのうるさい方",Body:"お前だったのか"},
 		},
 		StartDate: time.Now(),
 		Description: "イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細",
