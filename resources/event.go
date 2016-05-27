@@ -74,14 +74,15 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 		if err := c.Bind(u); err != nil {
 			return err
 		}
-		adminMember := model.Member{Name:u.Admin, Status:1 }
-		db.Create(&adminMember)
 
 		event := model.Event{
 			Name:u.Name,
 			Capacity:u.Capacity,
 			Place: u.Place,
-			Members: []model.Member{adminMember},
+			Description: u.Description,
+			Members: []model.Member{
+				{Name:u.Admin, Status:1},
+			},
 			Comments:[]model.Comment{},
 		}
 		db.Create(&event)
