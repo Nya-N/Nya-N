@@ -10,7 +10,7 @@ type Event struct {
 	StartDate time.Time `json:"start_date"`
 	Place string `sql:"size:255" json:"place"`
 	Description string `sql:"size:255" json:"description"`
-	Comment []Comment `json:"comment"`
+	Comments []Comment `json:"comments"`
 
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

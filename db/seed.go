@@ -10,60 +10,109 @@ import (
 	"time"
 )
 
-var Events = []model.Event{
-	model.Event{
+var members = []model.Member{
+	{ID:1,Name:"俺",Status:1},
+	{ID:2,Name:"誰",Status:0},
+	{ID:3,Name:"お前",Status:0},
+	{ID:4,Name:"やつ",Status:0},
+}
+
+var events = []model.Event{
+	{
 		ID: 1,
 		Name: "イベント名1",
 		ImagePath: "img/150x150.png",
 		Capacity: 250,
+		Members: []model.Member{
+			{ID:1,Name:"俺",Status:1},
+			{ID:2,Name:"誰",Status:0},
+			{ID:3,Name:"お前",Status:0},
+			{ID:4,Name:"やつ",Status:0},
+		},
 		StartDate: time.Now(),
 		Description: "イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細イベント1の詳細",
 	},
-	model.Event{
+	{
 		ID: 2,
 		Name: "イベント名2",
 		ImagePath: "img/150x150.png",
 		Capacity: 250,
+		Members: []model.Member{
+			{ID:1,Name:"俺",Status:1},
+			{ID:2,Name:"誰",Status:0},
+			{ID:3,Name:"お前",Status:0},
+			{ID:4,Name:"やつ",Status:0},
+		},
 		StartDate: time.Now(),
 		Description: "イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細",
 	},
-	model.Event{
+	{
 		ID: 3,
 		Name: "イベント名2",
 		ImagePath: "img/150x150.png",
 		Capacity: 250,
+		Members: []model.Member{
+			{ID:1,Name:"俺",Status:1},
+			{ID:2,Name:"誰",Status:0},
+			{ID:3,Name:"お前",Status:0},
+			{ID:4,Name:"やつ",Status:0},
+		},
 		StartDate: time.Now(),
 		Description: "イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細",
 	},
-	model.Event{
+	{
 		ID: 4,
 		Name: "イベント名2",
 		ImagePath: "img/150x150.png",
 		Capacity: 250,
+		Members: []model.Member{
+			{ID:1,Name:"俺",Status:1},
+			{ID:2,Name:"誰",Status:0},
+			{ID:3,Name:"お前",Status:0},
+			{ID:4,Name:"やつ",Status:0},
+		},
 		StartDate: time.Now(),
 		Description: "イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細",
 	},
-	model.Event{
+	{
 		ID: 5,
 		Name: "イベント名2",
 		ImagePath: "img/150x150.png",
 		Capacity: 250,
+		Members: []model.Member{
+			{ID:1,Name:"俺",Status:1},
+			{ID:2,Name:"誰",Status:0},
+			{ID:3,Name:"お前",Status:0},
+			{ID:4,Name:"やつ",Status:0},
+		},
 		StartDate: time.Now(),
 		Description: "イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細",
 	},
-	model.Event{
+	{
 		ID: 6,
 		Name: "イベント名2",
 		ImagePath: "img/150x150.png",
 		Capacity: 250,
+		Members: []model.Member{
+			{ID:1,Name:"俺",Status:1},
+			{ID:2,Name:"誰",Status:0},
+			{ID:3,Name:"お前",Status:0},
+			{ID:4,Name:"やつ",Status:0},
+		},
 		StartDate: time.Now(),
 		Description: "イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細",
 	},
-	model.Event{
+	{
 		ID: 7,
 		Name: "イベント名2",
 		ImagePath: "img/150x150.png",
 		Capacity: 250,
+		Members: []model.Member{
+			{ID:1,Name:"俺",Status:1},
+			{ID:2,Name:"誰",Status:0},
+			{ID:3,Name:"お前",Status:0},
+			{ID:4,Name:"やつ",Status:0},
+		},
 		StartDate: time.Now(),
 		Description: "イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細イベント2の詳細",
 	},
@@ -90,7 +139,10 @@ func main() {
 	}
 
 	// ここにファイルをしてもらって個別に追加できるようにしたい
-	for key := range Events {
-		db.Create(&Events[key])
+	for _, s := range members {
+		db.Create(&s)
+	}
+	for _, s := range events {
+		db.Create(&s)
 	}
 }
