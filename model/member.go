@@ -4,7 +4,8 @@ import (
 )
 
 type Member struct {
-	ID int `json:"id"`
+	ID int `sql:"AUTO_INCREMENT" gorm:"primary_key" json:"id"`
+	EventID int `json:"event_id"`
 	Name string `sql:"size:255" json:"name"`
 	Status int `json:"status"`
 

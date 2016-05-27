@@ -45,9 +45,14 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 		var (
 			db = resource.DB
 			event = model.Event{}
+			members = []model.Member{}
 		)
 
-		db.Model(event).Where(c.Param("id")).Find(&event)
+		db.Where("id = ?",c.Param("id")).Find(&event)
+		db.Model(&event).Related(&members)
+		log.Println(event)
+		log.Println(members)
+		event.Members = members
 		api := APIFormat{"success", 1, 0, event}
 		return c.JSON(http.StatusOK, &api)
 	}
@@ -74,7 +79,7 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 			Capacity:u.Capacity,
 			Place: u.Place,
 			Members: []model.Member{adminMember},
-			Comment:[]model.Comment{},
+			Comments:[]model.Comment{},
 		}
 		db.Create(&event)
 
