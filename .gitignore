@@ -5,3 +5,6 @@ access_logs.db
 tmp/
 node_modules/
 npm-debug.log
+
+Godeps/Readme
+vendor/
