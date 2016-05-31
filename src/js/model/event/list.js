@@ -25,6 +25,10 @@ var Model = function (data, isInitial) {
 
 // サーバからJSONを読み込む
 Model.read = function () {
+	console.log(m.route.param("p"));
+	if (m.route.param("p")) {
+		api_url += "?p=" + m.route.param("p"); 
+	}
 	return m.request({method: "GET", url: api_url, type: Model});
 };
 
