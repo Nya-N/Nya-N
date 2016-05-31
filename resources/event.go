@@ -19,8 +19,8 @@ func (resource *Resource) GetEvents() echo.HandlerFunc {
 			prev_id int
 			next_id int
 		)
-		if (c.QueryParam("current") != "") {
-			current, _ = strconv.Atoi(c.QueryParam("current"))
+		if (c.QueryParam("p") != "") {
+			current, _ = strconv.Atoi(c.QueryParam("p"))
 		} else {
 			current = 1
 		}

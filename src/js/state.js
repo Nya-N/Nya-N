@@ -28,6 +28,7 @@ var State = function() {
 
 // イベント一覧
 State.prototype.make_event_list = function() {
+	console.log(this.event_list);
 	if( ! this.event_list) {
 		this.event_list = new EventListViewModel();
 	}
