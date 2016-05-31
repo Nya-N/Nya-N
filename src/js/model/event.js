@@ -26,7 +26,6 @@ var Model = function (data, isInitial) {
 	if( ! data) {
 		data = {};
 	}
-
 	self.id          = m.prop(data.id);
 	self.name        = m.prop(data.name        || "");
 	self.place       = m.prop(data.place       || "");
@@ -39,21 +38,17 @@ var Model = function (data, isInitial) {
 
 	// TODO: リファクタ
 	// 主催者
-	if(data.admin) {
-		self.admin = {
-			name: m.prop(data.admin.name),
-		};
-	}
-	else {
-		self.admin = {
-			name: m.prop(""),
-		};
-	}
+	data.members.forEach(function(member) {
+		if (member.status === 1) {
+			self.admin = {name: m.prop(member.name)};
+		} 
+		
+	});
 
 	// 場所
 	if(data.place) {
 		self.place = {
-			name: m.prop(data.place.name),
+			name: m.prop(data.place),
 		};
 	}
 	else {
@@ -69,7 +64,7 @@ var Model = function (data, isInitial) {
 			self.members.push(new JoinModel(member));
 		});
 	}
-
+	
 	// コメント一覧
 	if(data.comments) {
 		self.comments = [];
