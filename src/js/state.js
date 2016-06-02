@@ -27,16 +27,21 @@ var State = function() {
 };
 
 // イベント一覧
-State.prototype.make_event_list = function() {
-	if(this.event_list) {this.event_list = null;}
-	this.event_list = new EventListViewModel();
+State.prototype.make_event_list = function(p) {
+	p = Number(p);
+	// キャッシュしてた ViewModel と同じ p ならば使い回す
+	if(this.event_list && p === this.event_list.model().p()) {
+		return this.event_list;
+	}
+
+	this.event_list = new EventListViewModel(p);
 
 	return this.event_list;
 };
 
 // イベント詳細
 State.prototype.make_event_detail = function(id) {
-	var id = Number(id);
+	id = Number(id);
 	// キャッシュしてた ViewModel と同じ id ならば使い回す
 	if(this.event_detail && id === this.event_detail.model().id()) {
 		return this.event_detail;

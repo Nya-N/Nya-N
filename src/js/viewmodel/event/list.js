@@ -11,9 +11,9 @@ var m = require('../../mithril');
 var Model = require('../../model/event/list');
 
 // ビューモデル
-var ViewModel = function() {
+var ViewModel = function(p) {
 	// モデル
-	this.model = Model.read();
+	this.model = Model.read(p);
 };
 
 module.exports = ViewModel;
