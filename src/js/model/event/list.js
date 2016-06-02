@@ -14,6 +14,8 @@ var m = require('../../mithril');
 
 // コンストラクタ
 var Model = function (data, isInitial) {
+	this.p = m.prop(data.p);
+
 	// 前へ
 	this.prev_id = data.prev_id;
 	// 次へ
@@ -24,12 +26,14 @@ var Model = function (data, isInitial) {
 };
 
 // サーバからJSONを読み込む
-Model.read = function () {
-	console.log(m.route.param("p"));
-	if (m.route.param("p")) {
-		api_url += "?p=" + m.route.param("p"); 
+Model.read = function (p) {
+	var url = api_url;
+
+	if(p) {
+		url += "?p=" + p;
 	}
-	return m.request({method: "GET", url: api_url, type: Model});
+
+	return m.request({method: "GET", url: url, type: Model});
 };
 
 // サーバにJSONを保存

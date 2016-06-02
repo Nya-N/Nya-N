@@ -3266,8 +3266,10 @@ var Navbar = require('../navbar');
 
 module.exports = {
 	controller: function() {
+		var p = m.route.param('p');
+
 		// ViewModel
-		this.vm = state.make_event_list();
+		this.vm = state.make_event_list(p);
 	},
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
@@ -3319,8 +3321,8 @@ module.exports = {
 				{tag: "nav", attrs: {}, children: [
 					{tag: "ul", attrs: {class:"pager"}, children: [
 				  		/*<li class="previous disabled"><a href=""><span aria-hidden="true">&larr;</span> Older</a></li>*/
-				  		{tag: "li", attrs: {class:"previous"}, children: [{tag: "a", attrs: {href:"/event?prev_id=" + prev_id, config:m.route}, children: [{tag: "span", attrs: {"aria-hidden":"true"}, children: ["←"]}, " Older"]}]}, 
-						{tag: "li", attrs: {class:"next"}, children: [{tag: "a", attrs: {href:"/event?next_id=" + next_id, config:m.route}, children: ["Newer ", {tag: "span", attrs: {"aria-hidden":"true"}, children: ["→"]}]}]}
+				  		{tag: "li", attrs: {class:"previous"}, children: [{tag: "a", attrs: {href:"/event?p=" + prev_id, config:m.route}, children: [{tag: "span", attrs: {"aria-hidden":"true"}, children: ["←"]}, " Older"]}]}, 
+						{tag: "li", attrs: {class:"next"}, children: [{tag: "a", attrs: {href:"/event?p=" + next_id, config:m.route}, children: ["Newer ", {tag: "span", attrs: {"aria-hidden":"true"}, children: ["→"]}]}]}
 				  	]}
 				]}
 			]}
@@ -3639,7 +3641,6 @@ var Model = function (data, isInitial) {
 	if( ! data) {
 		data = {};
 	}
-
 	self.id          = m.prop(data.id);
 	self.name        = m.prop(data.name        || "");
 	self.place       = m.prop(data.place       || "");
@@ -3652,21 +3653,17 @@ var Model = function (data, isInitial) {
 
 	// TODO: リファクタ
 	// 主催者
-	if(data.admin) {
-		self.admin = {
-			name: m.prop(data.admin.name),
-		};
-	}
-	else {
-		self.admin = {
-			name: m.prop(""),
-		};
-	}
+	data.members.forEach(function(member) {
+		if (member.status === 1) {
+			self.admin = {name: m.prop(member.name)};
+		} 
+		
+	});
 
 	// 場所
 	if(data.place) {
 		self.place = {
-			name: m.prop(data.place.name),
+			name: m.prop(data.place),
 		};
 	}
 	else {
@@ -3682,7 +3679,7 @@ var Model = function (data, isInitial) {
 			self.members.push(new JoinModel(member));
 		});
 	}
-
+	
 	// コメント一覧
 	if(data.comments) {
 		self.comments = [];
@@ -3749,6 +3746,8 @@ var m = require('../../mithril');
 
 // コンストラクタ
 var Model = function (data, isInitial) {
+	this.p = m.prop(data.p);
+
 	// 前へ
 	this.prev_id = data.prev_id;
 	// 次へ
@@ -3759,8 +3758,14 @@ var Model = function (data, isInitial) {
 };
 
 // サーバからJSONを読み込む
-Model.read = function () {
-	return m.request({method: "GET", url: api_url, type: Model});
+Model.read = function (p) {
+	var url = api_url;
+
+	if(p) {
+		url += "?p=" + p;
+	}
+
+	return m.request({method: "GET", url: url, type: Model});
 };
 
 // サーバにJSONを保存
@@ -3864,17 +3869,21 @@ var State = function() {
 };
 
 // イベント一覧
-State.prototype.make_event_list = function() {
-	if( ! this.event_list) {
-		this.event_list = new EventListViewModel();
+State.prototype.make_event_list = function(p) {
+	p = Number(p);
+	// キャッシュしてた ViewModel と同じ p ならば使い回す
+	if(this.event_list && p === this.event_list.model().p()) {
+		return this.event_list;
 	}
+
+	this.event_list = new EventListViewModel(p);
 
 	return this.event_list;
 };
 
 // イベント詳細
 State.prototype.make_event_detail = function(id) {
-	var id = Number(id);
+	id = Number(id);
 	// キャッシュしてた ViewModel と同じ id ならば使い回す
 	if(this.event_detail && id === this.event_detail.model().id()) {
 		return this.event_detail;
@@ -3992,9 +4001,9 @@ var m = require('../../mithril');
 var Model = require('../../model/event/list');
 
 // ビューモデル
-var ViewModel = function() {
+var ViewModel = function(p) {
 	// モデル
-	this.model = Model.read();
+	this.model = Model.read(p);
 };
 
 module.exports = ViewModel;

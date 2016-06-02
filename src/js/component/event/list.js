@@ -16,8 +16,10 @@ var Navbar = require('../navbar');
 
 module.exports = {
 	controller: function() {
+		var p = m.route.param('p');
+
 		// ViewModel
-		this.vm = state.make_event_list();
+		this.vm = state.make_event_list(p);
 	},
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
