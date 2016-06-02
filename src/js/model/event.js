@@ -22,7 +22,7 @@ var JoinModel = require('./join');
 // コンストラクタ
 var Model = function (data, isInitial) {
 	var self = this;
-
+	
 	if( ! data) {
 		data = {};
 	}
@@ -38,12 +38,21 @@ var Model = function (data, isInitial) {
 
 	// TODO: リファクタ
 	// 主催者
-	data.members.forEach(function(member) {
-		if (member.status === 1) {
-			self.admin = {name: m.prop(member.name)};
-		} 
-		
-	});
+	if(data.admin) {
+		self.admin = {
+			name:m.prop(data.admin.name),
+		}
+	} else {
+		self.admin = {
+			name:m.prop(""),
+		}
+	}
+	//data.members.forEach(function(member) {
+	//	if (member.status === 1) {
+	//		self.admin = {name: m.prop(member.name)};
+	//	} 
+	//	
+	//});
 
 	// 場所
 	if(data.place) {
