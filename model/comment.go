@@ -7,6 +7,7 @@ type Comment struct {
 	Name string `sql:"size:255" json:"name"`
 	Body string `sql:"size:255" json:"body"`
 
+	
 	CreatedAt time.Time  `json:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at"`
 	DeletedAt *time.Time `json:"deleted_at"`
