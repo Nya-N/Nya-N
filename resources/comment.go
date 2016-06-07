@@ -37,10 +37,16 @@ func (resource *Resource) CreateComment() echo.HandlerFunc {
 
 func (resource *Resource) DeleteComment() echo.HandlerFunc {
 	return func(c echo.Context) error {
-		u := new(CommentRequest)
-		if err := c.Bind(u); err != nil {
-			return err
-		}
-		return c.JSON(http.StatusOK, u)
+		var (
+			db = resource.DB
+			comment = model.Comment{}
+		)
+		responseApi := map[string]string{"ID": c.Param("id")}
+
+		db.Model(comment).Where(c.Param("id")).Delete(&comment)
+
+
+		api := APIFormat{"success", 1, 0, responseApi}
+		return c.JSON(http.StatusOK, &api)
 	}
 }
