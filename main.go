@@ -33,6 +33,8 @@ func rooter(e *echo.Echo) (*echo.Echo){
 	e.Put("/api/event/:id", resource.UpdateEvent())
 	e.Delete("/api/event/:id", resource.DeleteEvent())
 
+	e.Post("/api/join", resource.JoinEvent())
+
 	e.Post("/api/comment", resource.CreateComment())
 	e.Delete("/api/comment/:comment_id", resource.DeleteComment())
 
