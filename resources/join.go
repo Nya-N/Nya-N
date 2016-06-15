@@ -18,27 +18,21 @@ func (resource *Resource) JoinEvent() echo.HandlerFunc {
 			db = resource.DB
 		)
 
-		u := new(EventRequest)
+		u := new(JoinRequest)
 
 		if err := c.Bind(u); err != nil {
 			return err
 		}
 
-		event := model.Event{
+		member := model.Member{
+			EventID:u.EventId,
 			Name:u.Name,
-			Capacity:u.Capacity,
-			Place: u.Place,
-			Description: u.Description,
-			Members: []model.Member{
-				{Name:u.Admin, Status:1},
-			},
-			Comments:[]model.Comment{},
 		}
-		db.Create(&event)
+		log.Println(member)
 
-		log.Println(event)
+		db.Create(&member)
 
-		responseApi := map[string]int{"id": event.ID}
+		responseApi := map[string]int{"id": member.ID}
 
 		api := APIFormat{"success", 1, 0, responseApi}
 		return c.JSON(http.StatusOK, &api)
