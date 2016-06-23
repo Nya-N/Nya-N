@@ -45,23 +45,13 @@ func (resource *Resource) CancelEvent() echo.HandlerFunc {
 
 		var (
 			db = resource.DB
+			member = model.Member{}
 		)
 
-		u := new(JoinRequest)
+		responseApi := map[string]string{"id": c.Param("join_id")}
 
-		if err := c.Bind(u); err != nil {
-			return err
-		}
-
-		member := model.Member{
-			EventID:u.EventId,
-			Name:u.Name,
-		}
-		log.Println(member)
-
-		db.Create(&member)
-
-		responseApi := map[string]int{"id": member.ID}
+		db.Model(member).Where("id = ?",c.Param("join_id")).Delete(&member)
+		log.Println(responseApi)
 
 		api := APIFormat{"success", 1, 0, responseApi}
 		return c.JSON(http.StatusOK, &api)
