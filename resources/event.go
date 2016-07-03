@@ -43,7 +43,7 @@ func (resource *Resource) GetEvents() echo.HandlerFunc {
 func (resource *Resource) GetEvent() echo.HandlerFunc {
 
 	return func(c echo.Context) error {
-
+		log.Println("Strart GetEvent")
 		var (
 			db = resource.DB
 			event = model.Event{}
@@ -53,9 +53,7 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 
 		db.Where("id = ?",c.Param("id")).Find(&event)
 		db.Model(&event).Related(&members).Related(&comments)
-		log.Println(event)
-		log.Println(members)
-		log.Println(comments)
+
 		event.Members = members
 		event.Comments = comments
 		api := APIFormat{"success", 1, 0, event}
@@ -66,6 +64,7 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 func (resource *Resource) CreateEvent() echo.HandlerFunc {
 
 	return func(c echo.Context) error {
+		log.Println("Strart CreateEvent")
 
 		var (
 			db = resource.DB
@@ -88,6 +87,18 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 			Comments:[]model.Comment{},
 		}
 		db.Create(&event)
+
+		member := model.Member{}
+
+		db.Where("event_id = ?",event.ID).Find(&member)
+
+		log.Println(member)
+		log.Println(event)
+
+		event.AdminID = member.ID
+
+		log.Println("更新後")
+		db.Model(event).Update(&event)
 
 		log.Println(event)
 
