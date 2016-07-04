@@ -52,6 +52,8 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 		)
 
 		db.Where("id = ?",c.Param("id")).Find(&event)
+
+		log.Println(event)
 		db.Model(&event).Related(&members).Related(&comments)
 
 		event.Members = members
@@ -88,14 +90,9 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 		}
 		db.Create(&event)
 
-		member := model.Member{}
-
-		db.Where("event_id = ?",event.ID).Find(&member)
-
-		log.Println(member)
 		log.Println(event)
 
-		event.AdminID = member.ID
+		event.AdminID = event.Members[0].ID
 
 		log.Println("更新後")
 		db.Model(event).Update(&event)
