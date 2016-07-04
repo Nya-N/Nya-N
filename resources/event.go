@@ -81,23 +81,12 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 		event := model.Event{
 			Name:u.Name,
 			Capacity:u.Capacity,
+			Admin: model.Member{Name:u.Admin, AdminStatus:1},
 			Place: u.Place,
 			Description: u.Description,
-			Members: []model.Member{
-				{Name:u.Admin, Status:1},
-			},
 			Comments:[]model.Comment{},
 		}
 		db.Create(&event)
-
-		log.Println(event)
-
-		event.AdminID = event.Members[0].ID
-
-		log.Println("更新後")
-		db.Model(event).Update(&event)
-
-		log.Println(event)
 
 		responseApi := map[string]int{"id": event.ID}
 
