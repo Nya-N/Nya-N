@@ -2814,8 +2814,11 @@ module.exports = {
 	},
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
+
+		console.log(model);
+
 		// HTML
-		return {tag: "div", attrs: {}, children: [
+		return {tag: "div", attrs: {}, children: ["model", 
 			/*navbar*/
 			{tag: "div", attrs: {}, children: [ m.component(NavbarComponent) ]}, 
 
@@ -3645,6 +3648,11 @@ var Model = function (data, isInitial) {
 	self.name        = m.prop(data.name        || "");
 	self.place       = m.prop(data.place       || "");
 	self.image_path  = m.prop(data.image_path);
+	self.admin       = {
+		id:m.prop(data.admin_id    || 0),
+		name:m.prop(""),
+	};
+	// self.admin       = m.prop(data.admin_id    || 0);
 	self.capacity    = m.prop(data.capacity    || "");
 	self.attend_num  = m.prop(data.attend_num  || 0);
 	self.start_date  = m.prop(data.start_date  || "");
@@ -3653,21 +3661,20 @@ var Model = function (data, isInitial) {
 
 	// TODO: リファクタ
 	// 主催者
-	if(data.admin) {
-		self.admin = {
-			name:m.prop(data.admin.name),
-		}
+
+	if(data.admin_id) {
+		data.members.forEach(function(member) {
+
+			if (member.id === data.admin_id) {
+				console.log(member);
+				self.admin = {name: m.prop(member.name)};
+			}
+		});
 	} else {
 		self.admin = {
 			name:m.prop(""),
 		}
 	}
-	//data.members.forEach(function(member) {
-	//	if (member.status === 1) {
-	//		self.admin = {name: m.prop(member.name)};
-	//	} 
-	//	
-	//});
 
 	// 場所
 	if(data.place) {
