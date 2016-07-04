@@ -14,7 +14,7 @@ func (resource *Resource) GetEvents() echo.HandlerFunc {
 		var (
 			db = resource.DB
 			events = []model.Event{}
-			viewCount = 3
+			viewCount = 10
 			current int
 			prev_id int
 			next_id int
