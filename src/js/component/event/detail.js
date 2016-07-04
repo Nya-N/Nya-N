@@ -185,10 +185,8 @@ module.exports = {
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
 
-		console.log(model);
-
 		// HTML
-		return <div>model
+		return <div>
 			{/*navbar*/}
 			<div>{ m.component(NavbarComponent) }</div>
 
