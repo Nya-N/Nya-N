@@ -22,6 +22,7 @@ func rooter(e *echo.Echo) (*echo.Echo){
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+
 	dbcon :=  SetDBConnection()
 
 	resource.DB = dbcon
@@ -47,9 +48,9 @@ func rooter(e *echo.Echo) (*echo.Echo){
 func main() {
 	fmt.Println("main")
 	e := rooter(echo.New())
-	fmt.Println("Server running at http://localhost:4000")
+	fmt.Println("Server running at http://localhost:60000")
 	// Start server
-	e.Run(standard.New(":4000"))
+	e.Run(standard.New(":60000"))
 }
 
 
