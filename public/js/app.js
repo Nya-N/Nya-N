@@ -116,7 +116,7 @@
 	"use strict"
 
 	m.version = function () {
-		return "v0.2.3"
+		return "v0.2.5"
 	}
 
 	var hasOwn = {}.hasOwnProperty
@@ -963,6 +963,9 @@
 			// set attributes first, then create children
 			var attrs = constructAttrs(data, node, namespace, hasKeys)
 
+			// add the node to its parent before attaching children to it
+			insertNode(parentElement, node, index)
+
 			var children = constructChildren(data, node, cached, editable,
 				namespace, configs)
 
@@ -986,7 +989,7 @@
 				controllers)
 		}
 
-		if (isNew || shouldReattach === true && node != null) {
+		if (!isNew && shouldReattach === true && node != null) {
 			insertNode(parentElement, node, index)
 		}
 
@@ -1189,7 +1192,7 @@
 		tag,
 		namespace
 	) {
-		if (!(attrName in cachedAttrs) || (cachedAttr !== dataAttr)) {
+		if (!(attrName in cachedAttrs) || (cachedAttr !== dataAttr) || ($document.activeElement === node)) {
 			cachedAttrs[attrName] = dataAttr
 			try {
 				return setSingleAttr(
@@ -1275,7 +1278,39 @@
 				$document.createRange().createContextualFragment(data))
 		} catch (e) {
 			parentElement.insertAdjacentHTML("beforeend", data)
+			replaceScriptNodes(parentElement)
 		}
+	}
+
+	// Replace script tags inside given DOM element with executable ones.
+	// Will also check children recursively and replace any found script
+	// tags in same manner.
+	function replaceScriptNodes(node) {
+		if (node.tagName === "SCRIPT") {
+			node.parentNode.replaceChild(buildExecutableNode(node), node)
+		} else {
+			var children = node.childNodes
+			if (children && children.length) {
+				for (var i = 0; i < children.length; i++) {
+					replaceScriptNodes(children[i])
+				}
+			}
+		}
+
+		return node
+	}
+
+	// Replace script element with one whose contents are executable.
+	function buildExecutableNode(node){
+		var scriptEl = document.createElement("script")
+		var attrs = node.attributes
+
+		for (var i = 0; i < attrs.length; i++) {
+			scriptEl.setAttribute(attrs[i].name, attrs[i].value)
+		}
+
+		scriptEl.text = node.innerHTML
+		return scriptEl
 	}
 
 	function injectHTML(parentElement, index, data) {
@@ -1405,7 +1440,7 @@
 	}
 
 	m.prop = function (store) {
-		if ((store != null && isObject(store) || isFunction(store)) &&
+		if ((store != null && (isObject(store) || isFunction(store)) || ((typeof Promise !== "undefined") && (store instanceof Promise))) &&
 				isFunction(store.then)) {
 			return propify(store)
 		}
@@ -1716,8 +1751,16 @@
 				var method = replaceHistory ? "replaceState" : "pushState"
 				computePreRedrawHook = setScroll
 				computePostRedrawHook = function () {
-					global.history[method](null, $document.title,
-						modes[m.route.mode] + currentRoute)
+					try {
+						global.history[method](null, $document.title,
+							modes[m.route.mode] + currentRoute)
+					} catch (err) {
+						// In the event of a pushState or replaceState failure,
+						// fallback to a standard redirect. This is specifically
+						// to address a Safari security error when attempting to
+						// call pushState more than 100 times.
+						$location[m.route.mode] = currentRoute
+					}
 				}
 				redirect(modes[m.route.mode] + currentRoute)
 			} else {
@@ -2101,7 +2144,7 @@
 	function identity(value) { return value }
 
 	function handleJsonp(options) {
-		var callbackKey = "mithril_callback_" +
+		var callbackKey = options.callbackName || "mithril_callback_" +
 			new Date().getTime() + "_" +
 			(Math.round(Math.random() * 1e16)).toString(36)
 
@@ -2212,7 +2255,7 @@
 		if (data) {
 			url = url.replace(/:[a-z]\w+/gi, function (token){
 				var key = token.slice(1)
-				var value = data[key]
+				var value = data[key] || token
 				delete data[key]
 				return value
 			})
@@ -2491,6 +2534,10 @@ module.exports = {
 				m.route('/event/detail/' + id);
 			});
 		};
+		// カレンダーのpopup
+		self.showCallender = function(e) {
+			$(e.target).datepicker().datepicker('show');
+		};
 	},
 	view: function(ctrl) {
 		var model = ctrl.vm.model;
@@ -2529,7 +2576,10 @@ module.exports = {
 						prop:  ctrl.vm.model.start_date,
 						error: ctrl.validator.hasError('start_date'),
 						placeholder: "日時",
+						onfocus: ctrl.showCallender,
 					}) 
+
+
 
 				]}, 
 				{tag: "div", attrs: {class:"form-group"}, children: [
@@ -3114,6 +3164,10 @@ module.exports = {
 				m.route('/event/detail/' + id);
 			});
 		};
+		// カレンダーのpopup
+		self.showCallender = function(e) {
+			$(e.target).datepicker().datepicker('show');
+		};
 	},
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
@@ -3152,6 +3206,7 @@ module.exports = {
 						prop:  model.start_date,
 						error: ctrl.validator.hasError('start_date'),
 						placeholder: "日時",
+						onfocus: ctrl.showCallender,
 					}) 
 
 				]}, 
@@ -3352,9 +3407,11 @@ module.exports = {
 		var error = args.error;
 		// placeholder
 		var placeholder = args.placeholder;
+		// onfocus
+		var onfocus = args.onfocus;
 
 		return {tag: "div", attrs: {class: error ? "form-group has-error has-feedback" : "form-group"}, children: [
-			{tag: "input", attrs: {type:"text", class:"form-control", placeholder: placeholder, onchange:m.withAttr("value", prop), value: prop() }}, 
+			{tag: "input", attrs: {type:"text", class:"form-control", placeholder: placeholder, onchange:m.withAttr("value", prop), value: prop(), onfocus:onfocus}}, 
 			 error ? {tag: "span", attrs: {class:"glyphicon glyphicon-remove form-control-feedback", "aria-hidden":"true"}} : "", 
 			{tag: "span", attrs: {class:"help-block"}, children: [ error ]}
 		]};
