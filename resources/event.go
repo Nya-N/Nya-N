@@ -47,6 +47,7 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 		var (
 			db = resource.DB
 			event = model.Event{}
+			admin = model.Member{}
 			members = []model.Member{}
 			comments = []model.Comment{}
 		)
@@ -54,8 +55,9 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 		db.Where("id = ?",c.Param("id")).Find(&event)
 
 		log.Println(event)
-		db.Model(&event).Related(&members).Related(&comments)
+		db.Model(&event).Related(&admin).Related(&members).Related(&comments)
 
+		event.Admin = admin
 		event.Members = members
 		event.Comments = comments
 		api := APIFormat{"success", 1, 0, event}

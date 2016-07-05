@@ -3646,28 +3646,19 @@ var Model = function (data, isInitial) {
 	self.name        = m.prop(data.name        || "");
 	self.place       = m.prop(data.place       || "");
 	self.image_path  = m.prop(data.image_path);
-	self.admin       = {
-		id:m.prop(data.admin_id    || 0),
-		name:m.prop(""),
-	};
-	// self.admin       = m.prop(data.admin_id    || 0);
 	self.capacity    = m.prop(data.capacity    || "");
 	self.attend_num  = m.prop(data.attend_num  || 0);
 	self.start_date  = m.prop(data.start_date  || "");
 	self.description = m.prop(data.description || "");
 	self.comment_num = m.prop(data.comment_num || 0);
 
-	// TODO: リファクタ
 	// 主催者
+	console.log(data);
 
-	if(data.admin_id) {
-		data.members.forEach(function(member) {
-
-			if (member.id === data.admin_id) {
-				console.log(member);
-				self.admin = {name: m.prop(member.name)};
-			}
-		});
+	if(data.admin) {
+		self.admin = {
+			name:m.prop(data.admin.name),
+		}
 	} else {
 		self.admin = {
 			name:m.prop(""),
