@@ -108,6 +108,10 @@ module.exports = {
 				m.route('/event/detail/' + id);
 			});
 		};
+		// カレンダーのpopup
+		self.showCallender = function(e) {
+			$(e.target).datepicker().datepicker('show');
+		};
 	},
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
@@ -146,6 +150,7 @@ module.exports = {
 						prop:  model.start_date,
 						error: ctrl.validator.hasError('start_date'),
 						placeholder: "日時",
+						onfocus: ctrl.showCallender,
 					}) }
 
 				</div>
