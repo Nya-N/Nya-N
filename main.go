@@ -5,17 +5,17 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"github.com/labstack/echo/engine/standard"
-	"fmt"
 	"github.com/jinzhu/gorm"
 	"github.com/syo-sa1982/GoNTAkun/resources"
 	"io/ioutil"
 	"gopkg.in/yaml.v2"
 	"os"
+	"log"
 )
 
 
 func rooter(e *echo.Echo) (*echo.Echo){
-	fmt.Println(e)
+	log.Println(e)
 
 	resource := resources.Resource{}
 	// Middleware
@@ -44,10 +44,16 @@ func rooter(e *echo.Echo) (*echo.Echo){
 	return e
 }
 
+func setup_log() {
+	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+}
+
 func main() {
-	fmt.Println("main")
+	setup_log()
+
+	log.Println("main")
 	e := rooter(echo.New())
-	fmt.Println("Server running at http://localhost:4000")
+	log.Println("Server running at http://localhost:4000")
 	// Start server
 	e.Run(standard.New(":4000"))
 }
