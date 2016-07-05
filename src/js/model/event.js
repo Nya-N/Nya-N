@@ -37,8 +37,6 @@ var Model = function (data, isInitial) {
 	self.comment_num = m.prop(data.comment_num || 0);
 
 	// 主催者
-	console.log(data);
-
 	if(data.admin) {
 		self.admin = {
 			name:m.prop(data.admin.name),
