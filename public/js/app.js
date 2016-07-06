@@ -3006,7 +3006,7 @@ module.exports = {
 'use strict';
 
 /*
- * ATND イベント作成ページ
+ * ATND イベント詳細ページ
  *
  */
 
@@ -3037,7 +3037,7 @@ module.exports = {
 		// TODO: IDが存在しなかった場合のエラー処理
 
 		// ViewModel
-		self.vm = state.make_event_detail(self.id);
+		self.vm = state.make_event_edit(self.id);
 
 		self.validator = new m.validator({
 			name: function (name) {
@@ -3106,6 +3106,12 @@ module.exports = {
 			// イベント登録
 			self.vm.model().save()
 			.then(function(id) {
+				// イベント編集フォームをクリア
+				state.event_edit = null;
+
+				// イベント詳細もクリア(TODO: できれば編集→詳細にデータを受け渡したい)
+				state.event_detail = null;
+
 				// TODO: イベント一覧をクリア
 
 				// イベント詳細画面に遷移
@@ -3638,7 +3644,7 @@ var JoinModel = require('./join');
 // コンストラクタ
 var Model = function (data, isInitial) {
 	var self = this;
-	
+
 	if( ! data) {
 		data = {};
 	}
@@ -3653,8 +3659,6 @@ var Model = function (data, isInitial) {
 	self.comment_num = m.prop(data.comment_num || 0);
 
 	// 主催者
-	console.log(data);
-
 	if(data.admin) {
 		self.admin = {
 			name:m.prop(data.admin.name),
@@ -3662,7 +3666,7 @@ var Model = function (data, isInitial) {
 	} else {
 		self.admin = {
 			name:m.prop(""),
-		}
+		};
 	}
 
 	// 場所
@@ -3692,6 +3696,8 @@ var Model = function (data, isInitial) {
 			self.comments.push(new CommentModel(comment));
 		});
 	}
+
+	self.isInitial = m.prop(true); // サーバーにレコードが存在しない
 };
 
 // サーバからJSONを読み込む
@@ -3700,6 +3706,11 @@ Model.read = function (id) {
 		method: "GET",
 		url: api_url + "/" + id,
 		type: Model
+	})
+	.then(function(model) {
+		model.isInitial(false); // サーバーにレコードが存在する
+
+		return model;
 	});
 };
 
@@ -3707,7 +3718,10 @@ Model.read = function (id) {
 Model.prototype.save = function () {
 	var self = this;
 
-	return m.request({method: "POST", url: api_url, data: {
+	var method = self.isInitial() ? 'POST' : 'PUT';
+	var url    = self.isInitial() ? api_url : api_url + "/" + self.id();
+
+	return m.request({method: method, url: url, data: {
 		name:        self.name(),
 		admin:       self.admin.name(),
 		start_date:  self.start_date(),
@@ -3717,8 +3731,9 @@ Model.prototype.save = function () {
 		// TODO: image_path: self.image_path
 	}})
 	.then(function(res) {
+		self.isInitial(false); // サーバーにレコードが存在する
 		// 生成されたイベントID
-		return res.id;
+		return self.id() || res.id;
 	});
 };
 
@@ -3728,7 +3743,11 @@ Model.prototype.destroy = function () {
 		method: "DELETE",
 		url: api_url + "/" + this.id(),
 		data: {}
+	})
+	.then(function(model) {
+		model.isInitial(true); // サーバーにレコードが存在しない
 	});
+
 };
 
 module.exports = Model;
@@ -3863,12 +3882,20 @@ var EventDetailViewModel = require('./viewmodel/event/detail');
 // イベント作成
 var EventCreateViewModel = require('./viewmodel/event/create');
 
+// イベント編集
+var EventEditViewModel = require('./viewmodel/event/edit');
+
+
+
+
 // コンストラクタ
 var State = function() {
 	// イベント一覧
 	this.event_list = null;
 	// イベント登録フォーム
 	this.event_create = null;
+	// イベント編集フォーム
+	this.event_edit = null;
 	// イベント詳細
 	this.event_detail = null;
 };
@@ -3907,9 +3934,24 @@ State.prototype.make_event_create = function() {
 	return this.event_create;
 };
 
+// イベント編集
+State.prototype.make_event_edit = function(id) {
+	id = Number(id);
+	// キャッシュしてた ViewModel と同じ id ならば使い回す
+	if(this.event_edit && id === this.event_edit.model().id()) {
+		return this.event_edit;
+	}
+
+	this.event_edit = new EventEditViewModel(id);
+	return this.event_edit;
+};
+
+
+
+
 module.exports = new State();
 
-},{"./mithril":13,"./viewmodel/event/create":19,"./viewmodel/event/detail":20,"./viewmodel/event/list":21}],19:[function(require,module,exports){
+},{"./mithril":13,"./viewmodel/event/create":19,"./viewmodel/event/detail":20,"./viewmodel/event/edit":21,"./viewmodel/event/list":22}],19:[function(require,module,exports){
 'use strict';
 
 /*
@@ -3993,6 +4035,32 @@ ViewModel.prototype.clear_join = function() {
 module.exports = ViewModel;
 
 },{"../../mithril":13,"../../model/comment":14,"../../model/event":15,"../../model/join":17}],21:[function(require,module,exports){
+'use strict';
+
+/*
+ * ATND イベント編集 ViewModel
+ *
+ */
+
+
+var m = require('../../mithril');
+
+// イベント詳細 Model
+var EventModel = require('../../model/event');
+
+// ビューモデル
+var ViewModel = function(id) {
+	var self = this;
+	// イベント詳細 Model
+	self.model = EventModel.read(id);
+
+	// エラーが発生した時のエラーコード
+	self.error_code = null;
+};
+
+module.exports = ViewModel;
+
+},{"../../mithril":13,"../../model/event":15}],22:[function(require,module,exports){
 'use strict';
 
 /*
