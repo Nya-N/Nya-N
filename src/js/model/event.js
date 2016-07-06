@@ -22,7 +22,7 @@ var JoinModel = require('./join');
 // コンストラクタ
 var Model = function (data, isInitial) {
 	var self = this;
-	
+
 	if( ! data) {
 		data = {};
 	}
@@ -44,7 +44,7 @@ var Model = function (data, isInitial) {
 	} else {
 		self.admin = {
 			name:m.prop(""),
-		}
+		};
 	}
 
 	// 場所
@@ -74,6 +74,8 @@ var Model = function (data, isInitial) {
 			self.comments.push(new CommentModel(comment));
 		});
 	}
+
+	self.isInitial = m.prop(true); // サーバーにレコードが存在しない
 };
 
 // サーバからJSONを読み込む
@@ -82,6 +84,11 @@ Model.read = function (id) {
 		method: "GET",
 		url: api_url + "/" + id,
 		type: Model
+	})
+	.then(function(model) {
+		model.isInitial(false); // サーバーにレコードが存在する
+
+		return model;
 	});
 };
 
@@ -89,7 +96,10 @@ Model.read = function (id) {
 Model.prototype.save = function () {
 	var self = this;
 
-	return m.request({method: "POST", url: api_url, data: {
+	var method = self.isInitial() ? 'POST' : 'PUT';
+	var url    = self.isInitial() ? api_url : api_url + "/" + self.id();
+
+	return m.request({method: method, url: url, data: {
 		name:        self.name(),
 		admin:       self.admin.name(),
 		start_date:  self.start_date(),
@@ -99,8 +109,9 @@ Model.prototype.save = function () {
 		// TODO: image_path: self.image_path
 	}})
 	.then(function(res) {
+		self.isInitial(false); // サーバーにレコードが存在する
 		// 生成されたイベントID
-		return res.id;
+		return self.id() || res.id;
 	});
 };
 
@@ -110,7 +121,11 @@ Model.prototype.destroy = function () {
 		method: "DELETE",
 		url: api_url + "/" + this.id(),
 		data: {}
+	})
+	.then(function(model) {
+		model.isInitial(true); // サーバーにレコードが存在しない
 	});
+
 };
 
 module.exports = Model;

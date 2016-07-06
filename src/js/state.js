@@ -16,12 +16,20 @@ var EventDetailViewModel = require('./viewmodel/event/detail');
 // イベント作成
 var EventCreateViewModel = require('./viewmodel/event/create');
 
+// イベント編集
+var EventEditViewModel = require('./viewmodel/event/edit');
+
+
+
+
 // コンストラクタ
 var State = function() {
 	// イベント一覧
 	this.event_list = null;
 	// イベント登録フォーム
 	this.event_create = null;
+	// イベント編集フォーム
+	this.event_edit = null;
 	// イベント詳細
 	this.event_detail = null;
 };
@@ -59,5 +67,20 @@ State.prototype.make_event_create = function() {
 
 	return this.event_create;
 };
+
+// イベント編集
+State.prototype.make_event_edit = function(id) {
+	id = Number(id);
+	// キャッシュしてた ViewModel と同じ id ならば使い回す
+	if(this.event_edit && id === this.event_edit.model().id()) {
+		return this.event_edit;
+	}
+
+	this.event_edit = new EventEditViewModel(id);
+	return this.event_edit;
+};
+
+
+
 
 module.exports = new State();

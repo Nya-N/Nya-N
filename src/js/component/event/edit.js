@@ -2,7 +2,7 @@
 'use strict';
 
 /*
- * ATND イベント作成ページ
+ * ATND イベント詳細ページ
  *
  */
 
@@ -33,7 +33,7 @@ module.exports = {
 		// TODO: IDが存在しなかった場合のエラー処理
 
 		// ViewModel
-		self.vm = state.make_event_detail(self.id);
+		self.vm = state.make_event_edit(self.id);
 
 		self.validator = new m.validator({
 			name: function (name) {
@@ -102,6 +102,12 @@ module.exports = {
 			// イベント登録
 			self.vm.model().save()
 			.then(function(id) {
+				// イベント編集フォームをクリア
+				state.event_edit = null;
+
+				// イベント詳細もクリア(TODO: できれば編集→詳細にデータを受け渡したい)
+				state.event_detail = null;
+
 				// TODO: イベント一覧をクリア
 
 				// イベント詳細画面に遷移
