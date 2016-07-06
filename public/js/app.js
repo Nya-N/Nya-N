@@ -2464,6 +2464,22 @@ module.exports = {
 			},
 		});
 
+		// 画像がアップロードされた時
+		self.onimage = function(e) {
+			var file = e.target.files[0];
+			if( ! file) {
+				self.vm.model.image(null);
+				return;
+			}
+
+			var fr = new FileReader();
+			fr.readAsDataURL(file);
+			m.startComputation();
+			fr.onload = function(event) {
+				self.vm.model.image(event.target.result);
+				m.endComputation();
+			};
+		};
 		// イベント作成ボタンの確認が押下された時
 		self.onconfirm = function(e) {
 			// 入力値チェック
@@ -2563,8 +2579,9 @@ module.exports = {
 
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventImage"}, children: ["イベント画像"]}, 
-					{tag: "input", attrs: {type:"file", id:"EventImage"}}, 
-					{tag: "p", attrs: {class:"help-block"}, children: ["イベント画像をアップロードする"]}
+					{tag: "input", attrs: {type:"file", id:"EventImage", onchange: ctrl.onimage}}, 
+					{tag: "p", attrs: {class:"help-block"}, children: ["イベント画像をアップロードする"]}, 
+					 model.image() ? {tag: "img", attrs: {src: model.image(), width:"150", height:"150"}} : ''
 				]}, 
 
 				{tag: "div", attrs: {}, children: [
@@ -3088,6 +3105,23 @@ module.exports = {
 			},
 		});
 
+		// 画像がアップロードされた時
+		self.onimage = function(e) {
+			var file = e.target.files[0];
+			if( ! file) {
+				self.vm.model.image(null);
+				return;
+			}
+
+			var fr = new FileReader();
+			fr.readAsDataURL(file);
+			m.startComputation();
+			fr.onload = function(event) {
+				self.vm.model.image(event.target.result);
+				m.endComputation();
+			};
+		};
+
 		// イベント作成ボタンの確認が押下された時
 		self.onconfirm = function(e) {
 			// 入力値チェック
@@ -3191,7 +3225,8 @@ module.exports = {
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventImage"}, children: ["イベント画像"]}, 
 					{tag: "input", attrs: {type:"file", id:"EventImage"}}, 
-					{tag: "p", attrs: {class:"help-block"}, children: ["イベント画像をアップロードする"]}
+					{tag: "p", attrs: {class:"help-block"}, children: ["イベント画像をアップロードする"]}, 
+					 model.image() ? {tag: "img", attrs: {src: model.image(), width:"150", height:"150"}} : ''
 				]}, 
 
 				{tag: "div", attrs: {}, children: [
@@ -3305,7 +3340,7 @@ module.exports = {
 							{tag: "div", attrs: {class:"panel-body"}, children: [
 								{tag: "div", attrs: {class:"pull-left"}, children: [
 									/* イベント画像 */
-									{tag: "img", attrs: {src: event.image_path, height:"150", width:"150"}}
+									{tag: "img", attrs: {src: event.image, height:"150", width:"150"}}
 								]}, 
 								
 									/* イベント詳細 */
@@ -3651,7 +3686,7 @@ var Model = function (data, isInitial) {
 	self.id          = m.prop(data.id);
 	self.name        = m.prop(data.name        || "");
 	self.place       = m.prop(data.place       || "");
-	self.image_path  = m.prop(data.image_path);
+	self.image       = m.prop(data.image);
 	self.capacity    = m.prop(data.capacity    || "");
 	self.attend_num  = m.prop(data.attend_num  || 0);
 	self.start_date  = m.prop(data.start_date  || "");
@@ -3727,8 +3762,8 @@ Model.prototype.save = function () {
 		start_date:  self.start_date(),
 		capacity:    Number(self.capacity()), // int
 		place:       self.place.name(),
+		image:       self.image(),
 		description: self.description(),
-		// TODO: image_path: self.image_path
 	}})
 	.then(function(res) {
 		self.isInitial(false); // サーバーにレコードが存在する
