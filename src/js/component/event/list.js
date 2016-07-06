@@ -48,7 +48,7 @@ module.exports = {
 							<div class="panel-body">
 								<div class="pull-left">
 									{/* イベント画像 */}
-									<img src={ event.image_path } height="150" width="150" />
+									<img src={ event.image } height="150" width="150" />
 								</div>
 								{
 									/* イベント詳細 */

@@ -29,7 +29,7 @@ var Model = function (data, isInitial) {
 	self.id          = m.prop(data.id);
 	self.name        = m.prop(data.name        || "");
 	self.place       = m.prop(data.place       || "");
-	self.image_path  = m.prop(data.image_path);
+	self.image       = m.prop(data.image);
 	self.capacity    = m.prop(data.capacity    || "");
 	self.attend_num  = m.prop(data.attend_num  || 0);
 	self.start_date  = m.prop(data.start_date  || "");
@@ -105,8 +105,8 @@ Model.prototype.save = function () {
 		start_date:  self.start_date(),
 		capacity:    Number(self.capacity()), // int
 		place:       self.place.name(),
+		image:       self.image(),
 		description: self.description(),
-		// TODO: image_path: self.image_path
 	}})
 	.then(function(res) {
 		self.isInitial(false); // サーバーにレコードが存在する
