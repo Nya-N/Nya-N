@@ -4,7 +4,7 @@ import "time"
 type Event struct {
 	ID int `sql:"AUTO_INCREMENT" gorm:"primary_key" json:"id"`
 	Name string `sql:"size:255" json:"name"`
-	ImagePath string `sql:"size:255" json:"image_path"`
+	Image string `sql:"type:text" json:"image"`
 	Capacity int `json:"capacity"`
 	Admin Member `json:"admin"`
 	Members []Member `json:"members"` // One-To-Many relationship (has many)

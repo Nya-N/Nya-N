@@ -29,6 +29,7 @@ type EventRequest struct {
 	Capacity    int    `json:"capacity"`
 	Place       string `json:"place"`
 	Description string `json:"description"`
+	Image       string `json:"image"`
 }
 type JoinRequest struct {
 	EventId int    `json:"event_id"`

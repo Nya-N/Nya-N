@@ -80,8 +80,11 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 			return err
 		}
 
+		log.Println(u.Image)
+
 		event := model.Event{
 			Name:u.Name,
+			Image:u.Image,
 			Capacity:u.Capacity,
 			Admin: model.Member{Name:u.Admin, AdminStatus:1},
 			Place: u.Place,
