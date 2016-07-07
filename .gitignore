@@ -8,3 +8,5 @@ npm-debug.log
 
 Godeps/Readme
 vendor/
+
+public/js/app.*
