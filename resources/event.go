@@ -14,7 +14,7 @@ func (resource *Resource) GetEvents() echo.HandlerFunc {
 		var (
 			db = resource.DB
 			events = []model.Event{}
-			viewCount = 3
+			viewCount = 10
 			current int
 			prev_id int
 			next_id int
@@ -47,6 +47,7 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 		var (
 			db = resource.DB
 			event = model.Event{}
+			admin = model.Member{}
 			members = []model.Member{}
 			comments = []model.Comment{}
 		)
@@ -54,8 +55,9 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 		db.Where("id = ?",c.Param("id")).Find(&event)
 
 		log.Println(event)
-		db.Model(&event).Related(&members).Related(&comments)
+		db.Model(&event).Related(&admin).Related(&members).Related(&comments)
 
+		event.Admin = admin
 		event.Members = members
 		event.Comments = comments
 		api := APIFormat{"success", 1, 0, event}
@@ -78,26 +80,18 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 			return err
 		}
 
+		log.Println(u.Image)
+
 		event := model.Event{
 			Name:u.Name,
+			Image:u.Image,
 			Capacity:u.Capacity,
+			Admin: model.Member{Name:u.Admin, AdminStatus:1},
 			Place: u.Place,
 			Description: u.Description,
-			Members: []model.Member{
-				{Name:u.Admin, Status:1},
-			},
 			Comments:[]model.Comment{},
 		}
 		db.Create(&event)
-
-		log.Println(event)
-
-		event.AdminID = event.Members[0].ID
-
-		log.Println("更新後")
-		db.Model(event).Update(&event)
-
-		log.Println(event)
 
 		responseApi := map[string]int{"id": event.ID}
 
@@ -126,6 +120,7 @@ func (resource *Resource) UpdateEvent() echo.HandlerFunc {
 		event.Name      = u.Name
 		event.Capacity  = u.Capacity
 		event.Place     = u.Place
+		event.Description = u.Description
 
 		db.Model(event).Update(&event)
 

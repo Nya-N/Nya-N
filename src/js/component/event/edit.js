@@ -2,7 +2,7 @@
 'use strict';
 
 /*
- * ATND イベント作成ページ
+ * ATND イベント詳細ページ
  *
  */
 
@@ -33,7 +33,7 @@ module.exports = {
 		// TODO: IDが存在しなかった場合のエラー処理
 
 		// ViewModel
-		self.vm = state.make_event_detail(self.id);
+		self.vm = state.make_event_edit(self.id);
 
 		self.validator = new m.validator({
 			name: function (name) {
@@ -84,6 +84,23 @@ module.exports = {
 			},
 		});
 
+		// 画像がアップロードされた時
+		self.onimage = function(e) {
+			var file = e.target.files[0];
+			if( ! file) {
+				self.vm.model.image(null);
+				return;
+			}
+
+			var fr = new FileReader();
+			fr.readAsDataURL(file);
+			m.startComputation();
+			fr.onload = function(event) {
+				self.vm.model.image(event.target.result);
+				m.endComputation();
+			};
+		};
+
 		// イベント作成ボタンの確認が押下された時
 		self.onconfirm = function(e) {
 			// 入力値チェック
@@ -102,6 +119,12 @@ module.exports = {
 			// イベント登録
 			self.vm.model().save()
 			.then(function(id) {
+				// イベント編集フォームをクリア
+				state.event_edit = null;
+
+				// イベント詳細もクリア(TODO: できれば編集→詳細にデータを受け渡したい)
+				state.event_detail = null;
+
 				// TODO: イベント一覧をクリア
 
 				// イベント詳細画面に遷移
@@ -187,6 +210,7 @@ module.exports = {
 					<label for="EventImage">イベント画像</label>
 					<input type="file" id="EventImage" />
 					<p class="help-block">イベント画像をアップロードする</p>
+					{ model.image() ? <img src={ model.image() } width="150" height="150" /> : '' }
 				</div>
 
 				<div>

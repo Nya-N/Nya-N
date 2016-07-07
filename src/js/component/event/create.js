@@ -78,6 +78,22 @@ module.exports = {
 			},
 		});
 
+		// 画像がアップロードされた時
+		self.onimage = function(e) {
+			var file = e.target.files[0];
+			if( ! file) {
+				self.vm.model.image(null);
+				return;
+			}
+
+			var fr = new FileReader();
+			fr.readAsDataURL(file);
+			m.startComputation();
+			fr.onload = function(event) {
+				self.vm.model.image(event.target.result);
+				m.endComputation();
+			};
+		};
 		// イベント作成ボタンの確認が押下された時
 		self.onconfirm = function(e) {
 			// 入力値チェック
@@ -184,8 +200,9 @@ module.exports = {
 
 				<div class="form-group">
 					<label for="EventImage">イベント画像</label>
-					<input type="file" id="EventImage" />
+					<input type="file" id="EventImage" onchange={ ctrl.onimage } />
 					<p class="help-block">イベント画像をアップロードする</p>
+					{ model.image() ? <img src={ model.image() } width="150" height="150" /> : '' }
 				</div>
 
 				<div>

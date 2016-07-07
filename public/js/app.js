@@ -2507,6 +2507,22 @@ module.exports = {
 			},
 		});
 
+		// 画像がアップロードされた時
+		self.onimage = function(e) {
+			var file = e.target.files[0];
+			if( ! file) {
+				self.vm.model.image(null);
+				return;
+			}
+
+			var fr = new FileReader();
+			fr.readAsDataURL(file);
+			m.startComputation();
+			fr.onload = function(event) {
+				self.vm.model.image(event.target.result);
+				m.endComputation();
+			};
+		};
 		// イベント作成ボタンの確認が押下された時
 		self.onconfirm = function(e) {
 			// 入力値チェック
@@ -2613,8 +2629,9 @@ module.exports = {
 
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventImage"}, children: ["イベント画像"]}, 
-					{tag: "input", attrs: {type:"file", id:"EventImage"}}, 
-					{tag: "p", attrs: {class:"help-block"}, children: ["イベント画像をアップロードする"]}
+					{tag: "input", attrs: {type:"file", id:"EventImage", onchange: ctrl.onimage}}, 
+					{tag: "p", attrs: {class:"help-block"}, children: ["イベント画像をアップロードする"]}, 
+					 model.image() ? {tag: "img", attrs: {src: model.image(), width:"150", height:"150"}} : ''
 				]}, 
 
 				{tag: "div", attrs: {}, children: [
@@ -2865,10 +2882,8 @@ module.exports = {
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
 
-		console.log(model);
-
 		// HTML
-		return {tag: "div", attrs: {}, children: ["model", 
+		return {tag: "div", attrs: {}, children: [
 			/*navbar*/
 			{tag: "div", attrs: {}, children: [ m.component(NavbarComponent) ]}, 
 
@@ -3058,7 +3073,7 @@ module.exports = {
 'use strict';
 
 /*
- * ATND イベント作成ページ
+ * ATND イベント詳細ページ
  *
  */
 
@@ -3089,7 +3104,7 @@ module.exports = {
 		// TODO: IDが存在しなかった場合のエラー処理
 
 		// ViewModel
-		self.vm = state.make_event_detail(self.id);
+		self.vm = state.make_event_edit(self.id);
 
 		self.validator = new m.validator({
 			name: function (name) {
@@ -3140,6 +3155,23 @@ module.exports = {
 			},
 		});
 
+		// 画像がアップロードされた時
+		self.onimage = function(e) {
+			var file = e.target.files[0];
+			if( ! file) {
+				self.vm.model.image(null);
+				return;
+			}
+
+			var fr = new FileReader();
+			fr.readAsDataURL(file);
+			m.startComputation();
+			fr.onload = function(event) {
+				self.vm.model.image(event.target.result);
+				m.endComputation();
+			};
+		};
+
 		// イベント作成ボタンの確認が押下された時
 		self.onconfirm = function(e) {
 			// 入力値チェック
@@ -3158,6 +3190,12 @@ module.exports = {
 			// イベント登録
 			self.vm.model().save()
 			.then(function(id) {
+				// イベント編集フォームをクリア
+				state.event_edit = null;
+
+				// イベント詳細もクリア(TODO: できれば編集→詳細にデータを受け渡したい)
+				state.event_detail = null;
+
 				// TODO: イベント一覧をクリア
 
 				// イベント詳細画面に遷移
@@ -3242,7 +3280,8 @@ module.exports = {
 				{tag: "div", attrs: {class:"form-group"}, children: [
 					{tag: "label", attrs: {for:"EventImage"}, children: ["イベント画像"]}, 
 					{tag: "input", attrs: {type:"file", id:"EventImage"}}, 
-					{tag: "p", attrs: {class:"help-block"}, children: ["イベント画像をアップロードする"]}
+					{tag: "p", attrs: {class:"help-block"}, children: ["イベント画像をアップロードする"]}, 
+					 model.image() ? {tag: "img", attrs: {src: model.image(), width:"150", height:"150"}} : ''
 				]}, 
 
 				{tag: "div", attrs: {}, children: [
@@ -3356,7 +3395,7 @@ module.exports = {
 							{tag: "div", attrs: {class:"panel-body"}, children: [
 								{tag: "div", attrs: {class:"pull-left"}, children: [
 									/* イベント画像 */
-									{tag: "img", attrs: {src: event.image_path, height:"150", width:"150"}}
+									{tag: "img", attrs: {src: event.image, height:"150", width:"150"}}
 								]}, 
 								
 									/* イベント詳細 */
@@ -3697,40 +3736,29 @@ var JoinModel = require('./join');
 // コンストラクタ
 var Model = function (data, isInitial) {
 	var self = this;
-	
+
 	if( ! data) {
 		data = {};
 	}
 	self.id          = m.prop(data.id);
 	self.name        = m.prop(data.name        || "");
 	self.place       = m.prop(data.place       || "");
-	self.image_path  = m.prop(data.image_path);
-	self.admin       = {
-		id:m.prop(data.admin_id    || 0),
-		name:m.prop(""),
-	};
-	// self.admin       = m.prop(data.admin_id    || 0);
+	self.image       = m.prop(data.image);
 	self.capacity    = m.prop(data.capacity    || "");
 	self.attend_num  = m.prop(data.attend_num  || 0);
 	self.start_date  = m.prop(data.start_date  || "");
 	self.description = m.prop(data.description || "");
 	self.comment_num = m.prop(data.comment_num || 0);
 
-	// TODO: リファクタ
 	// 主催者
-
-	if(data.admin_id) {
-		data.members.forEach(function(member) {
-
-			if (member.id === data.admin_id) {
-				console.log(member);
-				self.admin = {name: m.prop(member.name)};
-			}
-		});
+	if(data.admin) {
+		self.admin = {
+			name:m.prop(data.admin.name),
+		}
 	} else {
 		self.admin = {
 			name:m.prop(""),
-		}
+		};
 	}
 
 	// 場所
@@ -3760,6 +3788,8 @@ var Model = function (data, isInitial) {
 			self.comments.push(new CommentModel(comment));
 		});
 	}
+
+	self.isInitial = m.prop(true); // サーバーにレコードが存在しない
 };
 
 // サーバからJSONを読み込む
@@ -3768,6 +3798,11 @@ Model.read = function (id) {
 		method: "GET",
 		url: api_url + "/" + id,
 		type: Model
+	})
+	.then(function(model) {
+		model.isInitial(false); // サーバーにレコードが存在する
+
+		return model;
 	});
 };
 
@@ -3775,18 +3810,22 @@ Model.read = function (id) {
 Model.prototype.save = function () {
 	var self = this;
 
-	return m.request({method: "POST", url: api_url, data: {
+	var method = self.isInitial() ? 'POST' : 'PUT';
+	var url    = self.isInitial() ? api_url : api_url + "/" + self.id();
+
+	return m.request({method: method, url: url, data: {
 		name:        self.name(),
 		admin:       self.admin.name(),
 		start_date:  self.start_date(),
 		capacity:    Number(self.capacity()), // int
 		place:       self.place.name(),
+		image:       self.image(),
 		description: self.description(),
-		// TODO: image_path: self.image_path
 	}})
 	.then(function(res) {
+		self.isInitial(false); // サーバーにレコードが存在する
 		// 生成されたイベントID
-		return res.id;
+		return self.id() || res.id;
 	});
 };
 
@@ -3796,7 +3835,11 @@ Model.prototype.destroy = function () {
 		method: "DELETE",
 		url: api_url + "/" + this.id(),
 		data: {}
+	})
+	.then(function(model) {
+		model.isInitial(true); // サーバーにレコードが存在しない
 	});
+
 };
 
 module.exports = Model;
@@ -3931,12 +3974,20 @@ var EventDetailViewModel = require('./viewmodel/event/detail');
 // イベント作成
 var EventCreateViewModel = require('./viewmodel/event/create');
 
+// イベント編集
+var EventEditViewModel = require('./viewmodel/event/edit');
+
+
+
+
 // コンストラクタ
 var State = function() {
 	// イベント一覧
 	this.event_list = null;
 	// イベント登録フォーム
 	this.event_create = null;
+	// イベント編集フォーム
+	this.event_edit = null;
 	// イベント詳細
 	this.event_detail = null;
 };
@@ -3975,9 +4026,24 @@ State.prototype.make_event_create = function() {
 	return this.event_create;
 };
 
+// イベント編集
+State.prototype.make_event_edit = function(id) {
+	id = Number(id);
+	// キャッシュしてた ViewModel と同じ id ならば使い回す
+	if(this.event_edit && id === this.event_edit.model().id()) {
+		return this.event_edit;
+	}
+
+	this.event_edit = new EventEditViewModel(id);
+	return this.event_edit;
+};
+
+
+
+
 module.exports = new State();
 
-},{"./mithril":13,"./viewmodel/event/create":19,"./viewmodel/event/detail":20,"./viewmodel/event/list":21}],19:[function(require,module,exports){
+},{"./mithril":13,"./viewmodel/event/create":19,"./viewmodel/event/detail":20,"./viewmodel/event/edit":21,"./viewmodel/event/list":22}],19:[function(require,module,exports){
 'use strict';
 
 /*
@@ -4061,6 +4127,32 @@ ViewModel.prototype.clear_join = function() {
 module.exports = ViewModel;
 
 },{"../../mithril":13,"../../model/comment":14,"../../model/event":15,"../../model/join":17}],21:[function(require,module,exports){
+'use strict';
+
+/*
+ * ATND イベント編集 ViewModel
+ *
+ */
+
+
+var m = require('../../mithril');
+
+// イベント詳細 Model
+var EventModel = require('../../model/event');
+
+// ビューモデル
+var ViewModel = function(id) {
+	var self = this;
+	// イベント詳細 Model
+	self.model = EventModel.read(id);
+
+	// エラーが発生した時のエラーコード
+	self.error_code = null;
+};
+
+module.exports = ViewModel;
+
+},{"../../mithril":13,"../../model/event":15}],22:[function(require,module,exports){
 'use strict';
 
 /*
