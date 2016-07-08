@@ -88,7 +88,7 @@ module.exports = {
 		self.onimage = function(e) {
 			var file = e.target.files[0];
 			if( ! file) {
-				self.vm.model.image(null);
+				self.vm.model().image(null);
 				return;
 			}
 
@@ -96,7 +96,7 @@ module.exports = {
 			fr.readAsDataURL(file);
 			m.startComputation();
 			fr.onload = function(event) {
-				self.vm.model.image(event.target.result);
+				self.vm.model().image(event.target.result);
 				m.endComputation();
 			};
 		};
@@ -208,7 +208,7 @@ module.exports = {
 
 				<div class="form-group">
 					<label for="EventImage">イベント画像</label>
-					<input type="file" id="EventImage" />
+					<input type="file" id="EventImage" onchange={ ctrl.onimage } />
 					<p class="help-block">イベント画像をアップロードする</p>
 					{ model.image() ? <img src={ model.image() } width="150" height="150" /> : '' }
 				</div>

@@ -120,6 +120,7 @@ func (resource *Resource) UpdateEvent() echo.HandlerFunc {
 		event.Name      = u.Name
 		event.Capacity  = u.Capacity
 		event.Place     = u.Place
+		event.Image     = u.Image
 		event.Description = u.Description
 
 		db.Model(event).Update(&event)
