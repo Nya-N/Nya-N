@@ -5,6 +5,7 @@ import (
 	"github.com/syo-sa1982/GoNTAkun/model"
 	"log"
 	"strconv"
+	"time"
 )
 
 func (resource *Resource) GetEvents() echo.HandlerFunc {
@@ -53,8 +54,6 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 		)
 
 		db.Where("id = ?",c.Param("id")).Find(&event)
-
-		log.Println(event)
 		db.Model(&event).Related(&admin).Related(&members).Related(&comments)
 
 		event.Admin = admin
@@ -80,11 +79,12 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 			return err
 		}
 
-		log.Println(u.Image)
+		t, _ := time.Parse("2006/01/02", u.StartDate)
 
 		event := model.Event{
 			Name:u.Name,
 			Image:u.Image,
+			StartDate:t,
 			Capacity:u.Capacity,
 			Admin: model.Member{Name:u.Admin, AdminStatus:1},
 			Place: u.Place,
