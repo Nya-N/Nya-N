@@ -117,7 +117,10 @@ func (resource *Resource) UpdateEvent() echo.HandlerFunc {
 
 		db.Model(event).Where(c.Param("id")).Find(&event)
 
+		t, _ := time.Parse("2006/01/02", u.StartDate)
+
 		event.Name      = u.Name
+		event.StartDate = t
 		event.Capacity  = u.Capacity
 		event.Place     = u.Place
 		event.Image     = u.Image
