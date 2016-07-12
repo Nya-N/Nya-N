@@ -32,7 +32,6 @@ var Model = function (data, isInitial) {
 	self.image       = m.prop(data.image);
 	self.capacity    = m.prop(data.capacity    || "");
 	self.attend_num  = m.prop(data.attend_num  || 0);
-	self.start_date  = m.prop(new Date(data.start_date).toLocaleString()  || "");
 	self.description = m.prop(data.description || "");
 	self.comment_num = m.prop(data.comment_num || 0);
 
@@ -45,6 +44,13 @@ var Model = function (data, isInitial) {
 		self.admin = {
 			name:m.prop(""),
 		};
+	}
+
+	// 開催日時
+	if(data.start_date) {
+		self.start_date  = m.prop(new Date(data.start_date).toLocaleString());
+	} else {
+		self.start_date  = m.prop("");
 	}
 
 	// 場所
