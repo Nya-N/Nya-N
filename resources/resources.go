@@ -5,6 +5,8 @@ import (
 	"github.com/syo-sa1982/GoNTAkun/model"
 )
 
+const date_format string = "2006/01/02"
+
 type Resource struct {
 	DB *gorm.DB
 }
@@ -65,7 +67,7 @@ func (*Resource) getEventResponse(event model.Event) EventResponse {
 		Capacity:    event.Capacity,
 		Admin:       event.Admin,
 		Members:     event.Members,
-		StartDate:   event.StartDate.Format("2006/01/02 15:04:05"),
+		StartDate:   event.StartDate.Format(date_format),
 		Place:       event.Place,
 		Description: event.Description,
 		Comments:    event.Comments,

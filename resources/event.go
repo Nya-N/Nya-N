@@ -64,8 +64,6 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 
 		event_res = resource.getEventResponse(event)
 
-		log.Println(event_res)
-
 		api := APIFormat{"success", 1, 0, event_res}
 		return c.JSON(http.StatusOK, &api)
 	}
@@ -86,7 +84,10 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 			return err
 		}
 
-		t, _ := time.Parse("2006/01/02", u.StartDate)
+		t, _ := time.Parse(date_format, u.StartDate)
+
+		log.Println("時間")
+		log.Println(t)
 
 		event := model.Event{
 			Name:        u.Name,
@@ -124,7 +125,10 @@ func (resource *Resource) UpdateEvent() echo.HandlerFunc {
 
 		db.Model(event).Where(c.Param("id")).Find(&event)
 
-		t, _ := time.Parse("2006/01/02", u.StartDate)
+		t, _ := time.Parse(date_format, u.StartDate)
+
+		log.Println("時間")
+		log.Println(t)
 
 		event.Name = u.Name
 		event.StartDate = t
