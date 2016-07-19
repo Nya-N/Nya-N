@@ -1,20 +1,19 @@
 package main
 
 import (
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
-	"github.com/labstack/echo/engine/standard"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/engine/standard"
+	"github.com/labstack/echo/middleware"
 	"github.com/syo-sa1982/GoNTAkun/resources"
-	"io/ioutil"
 	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"os"
 )
 
-
-func rooter(e *echo.Echo) (*echo.Echo){
+func rooter(e *echo.Echo) *echo.Echo {
 	fmt.Println(e)
 
 	resource := resources.Resource{}
@@ -22,8 +21,7 @@ func rooter(e *echo.Echo) (*echo.Echo){
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-
-	dbcon :=  SetDBConnection()
+	dbcon := SetDBConnection()
 
 	resource.DB = dbcon
 
@@ -52,7 +50,6 @@ func main() {
 	// Start server
 	e.Run(standard.New(":60000"))
 }
-
 
 func SetDBConnection() *gorm.DB {
 	yml, err := ioutil.ReadFile("conf/db.yaml")
