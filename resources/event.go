@@ -5,9 +5,6 @@ import (
 	"github.com/syo-sa1982/GoNTAkun/model"
 	"log"
 	"strconv"
-	"fmt"
-	"io/ioutil"
-	"golang.org/x/oauth2/google"
 )
 
 func (resource *Resource) GetEvents() echo.HandlerFunc {
@@ -76,30 +73,6 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 		var (
 			db = resource.DB
 		)
-
-		// ここから　google認証*******
-		fmt.Println("Google認証処理を開始します")
-		// JSONから設定ファイル読み込み
-		confFile, err := ioutil.ReadFile("resources/client_secret.json")
-		if err != nil {
-			log.Fatalf("Unable to read client secret file: %v", err)
-		}
-		fmt.Println("JSON読み込み成功")
-		config, err := google.ConfigFromJSON(confFile)
-		if err != nil {
-			log.Fatalf("Unable to read client secret file: %v", err)
-		}
-		config.Scopes = []string{
-			"https://www.googleapis.com/auth/userinfo.profile",
-		}
-		fmt.Println("JSONからconfigの生成成功")
-		authURL := config.AuthCodeURL("state")
-		fmt.Println("URL取得。URL= ", authURL)
-		fmt.Println("リダイレクトする。リダイレクトの仕方がわからん！！！")
-		//return c.Redirect(http.StatusMovedPermanently,authURL)
-		return c.Redirect(305,authURL)
-		fmt.Println("test")
-		// ここまで  google認証*******
 
 		u := new(EventRequest)
 
