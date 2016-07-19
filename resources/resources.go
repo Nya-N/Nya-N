@@ -23,6 +23,7 @@ type EventListAPI struct {
 }
 
 type EventResponse struct {
+	ID          int             `json:"id"`
 	Name        string          `json:"name"`
 	Image       string          `json:"image"`
 	Capacity    int             `json:"capacity"`
@@ -57,17 +58,16 @@ type CommentRequest struct {
 
 func (*Resource) getEventResponse(event model.Event) EventResponse {
 
-	event_res := EventResponse{
-		Name : event.Name,
-		Image : event.Image,
-		Capacity : event.Capacity,
-		Admin : event.Admin,
-		Members : event.Members,
-		StartDate : event.StartDate.Format("2006/01/02 15:04:05"),
-		Place : event.Place,
-		Description : event.Description,
-		Comments : event.Comments,
+	return EventResponse{
+		ID:          event.ID,
+		Name:        event.Name,
+		Image:       event.Image,
+		Capacity:    event.Capacity,
+		Admin:       event.Admin,
+		Members:     event.Members,
+		StartDate:   event.StartDate.Format("2006/01/02 15:04:05"),
+		Place:       event.Place,
+		Description: event.Description,
+		Comments:    event.Comments,
 	}
-
-	return event_res
 }
