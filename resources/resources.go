@@ -56,9 +56,18 @@ type CommentRequest struct {
 }
 
 func (*Resource) getEventResponse(event model.Event) EventResponse {
-	var event_res EventResponse
 
-	//event_res = {};
+	event_res := EventResponse{
+		Name : event.Name,
+		Image : event.Image,
+		Capacity : event.Capacity,
+		Admin : event.Admin,
+		Members : event.Members,
+		StartDate : event.StartDate.Format("2006/01/02 15:04:05"),
+		Place : event.Place,
+		Description : event.Description,
+		Comments : event.Comments,
+	}
 
 	return event_res
 }
