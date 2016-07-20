@@ -3,6 +3,9 @@ package resources
 import (
 	"github.com/jinzhu/gorm"
 	"github.com/syo-sa1982/GoNTAkun/model"
+	"io/ioutil"
+	"gopkg.in/yaml.v2"
+	"os"
 )
 
 const date_format string = "2006/01/02"
@@ -79,4 +82,24 @@ func (resource *Resource) getEventsResponse(events []model.Event) []EventRespons
 		events_res = append(events_res, resource.getEventResponse(v))
 	}
 	return events_res
+}
+
+
+func (resource *Resource)SetDBConnection() *gorm.DB {
+	yml, err := ioutil.ReadFile("conf/db.yaml")
+	if err != nil {
+		panic(err)
+	}
+
+	t := make(map[interface{}]interface{})
+
+	_ = yaml.Unmarshal([]byte(yml), &t)
+
+	conn := t[os.Getenv("GONTADB")].(map[interface{}]interface{})
+
+	db, err := gorm.Open("mysql", conn["user"].(string)+conn["password"].(string)+"@/"+conn["db"].(string)+"?charset=utf8&parseTime=True")
+	if err != nil {
+		panic(err)
+	}
+	return db
 }

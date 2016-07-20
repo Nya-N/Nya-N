@@ -21,6 +21,9 @@ func (resource *Resource) GetEvents() echo.HandlerFunc {
 			prev_id   int
 			next_id   int
 		)
+		db = resource.SetDBConnection()
+		defer db.Close()
+
 		log.Println("p is ....")
 		log.Println(c.QueryParam("p"))
 		if c.QueryParam("p") != "" {
@@ -59,6 +62,8 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 			members   = []model.Member{}
 			comments  = []model.Comment{}
 		)
+		db = resource.SetDBConnection()
+		defer db.Close()
 
 		db.Where("id = ?", c.Param("id")).Find(&event)
 		db.Model(&event).Related(&admin).Related(&members).Related(&comments)
@@ -78,10 +83,11 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 
 	return func(c echo.Context) error {
 		log.Println("Strart CreateEvent")
-
 		var (
 			db = resource.DB
 		)
+		db = resource.SetDBConnection()
+		defer db.Close()
 
 		u := new(EventRequest)
 
@@ -118,6 +124,8 @@ func (resource *Resource) UpdateEvent() echo.HandlerFunc {
 			db    = resource.DB
 			event = model.Event{}
 		)
+		db = resource.SetDBConnection()
+		defer db.Close()
 
 		u := new(EventRequest)
 
@@ -147,11 +155,13 @@ func (resource *Resource) UpdateEvent() echo.HandlerFunc {
 func (resource *Resource) DeleteEvent() echo.HandlerFunc {
 
 	return func(c echo.Context) error {
-
 		var (
 			db    = resource.DB
 			event = model.Event{}
 		)
+		db = resource.SetDBConnection()
+		defer db.Close()
+
 		responseApi := map[string]string{"ID": c.Param("id")}
 
 		db.Model(event).Where(c.Param("id")).Delete(&event)

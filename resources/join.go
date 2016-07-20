@@ -17,6 +17,8 @@ func (resource *Resource) JoinEvent() echo.HandlerFunc {
 		var (
 			db = resource.DB
 		)
+		db = resource.SetDBConnection()
+		defer db.Close()
 
 		u := new(JoinRequest)
 
@@ -47,6 +49,8 @@ func (resource *Resource) CancelEvent() echo.HandlerFunc {
 			db = resource.DB
 			member = model.Member{}
 		)
+		db = resource.SetDBConnection()
+		defer db.Close()
 
 		responseApi := map[string]string{"id": c.Param("join_id")}
 
