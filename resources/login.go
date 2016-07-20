@@ -7,6 +7,9 @@ import (
 	"golang.org/x/oauth2/google"
 	"net/http"
 	"golang.org/x/oauth2"
+	"github.com/syo-sa1982/GoNTAkun/model"
+	"encoding/json"
+	"reflect"
 )
 
 func (resource *Resource) GetLogin() echo.HandlerFunc {
@@ -73,6 +76,13 @@ func (resource *Resource) GetOauth() echo.HandlerFunc {
 		buf := make([]byte, 1024)
 		res.Body.Read(buf)
 		fmt.Println("body= ", string(buf))
+		var test string
+		test = string(buf)
+		fmt.Println("test= ", test)
+		fmt.Println(reflect.TypeOf(test))
+		var auth model.Auth
+		json.Unmarshal([]byte(test), &auth)
+		fmt.Printf("contents= %#v\n", auth)
 
 		//response, err := http.Get("https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + token.AccessToken)
 		//
