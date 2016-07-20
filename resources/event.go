@@ -86,9 +86,6 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 
 		t, _ := time.Parse(date_format, u.StartDate)
 
-		log.Println("時間")
-		log.Println(t)
-
 		event := model.Event{
 			Name:        u.Name,
 			Image:       u.Image,
@@ -126,9 +123,6 @@ func (resource *Resource) UpdateEvent() echo.HandlerFunc {
 		db.Model(event).Where(c.Param("id")).Find(&event)
 
 		t, _ := time.Parse(date_format, u.StartDate)
-
-		log.Println("時間")
-		log.Println(t)
 
 		event.Name = u.Name
 		event.StartDate = t
