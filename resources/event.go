@@ -53,7 +53,7 @@ func (resource *Resource) GetEvents() echo.HandlerFunc {
 func (resource *Resource) GetEvent() echo.HandlerFunc {
 
 	return func(c echo.Context) error {
-		log.Println("Strart GetEvent")
+		log.Println("Start GetEvent")
 		var (
 			db        = resource.DB
 			event     = model.Event{}
@@ -82,7 +82,7 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 func (resource *Resource) CreateEvent() echo.HandlerFunc {
 
 	return func(c echo.Context) error {
-		log.Println("Strart CreateEvent")
+		log.Println("Start CreateEvent")
 		var (
 			db = resource.DB
 		)
