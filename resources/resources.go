@@ -3,6 +3,7 @@ package resources
 import (
 	"github.com/jinzhu/gorm"
 	"github.com/syo-sa1982/GoNTAkun/model"
+	"log"
 )
 
 const date_format string = "2006/01/02"
@@ -21,7 +22,7 @@ type APIFormat struct {
 type EventListAPI struct {
 	PrevId int           `json:"prev_id"`
 	NextId int           `json:"next_id"`
-	Events []model.Event `json:"events"`
+	Events []EventResponse `json:"events"`
 }
 
 type EventResponse struct {
@@ -58,8 +59,7 @@ type CommentRequest struct {
 	Body    string `json:"body"`
 }
 
-func (*Resource) getEventResponse(event model.Event) EventResponse {
-
+func (resource *Resource) getEventResponse(event model.Event) EventResponse {
 	return EventResponse{
 		ID:          event.ID,
 		Name:        event.Name,
@@ -72,4 +72,13 @@ func (*Resource) getEventResponse(event model.Event) EventResponse {
 		Description: event.Description,
 		Comments:    event.Comments,
 	}
+}
+
+func (resource *Resource) getEventsResponse(events []model.Event) []EventResponse {
+	var events_res []EventResponse
+	for _,v := range events {
+		events_res = append(events_res, resource.getEventResponse(v))
+	}
+	log.Println(events_res)
+	return events_res
 }
