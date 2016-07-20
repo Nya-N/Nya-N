@@ -16,7 +16,6 @@ func (resource *Resource) GetEvents() echo.HandlerFunc {
 		var (
 			db        = resource.DB
 			events    = []model.Event{}
-			//events_res = []EventResponse{}
 			viewCount = 10
 			current   int
 			prev_id   int
@@ -34,12 +33,15 @@ func (resource *Resource) GetEvents() echo.HandlerFunc {
 
 		db.Model(events).Offset((current - 1) * 3).Limit(viewCount).Find(&events)
 
+		for i,s := range events {
+			db.Model(&s).Related(&events[i].Members, "EventID")
+		}
+
 		events_res := resource.getEventsResponse(events)
+
 
 		response := EventListAPI{prev_id, next_id, events_res}
 		api := APIFormat{"success", 1, 0, response}
-
-		log.Println(api)
 
 		return c.JSON(http.StatusOK, &api)
 	}

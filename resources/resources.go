@@ -3,7 +3,6 @@ package resources
 import (
 	"github.com/jinzhu/gorm"
 	"github.com/syo-sa1982/GoNTAkun/model"
-	"log"
 )
 
 const date_format string = "2006/01/02"
@@ -79,6 +78,5 @@ func (resource *Resource) getEventsResponse(events []model.Event) []EventRespons
 	for _,v := range events {
 		events_res = append(events_res, resource.getEventResponse(v))
 	}
-	log.Println(events_res)
 	return events_res
 }
