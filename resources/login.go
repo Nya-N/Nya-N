@@ -16,6 +16,8 @@ func (resource *Resource) GetLogin() echo.HandlerFunc {
 
 	return func(c echo.Context) error {
 
+		fmt.Println("ここに来てくれないとおかしいよ！！！！！！！！！")
+
 		// TODO:クッキーをみてIDを取得して、DBからIDをキーにトークンを取得する、トークンがない、もしくは有効期限切れてるならGoogle認証
 		// 有効期限切れはもう少し簡単な方法があったきがする・・・
 
@@ -81,7 +83,7 @@ func (resource *Resource) GetLogin() echo.HandlerFunc {
 			authURL := config.AuthCodeURL("state")
 			fmt.Println("URL取得。URL= ", authURL)
 			// 認証ページにリダイレクト
-			return c.Redirect(http.StatusMovedPermanently, authURL)
+			return c.Redirect(http.StatusFound, authURL)
 		}
 	}
 }
@@ -127,16 +129,28 @@ func (resource *Resource) GetOauth() echo.HandlerFunc {
 		// トークンをJSON形式にする
 		tokenJson, _ := json.Marshal(token)
 
-		// DBに登録
-		var db = resource.DB
-		googleAccount := model.GoogleAccount{
-			GID:auth.ID,
-			Name:auth.Name,
-			Picture:auth.Picture,
-			Token:string(tokenJson),
-		}
-		db.Create(&googleAccount)
-		
+		// DBにすでにデータがあるかチェック
+		var (
+			db = resource.DB
+			googleAccount = model.GoogleAccount{}
+		)
+
+		//db.Model(googleAccount).Where("g_id = ?",auth.ID,).Find(&googleAccount)
+		//if googleAccount != nil {
+		//	// データがあれば更新
+		//	googleAccount.
+		//} else {
+
+			// なければ登録
+			googleAccount = model.GoogleAccount{
+				GID:auth.ID,
+				Name:auth.Name,
+				Picture:auth.Picture,
+				Token:string(tokenJson),
+			}
+			db.Create(&googleAccount)
+		//}
+
 		return nil
 
 	}
