@@ -61,7 +61,7 @@ module.exports = {
 									{ event.start_date + "から" }
 								</div>
 								{/* 参加人数／定員 */}
-								{ event.attend_num + " / " + event.capacity + "人"}
+								{ event.members.length + " / " + event.capacity + "人"}
 							</div>
 						</div>;
 
