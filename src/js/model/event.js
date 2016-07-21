@@ -33,7 +33,6 @@ var Model = function (data, isInitial) {
 	self.capacity    = m.prop(data.capacity    || "");
 	self.start_date  = m.prop(data.start_date  || "");
 	self.description = m.prop(data.description || "");
-	self.comment_num = m.prop(data.comment_num || 0);
 
 	// 主催者
 	if(data.admin) {
