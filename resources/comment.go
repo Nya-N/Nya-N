@@ -13,6 +13,8 @@ func (resource *Resource) CreateComment() echo.HandlerFunc {
 		var (
 			db = resource.DB
 		)
+		db = resource.SetDBConnection()
+		defer db.Close()
 
 		u := new(CommentRequest)
 		if err := c.Bind(u); err != nil {
@@ -41,6 +43,9 @@ func (resource *Resource) DeleteComment() echo.HandlerFunc {
 			db = resource.DB
 			comment = model.Comment{}
 		)
+		db = resource.SetDBConnection()
+		defer db.Close()
+
 		responseApi := map[string]string{"ID": c.Param("id")}
 
 		db.Model(comment).Where(c.Param("id")).Delete(&comment)
