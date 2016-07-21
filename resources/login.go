@@ -10,35 +10,44 @@ import (
 	"encoding/json"
 	"time"
 	"net/http"
+	"strconv"
 )
 
 func (resource *Resource) GetLogin() echo.HandlerFunc {
 
 	return func(c echo.Context) error {
 
-		fmt.Println("ここに来てくれないとおかしいよ！！！！！！！！！")
-
-		// TODO:クッキーをみてIDを取得して、DBからIDをキーにトークンを取得する、トークンがない、もしくは有効期限切れてるならGoogle認証
+		// TODO:有効期限切れてるならGoogle認証
 		// 有効期限切れはもう少し簡単な方法があったきがする・・・
 
 		var (
 			db = resource.DB
 			googleAccount = model.GoogleAccount{}
+			account = model.Account{}
 		)
-		// TODO: PKで検索すること！
-		db.Model(googleAccount).Find(&googleAccount)
-		fmt.Printf("googleAccount= %#v\n", googleAccount)
+
+		// クッキーからIDを取得する
+		id , _:= c.Cookie("id")
+		//fmt.Printf("id= %#v\n", id.Value())
+
+		// アカウントテーブルを取得
+		db.Model(account).Where("id = ?",id.Value(),).Find(&account)
+		//fmt.Printf("account= %#v\n", account)
+
+		// googleアカウントテーブルを取得
+		db.Model(googleAccount).Where("g_id = ?",account.GID,).Find(&googleAccount)
+		//fmt.Printf("googleAccount= %#v\n", googleAccount)
 
 		confFile, _ := ioutil.ReadFile("resources/client_secret.json")
 		google.ConfigFromJSON(confFile)
 		config, _ := google.ConfigFromJSON(confFile)
 
 		if googleAccount.GID != "" {
+			// ここにくるということは一度認証済みということ！
 			fmt.Println("キャッシュから認証トークンを作成し、APIをコールできるようにする*****")
 
 			var tokenJson interface{}
 			json.Unmarshal([]byte(googleAccount.Token), &tokenJson)
-			fmt.Printf("contents= %#v\n", tokenJson)
 
 			expiry, _ := time.Parse("2006-01-02 15:04:05 MST", tokenJson.(map[string]interface{})["expiry"].(string))
 
@@ -58,10 +67,12 @@ func (resource *Resource) GetLogin() echo.HandlerFunc {
 			if err != nil {
 				log.Fatalf("Unable to read res body: %v", err)
 			}
+			// testコード****
 			var auth model.Auth
 			json.Unmarshal(b, &auth)
 			fmt.Printf("contents= %#v\n", auth)
-			fmt.Println("final!!")
+			fmt.Println("contentsが正しくとれてればキャッシュから認証情報の取得成功です")
+			// testコード****
 			return c.Redirect(http.StatusFound, `/`);
 		} else {
 			// Google認証処理を開始
@@ -81,7 +92,7 @@ func (resource *Resource) GetLogin() echo.HandlerFunc {
 				"https://www.googleapis.com/auth/userinfo.profile",
 			}
 			authURL := config.AuthCodeURL("state")
-			fmt.Println("URL取得。URL= ", authURL)
+			fmt.Println("認証URL= ", authURL)
 			// 認証ページにリダイレクト
 			return c.Redirect(http.StatusFound, authURL)
 		}
@@ -124,7 +135,7 @@ func (resource *Resource) GetOauth() echo.HandlerFunc {
 		}
 		var auth model.Auth
 		json.Unmarshal(b, &auth)
-		fmt.Printf("contents= %#v\n", auth)
+		//fmt.Printf("contents= %#v\n", auth)
 
 		// トークンをJSON形式にする
 		tokenJson, _ := json.Marshal(token)
@@ -133,14 +144,17 @@ func (resource *Resource) GetOauth() echo.HandlerFunc {
 		var (
 			db = resource.DB
 			googleAccount = model.GoogleAccount{}
+			account = model.Account{}
 		)
 
-		//db.Model(googleAccount).Where("g_id = ?",auth.ID,).Find(&googleAccount)
-		//if googleAccount != nil {
-		//	// データがあれば更新
-		//	googleAccount.
-		//} else {
-
+		db.Model(googleAccount).Where("g_id = ?",auth.ID,).Find(&googleAccount)
+		if googleAccount.GID != "" {
+			// データがあれば更新
+			googleAccount.Name = auth.Name
+			googleAccount.Picture = auth.Picture
+			googleAccount.Token = string(tokenJson)
+			db.Update(&googleAccount)
+		} else {
 			// なければ登録
 			googleAccount = model.GoogleAccount{
 				GID:auth.ID,
@@ -149,7 +163,25 @@ func (resource *Resource) GetOauth() echo.HandlerFunc {
 				Token:string(tokenJson),
 			}
 			db.Create(&googleAccount)
-		//}
+		}
+
+		// アカウント登録
+		db.Model(account).Where("g_id = ?",auth.ID,).Find(&account)
+		if account.GID == "" {
+
+			// なければ登録　＆ cookieにも登録
+			account.GID = auth.ID
+			db.Create(&account)
+			fmt.Println("account= ", account)
+			fmt.Println("account.id= ", account.ID)
+
+			// ユーザーIDをクッキーに格納する
+			cookie := new(echo.Cookie)
+			cookie.SetName("id")
+			cookie.SetValue(strconv.Itoa(account.ID))
+			//cookie.SetExpires(time.Now().Add(24 * time.Hour))
+			c.SetCookie(cookie)
+		}
 
 		return c.Redirect(http.StatusFound, `/`)
 
