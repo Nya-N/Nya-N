@@ -31,7 +31,6 @@ var Model = function (data, isInitial) {
 	self.place       = m.prop(data.place       || "");
 	self.image       = m.prop(data.image);
 	self.capacity    = m.prop(data.capacity    || "");
-	self.attend_num  = m.prop(data.attend_num  || 0);
 	self.start_date  = m.prop(data.start_date  || "");
 	self.description = m.prop(data.description || "");
 	self.comment_num = m.prop(data.comment_num || 0);

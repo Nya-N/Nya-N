@@ -119,9 +119,6 @@ module.exports = {
 				// 参加者一覧に新しく参加した人を移動
 				self.vm.model().members.push(self.vm.join);
 
-				// 参加者数を +1
-				self.vm.model().attend_num(self.vm.model().attend_num() + 1);
-
 				// 参加者名の入力欄を空にする
 				self.vm.clear_join();
 
@@ -277,7 +274,7 @@ module.exports = {
 						<button type="button" class="btn btn-lg btn-success" data-toggle="modal" data-target="#AttendModal">
 							イベントに参加する
 						</button>
-						<h3>参加人数 {model.attend_num()} / {model.capacity()}</h3>
+						<h3>参加人数 {model.members.length} / {model.capacity()}</h3>
 
 						<div class="panel panel-default">
 							<div class="panel-heading">
