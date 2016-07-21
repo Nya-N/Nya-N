@@ -62,7 +62,7 @@ func (resource *Resource) GetLogin() echo.HandlerFunc {
 			json.Unmarshal(b, &auth)
 			fmt.Printf("contents= %#v\n", auth)
 			fmt.Println("final!!")
-			return nil;
+			return c.Redirect(http.StatusFound, `/`);
 		} else {
 			// Google認証処理を開始
 			fmt.Println("Google認証処理を開始*****")
@@ -151,7 +151,7 @@ func (resource *Resource) GetOauth() echo.HandlerFunc {
 			db.Create(&googleAccount)
 		//}
 
-		return nil
+		return c.Redirect(http.StatusFound, `/`)
 
 	}
 }
