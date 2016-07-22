@@ -186,7 +186,7 @@ func (resource *Resource) GetOauth() echo.HandlerFunc {
 		//cookie.SetExpires(time.Now().Add(24 * time.Hour))
 		c.SetCookie(cookie)
 
-		return c.Redirect(http.StSatusFound, `/`)
+		return c.Redirect(http.StatusFound, `/`)
 
 	}
 }
