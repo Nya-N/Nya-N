@@ -75,7 +75,7 @@ func (resource *Resource) GetLogin() echo.HandlerFunc {
 			fmt.Printf("contents= %#v\n", auth)
 			fmt.Println("contentsが正しくとれてればキャッシュから認証情報の取得成功です")
 			// testコード****
-			return c.Redirect(http.StatusFound, `/`);
+			return c.Redirect(http.StatusFound, "/");
 		} else {
 			// Google認証処理を開始
 			fmt.Println("Google認証処理を開始*****")
@@ -186,7 +186,6 @@ func (resource *Resource) GetOauth() echo.HandlerFunc {
 		//cookie.SetExpires(time.Now().Add(24 * time.Hour))
 		c.SetCookie(cookie)
 
-		return c.Redirect(http.StatusFound, `/`)
-
+		return c.Redirect(http.StatusFound, "/")
 	}
 }
