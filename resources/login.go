@@ -30,13 +30,15 @@ func (resource *Resource) GetLogin() echo.HandlerFunc {
 		id , _:= c.Cookie("id")
 		//fmt.Printf("id= %#v\n", id.Value())
 
-		// アカウントテーブルを取得
-		db.Model(account).Where("id = ?",id.Value(),).Find(&account)
-		//fmt.Printf("account= %#v\n", account)
+		if id != nil {
+			// アカウントテーブルを取得
+			db.Model(account).Where("id = ?", id.Value(), ).Find(&account)
+			//fmt.Printf("account= %#v\n", account)
 
-		// googleアカウントテーブルを取得
-		db.Model(googleAccount).Where("g_id = ?",account.GID,).Find(&googleAccount)
-		//fmt.Printf("googleAccount= %#v\n", googleAccount)
+			// googleアカウントテーブルを取得
+			db.Model(googleAccount).Where("g_id = ?", account.GID, ).Find(&googleAccount)
+			//fmt.Printf("googleAccount= %#v\n", googleAccount)
+		}
 
 		confFile, _ := ioutil.ReadFile("resources/client_secret.json")
 		google.ConfigFromJSON(confFile)
@@ -167,6 +169,7 @@ func (resource *Resource) GetOauth() echo.HandlerFunc {
 
 		// アカウント登録
 		db.Model(account).Where("g_id = ?",auth.ID,).Find(&account)
+		fmt.Println("contents= %#v\n", account)
 		if account.GID == "" {
 
 			// なければ登録　＆ cookieにも登録
@@ -174,16 +177,16 @@ func (resource *Resource) GetOauth() echo.HandlerFunc {
 			db.Create(&account)
 			fmt.Println("account= ", account)
 			fmt.Println("account.id= ", account.ID)
-
-			// ユーザーIDをクッキーに格納する
-			cookie := new(echo.Cookie)
-			cookie.SetName("id")
-			cookie.SetValue(strconv.Itoa(account.ID))
-			//cookie.SetExpires(time.Now().Add(24 * time.Hour))
-			c.SetCookie(cookie)
 		}
 
-		return c.Redirect(http.StatusFound, `/`)
+		// クッキー登録or更新
+		cookie := new(echo.Cookie)
+		cookie.SetName("id")
+		cookie.SetValue(strconv.Itoa(account.ID))
+		//cookie.SetExpires(time.Now().Add(24 * time.Hour))
+		c.SetCookie(cookie)
+
+		return c.Redirect(http.StSatusFound, `/`)
 
 	}
 }
