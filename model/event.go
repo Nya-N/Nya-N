@@ -6,7 +6,7 @@ type Event struct {
 	Name string `sql:"size:255" json:"name"`
 	Image string `sql:"type:text" json:"image"`
 	Capacity int `json:"capacity"`
-	Admin Member `json:"admin"`
+	Admin Member `json:"admin" gorm:"ForeignKey:AdminStatus"`
 	Members []Member `json:"members"` // One-To-Many relationship (has many)
 	StartDate time.Time `json:"start_date"`
 	Place string `sql:"size:255" json:"place"`

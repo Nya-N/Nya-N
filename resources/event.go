@@ -66,7 +66,7 @@ func (resource *Resource) GetEvent() echo.HandlerFunc {
 		defer db.Close()
 
 		db.Where("id = ?", c.Param("id")).Find(&event)
-		db.Model(&event).Related(&admin).Related(&members).Related(&comments)
+		db.Model(&event).Related(&admin, "Admin").Related(&members, "Members").Related(&comments, "Comments")
 
 		event.Admin = admin
 		event.Members = members
