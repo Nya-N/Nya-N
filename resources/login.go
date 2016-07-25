@@ -26,6 +26,9 @@ func (resource *Resource) GetLogin() echo.HandlerFunc {
 			account = model.Account{}
 		)
 
+		db = resource.SetDBConnection()
+		defer db.Close()
+
 		// クッキーからIDを取得する
 		id , _:= c.Cookie("id")
 		//fmt.Printf("id= %#v\n", id.Value())
@@ -148,6 +151,8 @@ func (resource *Resource) GetOauth() echo.HandlerFunc {
 			googleAccount = model.GoogleAccount{}
 			account = model.Account{}
 		)
+		db = resource.SetDBConnection()
+		defer db.Close()
 
 		db.Model(googleAccount).Where("g_id = ?",auth.ID,).Find(&googleAccount)
 		if googleAccount.GID != "" {
