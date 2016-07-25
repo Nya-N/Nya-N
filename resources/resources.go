@@ -77,7 +77,7 @@ func (resource *Resource) getEventResponse(event model.Event) EventResponse {
 }
 
 func (resource *Resource) getEventsResponse(events []model.Event) []EventResponse {
-	var events_res []EventResponse
+	var events_res = []EventResponse{}
 	for _,v := range events {
 		events_res = append(events_res, resource.getEventResponse(v))
 	}
