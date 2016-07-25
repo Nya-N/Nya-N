@@ -10,9 +10,12 @@ import (
 
 func (resource *Resource) CreateComment() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log.Println("Start CreateComment")
 		var (
 			db = resource.DB
 		)
+		db = resource.SetDBConnection()
+		defer db.Close()
 
 		u := new(CommentRequest)
 		if err := c.Bind(u); err != nil {
@@ -37,13 +40,17 @@ func (resource *Resource) CreateComment() echo.HandlerFunc {
 
 func (resource *Resource) DeleteComment() echo.HandlerFunc {
 	return func(c echo.Context) error {
+		log.Println("Start DeleteComment")
 		var (
 			db = resource.DB
 			comment = model.Comment{}
 		)
-		responseApi := map[string]string{"ID": c.Param("id")}
+		db = resource.SetDBConnection()
+		defer db.Close()
 
-		db.Model(comment).Where(c.Param("id")).Delete(&comment)
+		responseApi := map[string]string{"ID": c.Param("comment_id")}
+
+		db.Model(comment).Where("id = ?",c.Param("comment_id")).Delete(&comment)
 
 
 		api := APIFormat{"success", 1, 0, responseApi}

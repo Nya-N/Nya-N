@@ -90,9 +90,6 @@ module.exports = {
 				// コメント一覧に新しく追加したコメントを移動
 				self.vm.model().comments.push(self.vm.comment);
 
-				// コメント件数を +1
-				self.vm.model().comment_num(self.vm.model().comment_num() + 1);
-
 				// コメント欄を空にする
 				self.vm.clear_comment();
 			});
@@ -118,9 +115,6 @@ module.exports = {
 
 				// 参加者一覧に新しく参加した人を移動
 				self.vm.model().members.push(self.vm.join);
-
-				// 参加者数を +1
-				self.vm.model().attend_num(self.vm.model().attend_num() + 1);
 
 				// 参加者名の入力欄を空にする
 				self.vm.clear_join();
@@ -158,9 +152,6 @@ module.exports = {
 				// サーバー上から削除
 				model.destroy()
 				.then(function() {
-					// コメント件数を -1
-					self.vm.model().comment_num(self.vm.model().comment_num() - 1);
-
 					// viewmodelからも削除
 					self.vm.model().comments.splice(i, 1);
 				});
@@ -173,8 +164,6 @@ module.exports = {
 				// サーバー上から削除
 				model.destroy()
 				.then(function() {
-					// 参加者件数を -1
-					self.vm.model().attend_num(self.vm.model().attend_num() - 1);
 
 					// viewmodelからも削除
 					self.vm.model().members.splice(i, 1);
@@ -230,7 +219,7 @@ module.exports = {
 						<div class="panel panel-default">
 							<div class="panel-heading">
 								{/* コメント数 */}
-								コメント一覧({ model.comment_num() })
+								コメント一覧({ model.comments.length })
 							</div>
 							<div class="panel-body">
 								{/* コメント一覧 */}
@@ -277,7 +266,7 @@ module.exports = {
 						<button type="button" class="btn btn-lg btn-success" data-toggle="modal" data-target="#AttendModal">
 							イベントに参加する
 						</button>
-						<h3>参加人数 {model.attend_num()} / {model.capacity()}</h3>
+						<h3>参加人数 {model.members.length} / {model.capacity()}</h3>
 
 						<div class="panel panel-default">
 							<div class="panel-heading">
