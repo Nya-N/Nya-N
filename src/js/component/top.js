@@ -13,6 +13,7 @@ var Navbar = require('./navbar');
 
 module.exports = {
 	controller: function() {
+		console.log("AccountID:" + AccountID);
 	},
 	view: function(ctrl) {
 		return <div>
