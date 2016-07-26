@@ -8,19 +8,19 @@ import (
 	"github.com/labstack/echo/middleware"
 	"github.com/syo-sa1982/GoNTAkun/resources"
 	//"github.com/syo-sa1982/GoNTAkun/controllers"
-	"html/template"
-	"io"
-	"net/http"
-	"log"
+	//"html/template"
+	//"io"
+	//"net/http"
+	//"log"
 )
 
-type Template struct {
-	templates *template.Template
-}
-
-func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context ) error {
-	return t.templates.ExecuteTemplate(w, name, data)
-}
+//type Template struct {
+//	templates *template.Template
+//}
+//
+//func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context ) error {
+//	return t.templates.ExecuteTemplate(w, name, data)
+//}
 //func Hello(c echo.Context) error {
 //	log.Println("show Index")
 //	id, _ := c.Cookie("id")
@@ -29,14 +29,14 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 //
 //	return c.Render(http.StatusOK, "hello", data)
 //}
-func Index(c echo.Context) error {
-	log.Println("show Index")
-	id, _ := c.Cookie("id")
-
-	data := struct {ID string}{ ID: id.Value() }
-
-	return c.Render(http.StatusOK, "index", data)
-}
+//func Index(c echo.Context) error {
+//	log.Println("show Index")
+//	id, _ := c.Cookie("id")
+//
+//	data := struct {ID string}{ ID: id.Value() }
+//
+//	return c.Render(http.StatusOK, "index", data)
+//}
 func rooter(e *echo.Echo) *echo.Echo {
 	fmt.Println(e)
 
@@ -45,10 +45,6 @@ func rooter(e *echo.Echo) *echo.Echo {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	t := &Template{
-		templates: template.Must(template.ParseGlob("public/*.html")),
-	}
-	e.SetRenderer(t)
 
 	// Routes(api)
 	e.Get("/api/event", resource.GetEvents())
@@ -66,11 +62,15 @@ func rooter(e *echo.Echo) *echo.Echo {
 	e.Get("/login", resource.GetLogin())
 	e.Get("/google-oauth", resource.GetOauth())
 
-	//e.Static("/", "public")
+	e.Static("/", "public")
 
+	//t := &Template{
+	//	templates: template.Must(template.ParseGlob("public/*.html")),
+	//}
+	//e.SetRenderer(t)
 	// Routes
 	//e.Get("/hello", Hello)
-	e.Get("/", Index)
+	//e.Get("/index", Index)
 
 	fmt.Println(e)
 	return e
