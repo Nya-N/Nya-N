@@ -21,14 +21,14 @@ type Template struct {
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context ) error {
 	return t.templates.ExecuteTemplate(w, name, data)
 }
-func Hello(c echo.Context) error {
-	log.Println("show Index")
-	id, _ := c.Cookie("id")
-
-	data := struct {ID string}{ ID: id.Value() }
-
-	return c.Render(http.StatusOK, "hello", data)
-}
+//func Hello(c echo.Context) error {
+//	log.Println("show Index")
+//	id, _ := c.Cookie("id")
+//
+//	data := struct {ID string}{ ID: id.Value() }
+//
+//	return c.Render(http.StatusOK, "hello", data)
+//}
 func Index(c echo.Context) error {
 	log.Println("show Index")
 	id, _ := c.Cookie("id")
@@ -50,10 +50,6 @@ func rooter(e *echo.Echo) *echo.Echo {
 	}
 	e.SetRenderer(t)
 
-	// Routes
-	e.Get("/hello", Hello)
-	e.Get("/", Index)
-
 	// Routes(api)
 	e.Get("/api/event", resource.GetEvents())
 	e.Post("/api/event", resource.CreateEvent())
@@ -71,6 +67,10 @@ func rooter(e *echo.Echo) *echo.Echo {
 	e.Get("/google-oauth", resource.GetOauth())
 
 	//e.Static("/", "public")
+
+	// Routes
+	//e.Get("/hello", Hello)
+	e.Get("/", Index)
 
 	fmt.Println(e)
 	return e
