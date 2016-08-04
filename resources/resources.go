@@ -21,6 +21,12 @@ type APIFormat struct {
 	Response  interface{} `json:"response"`
 }
 
+type AccountAPI struct {
+	ID    int	`json:"id"`
+	Name  string 	`json:"name"`
+	Image string 	`json:"img_path"`
+}
+
 type EventListAPI struct {
 	PrevId int           `json:"prev_id"`
 	NextId int           `json:"next_id"`

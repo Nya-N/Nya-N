@@ -59,6 +59,8 @@ func rooter(e *echo.Echo) *echo.Echo {
 	e.Post("/api/comment", resource.CreateComment())
 	e.Delete("/api/comment/:comment_id", resource.DeleteComment())
 
+	e.Get("/api/account", resource.GetAccount())
+
 	e.Get("/login", resource.GetLogin())
 	e.Get("/google-oauth", resource.GetOauth())
 
