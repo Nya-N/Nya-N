@@ -160,7 +160,7 @@ module.exports = {
 						prop:  ctrl.vm.model.start_date,
 						error: ctrl.validator.hasError('start_date'),
 						placeholder: "日時",
-						config: this.showCallender,
+						config: this.showCalendar,
 					}) }
 
 				</div>
@@ -258,9 +258,14 @@ module.exports = {
 			</div>
 		</div>;
 	},
-	showCallender: function(element, isInitialized, context) {
+	showCalendar: function(element, isInitialized, context) {
 		//一度描画したら再描画はしない
 		if (isInitialized) return;
-		$(element).datepicker()
+		console.log($(element));
+		$(element).datetimepicker({
+		  format: 'Y-m-d H:i',
+			step: 15,
+			lang: 'ja'
+		});
 	}
 };
