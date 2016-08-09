@@ -258,9 +258,8 @@ module.exports = {
 		</div>;
 	},
 	showCalendar: function(element, isInitialized, context) {
-		//一度描画したら再描画はしない
+		// 初回描画時のみ処理
 		if (isInitialized) return;
-		console.log($(element));
 		$(element).datetimepicker({
 		  format: 'Y-m-d H:i',
 			step: 15,
