@@ -19,8 +19,17 @@ module.exports = {
 		// onfocus
 		var onfocus = args.onfocus;
 
+		var inputElement = m("input", {
+					type: "text",
+					class: "form-control",
+					placeholder: placeholder,
+					onchange: m.withAttr("value", prop),
+					value: prop(),
+					config: args.config
+				});
+
 		return <div class={ error ? "form-group has-error has-feedback" : "form-group"}>
-			<input type="text" class="form-control" placeholder={ placeholder } onchange={m.withAttr("value", prop)} value={ prop() } onfocus={onfocus} />
+		  	{ inputElement }
 			{ error ? <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span> : "" }
 			<span class="help-block">{ error }</span>
 		</div>;
