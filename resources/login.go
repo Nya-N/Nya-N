@@ -7,6 +7,7 @@ import (
 	"golang.org/x/oauth2/google"
 	"golang.org/x/oauth2"
 	"github.com/syo-sa1982/GoNTAkun/model"
+	"github.com/syo-sa1982/GoNTAkun/services"
 	"encoding/json"
 	"time"
 	"net/http"
@@ -30,12 +31,16 @@ func (resource *Resource) GetLogin() echo.HandlerFunc {
 		defer db.Close()
 
 		// クッキーからIDを取得する
+		strId := ""
 		id , _:= c.Cookie("id")
-		//fmt.Printf("id= %#v\n", id.Value())
+		if id != nil && id.Value() != "" {
+			// IDを複合する
+			strId = services.DecrypterBase64(id.Value())
+		}
 
-		if id != nil {
+		if strId != "" {
 			// アカウントテーブルを取得
-			db.Model(account).Where("id = ?", id.Value(), ).Find(&account)
+			db.Model(account).Where("id = ?", strId, ).Find(&account)
 			//fmt.Printf("account= %#v\n", account)
 
 			// googleアカウントテーブルを取得
@@ -184,10 +189,13 @@ func (resource *Resource) GetOauth() echo.HandlerFunc {
 			fmt.Println("account.id= ", account.ID)
 		}
 
+		// IDを暗号化する
+		encId := services.EncrypterBase64(strconv.Itoa(account.ID))
+
 		// クッキー登録or更新
 		cookie := new(echo.Cookie)
 		cookie.SetName("id")
-		cookie.SetValue(strconv.Itoa(account.ID))
+		cookie.SetValue(encId)
 		//cookie.SetExpires(time.Now().Add(24 * time.Hour))
 		c.SetCookie(cookie)
 
