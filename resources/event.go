@@ -117,7 +117,7 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 			return err
 		}
 
-		t, _ := time.Parse(date_format, u.StartDate)
+		t, _ := time.Parse(date_time_format, u.StartDate)
 
 		event := model.Event{
 			Name:        u.Name,

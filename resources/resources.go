@@ -8,7 +8,8 @@ import (
 	"os"
 )
 
-const date_format string = "2006/01/02"
+const date_format string = "2006-01-02"
+const date_time_format string = "2006-01-02 15:04"
 
 type Resource struct {
 	DB *gorm.DB
