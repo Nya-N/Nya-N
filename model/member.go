@@ -6,9 +6,9 @@ import (
 type Member struct {
 	ID int `sql:"AUTO_INCREMENT" gorm:"primary_key" json:"id"`
 	EventID int `json:"event_id"`
-	AccountId string `sql:"size:255" json:"name"` // encript
+	AccountId string `sql:"size:255" json:"account_id"` // encript
 	Name string `sql:"size:255" json:"name"`
-	Picture string `sql:"size:255" json:"picture"`
+	Picture string `sql:"size:255" json:"image"`
 	AdminStatus int `json:"admin_status"`
 
 	CreatedAt time.Time  `json:"created_at"`
