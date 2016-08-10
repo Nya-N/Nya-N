@@ -39,11 +39,8 @@ module.exports = {
 				}
 			},
 			admin: function (admin) {
-				if (!admin.name()) {
+				if (!self.vm.account().name) {
 					return "主催者を入力してください";
-				}
-				if(admin.name().length > 20) {
-					return "主催者は20文字以内でお願いします";
 				}
 			},
 			start_date: function (start_date) {
