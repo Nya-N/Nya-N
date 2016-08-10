@@ -8,7 +8,9 @@
 var m = require('../../mithril');
 
 module.exports = {
-	controller: function() {},
+	controller: function() {
+
+	},
 	view: function(ctrl, args) {
 		// プロパティ
 		var prop = args.prop;

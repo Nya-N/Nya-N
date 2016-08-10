@@ -21,13 +21,8 @@ var ViewModel = function(id) {
 	// 入力したイベントデータ
 	self.model = new EventModel();
 
-	// 入力したイベントデータ
-	// self.account = new AccountModel;
+	// ログイン情報
 	self.account = AccountModel.read();
-	// self.account = AccountModel.read();
-
-
-	console.log("ほげ",self.account());
 
 };
 

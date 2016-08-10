@@ -137,7 +137,7 @@ module.exports = {
 
 		return <div>
 			{/*navbar*/}
-			<div>{ m.component(Navbar) }</div>
+			<div>{ m.component(Navbar, ctrl.vm.account()) }</div>
 
 			<div class="container" style="padding-top:30px" id="root">
 				<h1>イベント編集</h1>
@@ -210,7 +210,11 @@ module.exports = {
 				</div>
 
 				<div>
-					<button type="button" class="btn btn-lg btn-success" onclick={ ctrl.onconfirm }>編集</button>
+					<button
+						type="button"
+						class="btn btn-lg btn-success"
+						onclick={ ctrl.onconfirm }
+						disabled={ ctrl.vm.account().id ? false : true }>編集</button>
 				</div>
 
 				{/* BEGIN: 確認画面モーダル */}

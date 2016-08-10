@@ -177,7 +177,7 @@ module.exports = {
 		// HTML
 		return <div>
 			{/*navbar*/}
-			<div>{ m.component(NavbarComponent) }</div>
+			<div>{ m.component(NavbarComponent, ctrl.vm.account()) }</div>
 
 			<div class="container" style="padding-top:30px" id="root">
 				<div class="row">
@@ -253,7 +253,11 @@ module.exports = {
 										rows: 4,
 									}) }
 									<div>
-										<button type="button" class="btn btn-lg btn-success" onclick={ctrl.onsubmit_comment}>コメントを投稿</button>
+										<button
+											type="button"
+											class="btn btn-lg btn-success"
+											onclick={ctrl.onsubmit_comment}
+											disabled={ ctrl.vm.account().id ? false : true }>コメントを投稿</button>
 									</div>
 								</form>
 							</div>
@@ -263,7 +267,12 @@ module.exports = {
 
 					{/* BEGIN: 右サイドバー */}
 					<div class="col-md-3">
-						<button type="button" class="btn btn-lg btn-success" data-toggle="modal" data-target="#AttendModal">
+						<button
+							type="button"
+							class="btn btn-lg btn-success"
+							data-toggle="modal"
+							data-target="#AttendModal"
+							disabled={ ctrl.vm.account().id ? false : true }>
 							イベントに参加する
 						</button>
 						<h3>参加人数 {model.members.length} / {model.capacity()}</h3>
@@ -291,8 +300,17 @@ module.exports = {
 							</div>
 						</div>
 
-						<button type="button" class="btn btn-sm btn-warning" onclick={ ctrl.onedit }>イベントを編集</button>
-						<button type="button" class="btn btn-sm btn-danger" onclick={ ctrl.onconfirm_destroy }>イベントを削除</button>
+						<button
+							type="button"
+							class="btn btn-sm btn-warning"
+							onclick={ ctrl.onedit }
+							disabled={ ctrl.vm.account().id ? false : true }>イベントを編集</button>
+
+						<button
+							type="button"
+							class="btn btn-sm btn-danger"
+							onclick={ ctrl.onconfirm_destroy }
+							disabled={ ctrl.vm.account().id ? false : true }>イベントを削除</button>
 
 					</div>
 					{/* END: 右サイドバー */}

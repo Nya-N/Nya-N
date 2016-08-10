@@ -17,6 +17,9 @@ var CommentModel = require('../../model/comment');
 // コメントモデル
 var JoinModel = require('../../model/join');
 
+// account Model
+var AccountModel = require('../../model/account');
+
 
 
 // ビューモデル
@@ -30,6 +33,9 @@ var ViewModel = function(id) {
 
 	// 入力した参加登録
 	self.join = new JoinModel();
+
+	// ログイン情報
+	self.account = AccountModel.read();
 
 	// エラーが発生した時のエラーコード
 	self.error_code = null;
