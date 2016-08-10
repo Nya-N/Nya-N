@@ -131,7 +131,7 @@ module.exports = {
 
 		return <div>
 			{/*navbar*/}
-			<div>{ m.component(Navbar) }</div>
+			<div>{ m.component(Navbar, ctrl.vm.account()) }</div>
 
 			<div class="container" style="padding-top:30px" id="root">
 				<h1>イベントを新規作成</h1>
@@ -151,7 +151,7 @@ module.exports = {
 					<label for="EventAdmin">主催者</label>
 					{ ctrl.vm.account().name }
 					{ m.component(FormInputComponent, {
-						prop:  ctrl.vm.model.admin.name,
+						prop:  m.prop(ctrl.vm.account().name),
 						error: ctrl.validator.hasError('admin'),
 						placeholder: "主催者",
 					}) }
