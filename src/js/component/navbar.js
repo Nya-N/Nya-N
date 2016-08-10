@@ -9,6 +9,13 @@ module.exports = {
 
 		console.log("navbar args", args);
 
+		if (!args) {
+			var args = {};
+			args.id = 0;
+		}
+
+		console.log("navbar args2", args);
+
 		return <div>
 			<nav class="navbar navbar-default">
 				<div class="container-fluid">
