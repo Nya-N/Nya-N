@@ -33,8 +33,8 @@ module.exports = {
 							<li class={ active_url === "/" ? "active" : "" }><a href="/" config={m.route}>TOP</a></li>
 							<li class={ active_url === "/event" ? "active" : "" }><a href="/event" config={m.route}>イベント一覧</a></li>
 							<li class={ active_url === "/event/create" ? "active" : "" }><a href="/event/create" config={m.route}>新しくイベントを作る</a></li>
-							<li class={ active_url === "/login" ? "active" : "" } style={args.id == 0 ? '' : 'display:none'}><a href="/login">ログイン</a></li>
-							<li style=""><img src={args.img_path} /></li>
+							<li class={ active_url === "/login" ? "active" : "" } style={args.id === 0 ? '' : 'display:none'}><a href="/login">ログイン</a></li>
+							<li style={ { float: "right", display: args.id ? "" : "none" } }><img src={args.img_path} /></li>
 						</ul>
 					</div>
 				</div>
