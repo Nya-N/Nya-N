@@ -4,7 +4,9 @@ import "time"
 type Comment struct {
 	ID int `json:"id"`
 	EventID int `json:"event_id"`
+	AccountId string `sql:"size:255" json:"name"` // encript
 	Name string `sql:"size:255" json:"name"`
+	Picture string `sql:"size:255" json:"picture"`
 	Body string `sql:"size:255" json:"body"`
 
 	
