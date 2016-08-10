@@ -97,12 +97,6 @@ module.exports = {
 
 		// イベントに参加ボタンが押下された時
 		self.onsubmit_join = function(e) {
-			// 入力値チェック
-			self.join_validator.validate(self.vm.join);
-
-			if (self.join_validator.hasErrors()) {
-				return;
-			}
 
 			// event_id
 			self.vm.join.event_id(self.vm.model().id());
@@ -119,8 +113,6 @@ module.exports = {
 				// 参加者名の入力欄を空にする
 				self.vm.clear_join();
 
-				// モーダルを閉じる
-				$('#AttendModal').modal('hide');
 			}, ErrorComponent.handleErrorToViewModel(self.vm));
 		};
 
@@ -270,8 +262,7 @@ module.exports = {
 						<button
 							type="button"
 							class="btn btn-lg btn-success"
-							data-toggle="modal"
-							data-target="#AttendModal"
+							onclick={ctrl.onsubmit_join}
 							disabled={ ctrl.vm.account().id ? false : true }>
 							イベントに参加する
 						</button>
@@ -315,37 +306,6 @@ module.exports = {
 					</div>
 					{/* END: 右サイドバー */}
 				</div>
-
-				{/* BEGIN: イベント参加 入力モーダル */}
-				<div id="AttendModal" class="modal fade" role="dialog">
-					<div class="modal-dialog">
-
-						<div class="modal-content">
-							<div class="modal-header">
-								{/* 閉じるボタン */}
-								<button type="button" class="close" data-dismiss="modal">&times;</button>
-								<h4 class="modal-title">イベントに参加する</h4>
-							</div>
-							<div class="modal-body">
-								{/* イベント参加に必要な各入力項目 */}
-								<form>
-									{/* 名前入力 */}
-									<label>名前</label>
-									{ m.component(FormInputComponent, {
-										prop:  ctrl.vm.join.name,
-										error: ctrl.join_validator.hasError('name'),
-										placeholder: "名前",
-									}) }
-								</form>
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-lg btn-success" onclick={ ctrl.onsubmit_join}>参加</button>
-								<button type="button" class="btn btn-lg btn-warning" data-dismiss="modal">閉じる</button>
-							</div>
-						</div>
-					</div>
-				</div>
-				{/* END: イベント参加 入力モーダル */}
 
 				{/* BEGIN: イベント削除 確認モーダル */}
 				<div id="DeleteModal" class="modal fade" role="dialog">
