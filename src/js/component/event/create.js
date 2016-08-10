@@ -121,10 +121,6 @@ module.exports = {
 				m.route('/event/detail/' + id);
 			});
 		};
-		// カレンダーのpopup
-		self.showCallender = function(e) {
-			$(e.target).datepicker().datepicker('show');
-		};
 	},
 	view: function(ctrl) {
 		var model = ctrl.vm.model;
@@ -164,10 +160,8 @@ module.exports = {
 						prop:  ctrl.vm.model.start_date,
 						error: ctrl.validator.hasError('start_date'),
 						placeholder: "日時",
-						onfocus: ctrl.showCallender,
+						config: this.showCalendar,
 					}) }
-
-
 
 				</div>
 				<div class="form-group">
@@ -263,5 +257,14 @@ module.exports = {
 
 			</div>
 		</div>;
+	},
+	showCalendar: function(element, isInitialized, context) {
+		// 初回描画時のみ処理
+		if (isInitialized) return;
+		$(element).datetimepicker({
+		  format: 'Y-m-d H:i',
+			step: 15,
+			lang: 'ja'
+		});
 	}
 };
