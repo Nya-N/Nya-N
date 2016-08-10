@@ -23,7 +23,7 @@ var Model = function (data, isInitial) {
 
 	self.id          = m.prop(data.id);
 	self.name        = m.prop(data.name        || "");
-	self.img_path    = m.prop(data.img_path    || "");
+	self.image       = m.prop(data.image    || "");
 
 };
 

@@ -10,15 +10,23 @@ var m = require('../mithril');
 // navbar
 var Navbar = require('./navbar');
 
+// account Model
+var AccountModel = require('../model/account');
+
 
 module.exports = {
 	controller: function() {
 		console.log("AccountID:" + AccountID);
+
+		this.vm = {};
+		this.vm.account = AccountModel.read();
+
 	},
 	view: function(ctrl) {
+
 		return <div>
 			{/*navbar*/}
-			<div>{ m.component(Navbar) }</div>
+			<div>{ m.component(Navbar, ctrl.vm.account()) }</div>
 
 			{/*jumbotron*/}
 			<div class="container" style="padding-top:30px" id="root">
