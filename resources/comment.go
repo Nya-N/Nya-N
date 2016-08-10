@@ -45,7 +45,7 @@ func (resource *Resource) CreateComment() echo.HandlerFunc {
 		}
 
 		comment := model.Comment{
-			AccountId: id.Value(),
+			AccountId: account.ID,
 			Name: googleAccount.Name,
 			Picture: googleAccount.Picture,
 			EventID:u.EventID,

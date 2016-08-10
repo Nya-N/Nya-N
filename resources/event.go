@@ -124,7 +124,7 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 			Image:       u.Image,
 			StartDate:   t,
 			Capacity:    u.Capacity,
-			Admin:       model.Member{AccountId: id.Value(), Name: googleAccount.Name, Picture: googleAccount.Picture, AdminStatus: 1},
+			Admin:       model.Member{AccountId: account.ID, Name: googleAccount.Name, Picture: googleAccount.Picture, AdminStatus: 1},
 			Place:       u.Place,
 			Description: u.Description,
 			Comments:    []model.Comment{},

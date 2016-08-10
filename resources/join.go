@@ -50,7 +50,7 @@ func (resource *Resource) JoinEvent() echo.HandlerFunc {
 
 		member := model.Member{
 			EventID:u.EventId,
-			AccountId: id.Value(),
+			AccountId: account.ID,
 			Name:googleAccount.Name,
 			Picture: googleAccount.Picture,
 		}
