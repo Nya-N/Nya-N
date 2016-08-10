@@ -5,6 +5,7 @@ import (
 	"github.com/syo-sa1982/GoNTAkun/model"
 	"log"
 	"net/http"
+	"github.com/syo-sa1982/GoNTAkun/services"
 )
 
 
@@ -26,14 +27,19 @@ func (resource *Resource) GetAccount() echo.HandlerFunc {
 		id , _:= c.Cookie("id")
 		//fmt.Printf("id= %#v\n", id.Value())
 
-		if id != nil {
+		// クッキーからIDを取得する
+		strId := ""
+		if id != nil && id.Value() != "" {
+			// IDを複合する
+			strId = services.DecrypterBase64(id.Value())
+		}
+
+		if strId != "" {
 			// アカウントテーブルを取得
-			db.Model(account).Where("id = ?", id.Value(), ).Find(&account)
-			//fmt.Printf("account= %#v\n", account)
+			db.Model(account).Where("id = ?", strId, ).Find(&account)
 
 			// googleアカウントテーブルを取得
 			db.Model(googleAccount).Where("g_id = ?", account.GID, ).Find(&googleAccount)
-			//fmt.Printf("googleAccount= %#v\n", googleAccount)
 
 			account_res.ID = account.ID
 			account_res.Name = googleAccount.Name
