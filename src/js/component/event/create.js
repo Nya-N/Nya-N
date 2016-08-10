@@ -149,6 +149,7 @@ module.exports = {
 				</div>
 				<div class="form-group">
 					<label for="EventAdmin">主催者</label>
+					{ ctrl.vm.account().name }
 					{ m.component(FormInputComponent, {
 						prop:  ctrl.vm.model.admin.name,
 						error: ctrl.validator.hasError('admin'),
