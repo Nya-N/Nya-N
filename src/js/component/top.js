@@ -24,6 +24,17 @@ module.exports = {
 	},
 	view: function(ctrl) {
 
+		var create_event_btn = "";
+		if ( ctrl.vm.account().id > 0 ) {
+			create_event_btn =
+				<p>
+					<a class="btn btn-success btn-lg" href="/event/create" config={m.route} role="button">
+						<span class="glyphicon glyphicon-log-in">　</span>
+						新しいイベントを作る
+					</a>
+				</p>
+		}
+
 		return <div>
 			{/*navbar*/}
 			<div>{ m.component(Navbar, ctrl.vm.account()) }</div>
@@ -38,12 +49,7 @@ module.exports = {
 							仲間内の飲み会から勉強会まで<br />
 							色んなイベントで色んな人に会いましょう。<br />
 						</p>
-						<p>
-							<a class="btn btn-success btn-lg" href="/event/create" config={m.route} role="button">
-								<span class="glyphicon glyphicon-log-in">　</span>
-								新しいイベントを作る
-							</a>
-						</p>
+						{ create_event_btn }
 					</div>
 				</div>
 			</div>

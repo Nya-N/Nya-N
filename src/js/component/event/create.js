@@ -145,7 +145,6 @@ module.exports = {
 				</div>
 				<div class="form-group">
 					<label for="EventAdmin">主催者</label>
-					{ ctrl.vm.account().name }
 					{ m.component(FormInputComponent, {
 						prop:  m.prop(ctrl.vm.account().name),
 						error: ctrl.validator.hasError('admin'),
@@ -201,7 +200,11 @@ module.exports = {
 				</div>
 
 				<div>
-					<button type="button" class="btn btn-lg btn-success" onclick={ ctrl.onconfirm }>イベントを新規作成</button>
+					<button
+						type="button"
+						class="btn btn-lg btn-success"
+						onclick={ ctrl.onconfirm }
+						disabled={ ctrl.vm.account().id ? false : true }>イベントを新規作成</button>
 				</div>
 
 				{/* BEGIN: 確認画面モーダル */}

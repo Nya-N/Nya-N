@@ -32,9 +32,9 @@ module.exports = {
 						<ul class="nav navbar-nav">
 							<li class={ active_url === "/" ? "active" : "" }><a href="/" config={m.route}>TOP</a></li>
 							<li class={ active_url === "/event" ? "active" : "" }><a href="/event" config={m.route}>イベント一覧</a></li>
-							<li class={ active_url === "/event/create" ? "active" : "" }><a href="/event/create" config={m.route}>新しくイベントを作る</a></li>
+							<li class={ active_url === "/event/create" ? "active" : "" } style={{display: args.id ? "" : "none"}}><a href="/event/create" config={m.route}>新しくイベントを作る</a></li>
 							<li class={ active_url === "/login" ? "active" : "" } style={args.id === 0 ? '' : 'display:none'}><a href="/login">ログイン</a></li>
-							<li style={ { float: "right", display: args.id ? "" : "none" } }><img src={args.img_path} /></li>
+							<li style={ { float: "right", width: "70px", margin: "5px 0 0 30px", display: args.id ? "" : "none" } }><img style="width: 100%" src={args.image} /></li>
 						</ul>
 					</div>
 				</div>
