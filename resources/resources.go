@@ -61,10 +61,24 @@ type JoinRequest struct {
 	Name    string `json:"name"`
 }
 
+type JoinResponce struct {
+	ID int    `json:"id"`
+	AccountID  int    `json:"account_id"`
+	Name    string `json:"name"`
+	Image    string `json:"image"`
+}
+
 type CommentRequest struct {
 	EventID int    `json:"event_id"`
 	Name    string `json:"name"`
 	Body    string `json:"body"`
+}
+
+type CommentResponce struct {
+	ID int    `json:"id"`
+	AccountID  int    `json:"account_id"`
+	Name    string `json:"name"`
+	Image    string `json:"image"`
 }
 
 func (resource *Resource) getEventResponse(event model.Event) EventResponse {

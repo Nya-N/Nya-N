@@ -19,6 +19,7 @@ func (resource *Resource) JoinEvent() echo.HandlerFunc {
 			db = resource.DB
 			googleAccount = model.GoogleAccount{}
 			account = model.Account{}
+			join_res = JoinResponce{}
 		)
 		db = resource.SetDBConnection()
 		defer db.Close()
@@ -58,9 +59,14 @@ func (resource *Resource) JoinEvent() echo.HandlerFunc {
 
 		db.Create(&member)
 
-		responseApi := map[string]int{"id": member.ID}
+		join_res.ID = member.ID
+		join_res.AccountID = account.ID
+		join_res.Name = googleAccount.Name
+		join_res.Image = googleAccount.Picture
 
-		api := APIFormat{"success", 1, 0, responseApi}
+		//responseApi := map[string]int{"id": member.ID}
+
+		api := APIFormat{"success", 1, 0, join_res}
 		return c.JSON(http.StatusOK, &api)
 	}
 }
