@@ -169,11 +169,18 @@ module.exports = {
 		var model = ctrl.vm.model();
 
     // イベントに参加するボタン有効フラグ
-    var event_add_btn_flg = false;
+    var event_add_btn_flg = true;
+
     if (ctrl.vm.account().id && model.members.length < model.capacity()) {
-			// ログイン済み + 参加人数があいてれば参加ボタンが押せる
-			event_add_btn_flg = true;
-		}
+      // ログイン済み + 参加人数があいてて、未参加であれば参加ボタンが押せる
+      model.members.forEach(function(member, index) {
+          if (ctrl.vm.account().id == member.account_id()) {
+            event_add_btn_flg = false;
+          }
+      });
+    } else {
+      event_add_btn_flg = false;
+    }
 
 		// HTML
 		return <div>
