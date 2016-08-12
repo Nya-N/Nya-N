@@ -222,7 +222,7 @@ module.exports = {
 											{/* 削除ボタン */}
 											{ comment_del_btn }
 											{/* コメント投稿者 */}
-											{ comment.name() }<br />
+											<img style="width: 20px ;margin-right: 4px;" src={comment.image()} />{ comment.name() }<br />
 											{/* コメント本文 */}
 											{ comment.body() }<hr />
 										</div>;
@@ -284,7 +284,7 @@ module.exports = {
 											{/* 削除ボタン */}
 											{ member_del_btn }
 
-											{ member.name() } さん<br />
+											<img style="width: 20px ;margin-right: 4px;" src={member.image()} />{ member.name() }<br />
 										</span>;
 									})
 								}
