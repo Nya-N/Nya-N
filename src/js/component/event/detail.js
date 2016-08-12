@@ -41,14 +41,6 @@ module.exports = {
 
 		// Validator
 		self.comment_validator = new m.validator({
-			name: function (name) {
-				if (!name) {
-					return "名前を入力してください";
-				}
-				if(name.length > 20) {
-					return "名前は20文字以内でお願いします";
-				}
-			},
 			body: function (body) {
 				if (!body) {
 					return "コメントを入力してください";
@@ -238,12 +230,6 @@ module.exports = {
 								}
 								{/* コメント投稿フォーム */}
 								<form>
-									{/* コメントの名前入力 */}
-									{ m.component(FormInputComponent, {
-										prop:  ctrl.vm.comment.name,
-										error: ctrl.comment_validator.hasError('name'),
-										placeholder: "名前",
-									}) }
 									{/* コメントの内容入力 */}
 									{ m.component(FormTextAreaComponent, {
 										prop:  ctrl.vm.comment.body,
