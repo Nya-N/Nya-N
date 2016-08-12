@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-const date_format string = "2006-01-02"
+const date_time_format_for_client string = "2006/01/02 15:04"
 const date_time_format string = "2006-01-02 15:04"
 
 type Resource struct {
@@ -90,7 +90,7 @@ func (resource *Resource) getEventResponse(event model.Event) EventResponse {
 		Capacity:    event.Capacity,
 		Admin:       event.Admin,
 		Members:     event.Members,
-		StartDate:   event.StartDate.Format(date_format),
+		StartDate:   event.StartDate.Format(date_time_format_for_client),
 		Place:       event.Place,
 		Description: event.Description,
 		Comments:    event.Comments,
