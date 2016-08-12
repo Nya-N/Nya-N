@@ -38,11 +38,11 @@ module.exports = {
 					return "イベント名は50文字以内でお願いします";
 				}
 			},
-			admin: function (admin) {
-				if (!self.vm.account().name) {
-					return "主催者を入力してください";
-				}
-			},
+			// admin: function (admin) {
+			// 	if (!self.vm.account().name) {
+			// 		return "主催者を入力してください";
+			// 	}
+			// },
 			start_date: function (start_date) {
 				if (!start_date) {
 					return "日時を入力してください";
@@ -223,7 +223,7 @@ module.exports = {
 									</div>
 									<div class="form-group">
 										<label>主催者</label>
-										<div class="form-control-static">{ model.admin.name() }</div>
+										<div class="form-control-static">{ ctrl.vm.account().name }</div>
 									</div>
 
 									<div class="form-group">
