@@ -217,11 +217,18 @@ module.exports = {
 								{/* コメント一覧 */}
 								{
 									model.comments.map(function(comment, i) {
+										// コメント削除ボタン制御
+										var comment_del_btn = "";
+										if (ctrl.vm.account().id) {
+											comment_del_btn =
+												<div class="pull-right" onclick={ ctrl.ondestroy_comment_function(comment, i) }>
+													<span class="glyphicon glyphicon-remove-sign"></span>
+												</div>;
+										}
+
 										return <div>
 											{/* 削除ボタン */}
-											<div class="pull-right" onclick={ ctrl.ondestroy_comment_function(comment, i) }>
-												<span class="glyphicon glyphicon-remove-sign"></span>
-											</div>
+											{ comment_del_btn }
 											{/* コメント投稿者 */}
 											{ comment.name() }<br />
 											{/* コメント本文 */}
@@ -278,11 +285,18 @@ module.exports = {
 								{ model.members.length === 0 ? "なし" : "" }
 								{
 									model.members.map(function(member, i) {
+										// 参加削除ボタン制御
+										var member_del_btn = "";
+										if (ctrl.vm.account().id) {
+											member_del_btn =
+												<div class="pull-right" onclick={ ctrl.ondestroy_member_function(member, i) }>
+													<span class="glyphicon glyphicon-remove-circle"></span>
+												</div>;
+										}
+
 										return <span>
 											{/* 削除ボタン */}
-											<div class="pull-right" onclick={ ctrl.ondestroy_member_function(member, i) }>
-												<span class="glyphicon glyphicon-remove-circle"></span>
-											</div>
+											{ member_del_btn }
 
 											{ member.name() } さん<br />
 										</span>;
