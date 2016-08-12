@@ -30,6 +30,10 @@ module.exports = {
 					config: args.config
 				});
 
+		if (args.readonly) {
+			inputElement.attrs.readonly = true;
+		}
+
 		return <div class={ error ? "form-group has-error has-feedback" : "form-group"}>
 		  	{ inputElement }
 			{ error ? <span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span> : "" }

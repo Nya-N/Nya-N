@@ -146,6 +146,7 @@ module.exports = {
 						prop:  m.prop(ctrl.vm.account().name),
 						error: ctrl.validator.hasError('admin'),
 						placeholder: "主催者",
+						readonly: true,
 					}) }
 
 				</div>
