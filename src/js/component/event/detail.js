@@ -79,6 +79,10 @@ module.exports = {
 				// 生成されたコメントIDを保存
 				self.vm.comment.id(id);
 
+				// 名前とimageはaccountモデルから取る
+				self.vm.comment.name(self.vm.account().name);
+				self.vm.comment.image(self.vm.account().image);
+
 				// コメント一覧に新しく追加したコメントを移動
 				self.vm.model().comments.push(self.vm.comment);
 
@@ -98,6 +102,10 @@ module.exports = {
 			.then(function(id) {
 				// 生成された参加IDを保存
 				self.vm.join.id(id);
+
+				// 名前とimageはaccountモデルから取る
+				self.vm.join.name(self.vm.account().name);
+				self.vm.join.image(self.vm.account().image);
 
 				// 参加者一覧に新しく参加した人を移動
 				self.vm.model().members.push(self.vm.join);
