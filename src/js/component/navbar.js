@@ -7,14 +7,10 @@ module.exports = {
 		// 現在のURL
 		var active_url = m.route();
 
-		console.log("navbar args", args);
-
 		if (!args) {
 			var args = {};
 			args.id = 0;
 		}
-
-		console.log("navbar args2", args);
 
 		return <div>
 			<nav class="navbar navbar-default">

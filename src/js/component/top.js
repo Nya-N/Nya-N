@@ -16,7 +16,6 @@ var AccountModel = require('../model/account');
 
 module.exports = {
 	controller: function() {
-		console.log("AccountID:" + AccountID);
 
 		this.vm = {};
 		this.vm.account = AccountModel.read();

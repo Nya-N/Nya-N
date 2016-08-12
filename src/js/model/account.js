@@ -15,8 +15,6 @@ var m = require('../mithril');
 var Model = function (data, isInitial) {
 	var self = this;
 
-	console.log("いい",data);
-
 	if( ! data) {
 		data = {};
 	}
@@ -35,8 +33,6 @@ Model.read = function(id) {
 		type: this.Model
 	})
 	.then(function(model) {
-		console.log("うう", model);
-
 		return model;
 	});
 };
