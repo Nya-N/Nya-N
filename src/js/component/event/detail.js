@@ -166,6 +166,13 @@ module.exports = {
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
 
+    // イベントに参加するボタン有効フラグ
+    var event_add_btn_flg = false;
+    if (ctrl.vm.account().id && model.members.length < model.capacity()) {
+			// ログイン済み + 参加人数があいてれば参加ボタンが押せる
+			event_add_btn_flg = true;
+		}
+
 		// HTML
 		return <div>
 			{/*navbar*/}
@@ -264,7 +271,7 @@ module.exports = {
 							type="button"
 							class="btn btn-lg btn-success"
 							onclick={ctrl.onsubmit_join}
-							disabled={ ctrl.vm.account().id ? false : true }>
+							disabled={ !event_add_btn_flg }>
 							イベントに参加する
 						</button>
 						<h3>参加人数 {model.members.length} / {model.capacity()}</h3>
