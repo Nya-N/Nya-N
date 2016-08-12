@@ -19,6 +19,8 @@ var Model = function (data, isInitial) {
 	}
 	// コメントID
 	this.id = m.prop(data.id);
+	// account_id
+	this.account_id = m.prop(data.account_id);
 	// イベントID
 	this.event_id = m.prop(data.event_id);
 	// コメントした人の名前
@@ -62,4 +64,3 @@ Model.prototype.destroy = function () {
 
 
 module.exports = Model;
-

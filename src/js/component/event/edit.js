@@ -135,6 +135,14 @@ module.exports = {
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
 
+		if (ctrl.vm.account().id != model.admin.account_id()) {
+			return <div>
+				{/*navbar*/}
+				<div>{ m.component(Navbar, ctrl.vm.account()) }</div>
+				<div>不正なアクセスです</div>
+				</div>;
+		}
+
 		return <div>
 			{/*navbar*/}
 			<div>{ m.component(Navbar, ctrl.vm.account()) }</div>

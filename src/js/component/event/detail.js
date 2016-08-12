@@ -79,7 +79,8 @@ module.exports = {
 				// 生成されたコメントIDを保存
 				self.vm.comment.id(id);
 
-				// 名前とimageはaccountモデルから取る
+				// account_idと名前とimageはaccountモデルから取る
+				self.vm.comment.account_id(self.vm.account().id);
 				self.vm.comment.name(self.vm.account().name);
 				self.vm.comment.image(self.vm.account().image);
 
@@ -103,7 +104,8 @@ module.exports = {
 				// 生成された参加IDを保存
 				self.vm.join.id(id);
 
-				// 名前とimageはaccountモデルから取る
+				// account_idと名前とimageはaccountモデルから取る
+				self.vm.join.account_id(self.vm.account().id);
 				self.vm.join.name(self.vm.account().name);
 				self.vm.join.image(self.vm.account().image);
 
@@ -226,7 +228,7 @@ module.exports = {
 									model.comments.map(function(comment, i) {
 										// コメント削除ボタン制御
 										var comment_del_btn = "";
-										if (ctrl.vm.account().id) {
+										if (ctrl.vm.account().id && ctrl.vm.account().id === comment.account_id()) {
 											comment_del_btn =
 												<div class="pull-right" onclick={ ctrl.ondestroy_comment_function(comment, i) }>
 													<span class="glyphicon glyphicon-remove-sign"></span>
@@ -288,7 +290,7 @@ module.exports = {
 									model.members.map(function(member, i) {
 										// 参加削除ボタン制御
 										var member_del_btn = "";
-										if (ctrl.vm.account().id) {
+										if (ctrl.vm.account().id && ctrl.vm.account().id === member.account_id()) {
 											member_del_btn =
 												<div class="pull-right" onclick={ ctrl.ondestroy_member_function(member, i) }>
 													<span class="glyphicon glyphicon-remove-circle"></span>
@@ -310,13 +312,13 @@ module.exports = {
 							type="button"
 							class="btn btn-sm btn-warning"
 							onclick={ ctrl.onedit }
-							disabled={ ctrl.vm.account().id ? false : true }>イベントを編集</button>
+							disabled={ ctrl.vm.account().id && ctrl.vm.account().id === model.admin.account_id() ? false : true }>イベントを編集</button>
 
 						<button
 							type="button"
 							class="btn btn-sm btn-danger"
 							onclick={ ctrl.onconfirm_destroy }
-							disabled={ ctrl.vm.account().id ? false : true }>イベントを削除</button>
+							disabled={ ctrl.vm.account().id && ctrl.vm.account().id === model.admin.account_id() ? false : true }>イベントを削除</button>
 
 					</div>
 					{/* END: 右サイドバー */}

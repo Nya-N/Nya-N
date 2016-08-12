@@ -19,6 +19,8 @@ var Model = function (data, isInitial) {
 	}
 	// JOIN ID
 	this.id = m.prop(data.id);
+	// account_id
+	this.account_id = m.prop(data.account_id);
 	// イベントID
 	this.event_id = m.prop(data.event_id);
 	// 参加者の名前
@@ -58,4 +60,3 @@ Model.prototype.destroy = function () {
 };
 
 module.exports = Model;
-

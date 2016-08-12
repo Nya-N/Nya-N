@@ -38,10 +38,12 @@ var Model = function (data, isInitial) {
 	if(data.admin) {
 		self.admin = {
 			name:m.prop(data.admin.name),
+			account_id:m.prop(data.admin.account_id),
 		}
 	} else {
 		self.admin = {
 			name:m.prop(""),
+			account_id:m.prop(0),
 		};
 	}
 
@@ -64,7 +66,7 @@ var Model = function (data, isInitial) {
 			self.members.push(new JoinModel(member));
 		});
 	}
-	
+
 	// コメント一覧
 	if(data.comments) {
 		self.comments = [];
@@ -127,4 +129,3 @@ Model.prototype.destroy = function () {
 };
 
 module.exports = Model;
-
