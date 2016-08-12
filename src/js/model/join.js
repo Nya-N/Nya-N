@@ -23,6 +23,8 @@ var Model = function (data, isInitial) {
 	this.event_id = m.prop(data.event_id);
 	// 参加者の名前
 	this.name = m.prop(data.name || "");
+	// 画像
+	this.image = m.prop(data.image || "");
 };
 
 // サーバからJSONを読み込む

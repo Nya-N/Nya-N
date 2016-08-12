@@ -25,6 +25,8 @@ var Model = function (data, isInitial) {
 	this.name = m.prop(data.name || "");
 	// コメント内容
 	this.body = m.prop(data.body || "");
+	// 画像
+	this.image = m.prop(data.image || "");
 };
 
 // サーバからJSONを読み込む
