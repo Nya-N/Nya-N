@@ -11,6 +11,8 @@ var m = require('../../mithril');
 // イベント詳細 Model
 var EventModel = require('../../model/event');
 
+// account Model
+var AccountModel = require('../../model/account');
 
 // ビューモデル
 var ViewModel = function(id) {
@@ -18,6 +20,10 @@ var ViewModel = function(id) {
 
 	// 入力したイベントデータ
 	self.model = new EventModel();
+
+	// ログイン情報
+	self.account = AccountModel.read();
+
 };
 
 // 入力されたイベントデータをクリア

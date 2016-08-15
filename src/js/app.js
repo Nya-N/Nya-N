@@ -14,10 +14,6 @@ var EventDetail = require('./component/event/detail.js');
 // イベント編集ページ
 var EventEdit = require('./component/event/edit.js');
 
-
-
-
-
 m.route.mode = "hash";
 
 //HTML要素にコンポーネントをマウント

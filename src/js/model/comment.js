@@ -19,12 +19,16 @@ var Model = function (data, isInitial) {
 	}
 	// コメントID
 	this.id = m.prop(data.id);
+	// account_id
+	this.account_id = m.prop(data.account_id);
 	// イベントID
 	this.event_id = m.prop(data.event_id);
 	// コメントした人の名前
 	this.name = m.prop(data.name || "");
 	// コメント内容
 	this.body = m.prop(data.body || "");
+	// 画像
+	this.image = m.prop(data.image || "");
 };
 
 // サーバからJSONを読み込む
@@ -60,4 +64,3 @@ Model.prototype.destroy = function () {
 
 
 module.exports = Model;
-

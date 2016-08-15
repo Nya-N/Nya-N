@@ -41,14 +41,6 @@ module.exports = {
 
 		// Validator
 		self.comment_validator = new m.validator({
-			name: function (name) {
-				if (!name) {
-					return "名前を入力してください";
-				}
-				if(name.length > 20) {
-					return "名前は20文字以内でお願いします";
-				}
-			},
 			body: function (body) {
 				if (!body) {
 					return "コメントを入力してください";
@@ -87,6 +79,11 @@ module.exports = {
 				// 生成されたコメントIDを保存
 				self.vm.comment.id(id);
 
+				// account_idと名前とimageはaccountモデルから取る
+				self.vm.comment.account_id(self.vm.account().id);
+				self.vm.comment.name(self.vm.account().name);
+				self.vm.comment.image(self.vm.account().image);
+
 				// コメント一覧に新しく追加したコメントを移動
 				self.vm.model().comments.push(self.vm.comment);
 
@@ -97,12 +94,6 @@ module.exports = {
 
 		// イベントに参加ボタンが押下された時
 		self.onsubmit_join = function(e) {
-			// 入力値チェック
-			self.join_validator.validate(self.vm.join);
-
-			if (self.join_validator.hasErrors()) {
-				return;
-			}
 
 			// event_id
 			self.vm.join.event_id(self.vm.model().id());
@@ -113,14 +104,17 @@ module.exports = {
 				// 生成された参加IDを保存
 				self.vm.join.id(id);
 
+				// account_idと名前とimageはaccountモデルから取る
+				self.vm.join.account_id(self.vm.account().id);
+				self.vm.join.name(self.vm.account().name);
+				self.vm.join.image(self.vm.account().image);
+
 				// 参加者一覧に新しく参加した人を移動
 				self.vm.model().members.push(self.vm.join);
 
 				// 参加者名の入力欄を空にする
 				self.vm.clear_join();
 
-				// モーダルを閉じる
-				$('#AttendModal').modal('hide');
 			}, ErrorComponent.handleErrorToViewModel(self.vm));
 		};
 
@@ -174,10 +168,24 @@ module.exports = {
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
 
+    // イベントに参加するボタン有効フラグ
+    var event_add_btn_flg = true;
+
+    if (ctrl.vm.account().id && model.members.length < model.capacity()) {
+      // ログイン済み + 参加人数があいてて、未参加であれば参加ボタンが押せる
+      model.members.forEach(function(member, index) {
+          if (ctrl.vm.account().id == member.account_id()) {
+            event_add_btn_flg = false;
+          }
+      });
+    } else {
+      event_add_btn_flg = false;
+    }
+
 		// HTML
 		return <div>
 			{/*navbar*/}
-			<div>{ m.component(NavbarComponent) }</div>
+			<div>{ m.component(NavbarComponent, ctrl.vm.account()) }</div>
 
 			<div class="container" style="padding-top:30px" id="root">
 				<div class="row">
@@ -225,13 +233,20 @@ module.exports = {
 								{/* コメント一覧 */}
 								{
 									model.comments.map(function(comment, i) {
+										// コメント削除ボタン制御
+										var comment_del_btn = "";
+										if (ctrl.vm.account().id && ctrl.vm.account().id === comment.account_id()) {
+											comment_del_btn =
+												<div class="pull-right" onclick={ ctrl.ondestroy_comment_function(comment, i) }>
+													<span class="glyphicon glyphicon-remove-sign"></span>
+												</div>;
+										}
+
 										return <div>
 											{/* 削除ボタン */}
-											<div class="pull-right" onclick={ ctrl.ondestroy_comment_function(comment, i) }>
-												<span class="glyphicon glyphicon-remove-sign"></span>
-											</div>
+											{ comment_del_btn }
 											{/* コメント投稿者 */}
-											{ comment.name() }<br />
+											<img style="width: 20px ;margin-right: 4px;" src={comment.image()} />{ comment.name() }<br />
 											{/* コメント本文 */}
 											{ comment.body() }<hr />
 										</div>;
@@ -239,12 +254,6 @@ module.exports = {
 								}
 								{/* コメント投稿フォーム */}
 								<form>
-									{/* コメントの名前入力 */}
-									{ m.component(FormInputComponent, {
-										prop:  ctrl.vm.comment.name,
-										error: ctrl.comment_validator.hasError('name'),
-										placeholder: "名前",
-									}) }
 									{/* コメントの内容入力 */}
 									{ m.component(FormTextAreaComponent, {
 										prop:  ctrl.vm.comment.body,
@@ -253,7 +262,11 @@ module.exports = {
 										rows: 4,
 									}) }
 									<div>
-										<button type="button" class="btn btn-lg btn-success" onclick={ctrl.onsubmit_comment}>コメントを投稿</button>
+										<button
+											type="button"
+											class="btn btn-lg btn-success"
+											onclick={ctrl.onsubmit_comment}
+											disabled={ ctrl.vm.account().id ? false : true }>コメントを投稿</button>
 									</div>
 								</form>
 							</div>
@@ -263,7 +276,11 @@ module.exports = {
 
 					{/* BEGIN: 右サイドバー */}
 					<div class="col-md-3">
-						<button type="button" class="btn btn-lg btn-success" data-toggle="modal" data-target="#AttendModal">
+						<button
+							type="button"
+							class="btn btn-lg btn-success"
+							onclick={ctrl.onsubmit_join}
+							disabled={ !event_add_btn_flg }>
 							イベントに参加する
 						</button>
 						<h3>参加人数 {model.members.length} / {model.capacity()}</h3>
@@ -278,56 +295,41 @@ module.exports = {
 								{ model.members.length === 0 ? "なし" : "" }
 								{
 									model.members.map(function(member, i) {
+										// 参加削除ボタン制御
+										var member_del_btn = "";
+										if (ctrl.vm.account().id && ctrl.vm.account().id === member.account_id()) {
+											member_del_btn =
+												<div class="pull-right" onclick={ ctrl.ondestroy_member_function(member, i) }>
+													<span class="glyphicon glyphicon-remove-circle"></span>
+												</div>;
+										}
+
 										return <span>
 											{/* 削除ボタン */}
-											<div class="pull-right" onclick={ ctrl.ondestroy_member_function(member, i) }>
-												<span class="glyphicon glyphicon-remove-circle"></span>
-											</div>
+											{ member_del_btn }
 
-											{ member.name() } さん<br />
+											<img style="width: 20px ;margin-right: 4px;" src={member.image()} />{ member.name() }<br />
 										</span>;
 									})
 								}
 							</div>
 						</div>
 
-						<button type="button" class="btn btn-sm btn-warning" onclick={ ctrl.onedit }>イベントを編集</button>
-						<button type="button" class="btn btn-sm btn-danger" onclick={ ctrl.onconfirm_destroy }>イベントを削除</button>
+						<button
+							type="button"
+							class="btn btn-sm btn-warning"
+							onclick={ ctrl.onedit }
+							disabled={ ctrl.vm.account().id && ctrl.vm.account().id === model.admin.account_id() ? false : true }>イベントを編集</button>
+
+						<button
+							type="button"
+							class="btn btn-sm btn-danger"
+							onclick={ ctrl.onconfirm_destroy }
+							disabled={ ctrl.vm.account().id && ctrl.vm.account().id === model.admin.account_id() ? false : true }>イベントを削除</button>
 
 					</div>
 					{/* END: 右サイドバー */}
 				</div>
-
-				{/* BEGIN: イベント参加 入力モーダル */}
-				<div id="AttendModal" class="modal fade" role="dialog">
-					<div class="modal-dialog">
-
-						<div class="modal-content">
-							<div class="modal-header">
-								{/* 閉じるボタン */}
-								<button type="button" class="close" data-dismiss="modal">&times;</button>
-								<h4 class="modal-title">イベントに参加する</h4>
-							</div>
-							<div class="modal-body">
-								{/* イベント参加に必要な各入力項目 */}
-								<form>
-									{/* 名前入力 */}
-									<label>名前</label>
-									{ m.component(FormInputComponent, {
-										prop:  ctrl.vm.join.name,
-										error: ctrl.join_validator.hasError('name'),
-										placeholder: "名前",
-									}) }
-								</form>
-							</div>
-							<div class="modal-footer">
-								<button type="button" class="btn btn-lg btn-success" onclick={ ctrl.onsubmit_join}>参加</button>
-								<button type="button" class="btn btn-lg btn-warning" data-dismiss="modal">閉じる</button>
-							</div>
-						</div>
-					</div>
-				</div>
-				{/* END: イベント参加 入力モーダル */}
 
 				{/* BEGIN: イベント削除 確認モーダル */}
 				<div id="DeleteModal" class="modal fade" role="dialog">

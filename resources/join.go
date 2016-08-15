@@ -4,6 +4,7 @@ import (
 	"github.com/syo-sa1982/GoNTAkun/model"
 	"github.com/labstack/echo"
 	"log"
+	"github.com/syo-sa1982/GoNTAkun/services"
 )
 
 
@@ -16,9 +17,31 @@ func (resource *Resource) JoinEvent() echo.HandlerFunc {
 
 		var (
 			db = resource.DB
+			googleAccount = model.GoogleAccount{}
+			account = model.Account{}
+			join_res = JoinResponce{}
 		)
 		db = resource.SetDBConnection()
 		defer db.Close()
+
+		// クッキーからIDを取得する
+		strId := ""
+		id , _:= c.Cookie("id")
+		if id != nil && id.Value() != "" {
+			// IDを複合する
+			strId = services.DecrypterBase64(id.Value())
+		}
+
+		if strId == "" {
+			// TODO: エラー処理
+			//return
+		} else {
+			// アカウントテーブルを取得
+			db.Model(account).Where("id = ?", strId, ).Find(&account)
+
+			// googleアカウントテーブルを取得
+			db.Model(googleAccount).Where("g_id = ?", account.GID, ).Find(&googleAccount)
+		}
 
 		u := new(JoinRequest)
 
@@ -28,15 +51,22 @@ func (resource *Resource) JoinEvent() echo.HandlerFunc {
 
 		member := model.Member{
 			EventID:u.EventId,
-			Name:u.Name,
+			AccountId: account.ID,
+			Name:googleAccount.Name,
+			Picture: googleAccount.Picture,
 		}
 		log.Println(member)
 
 		db.Create(&member)
 
-		responseApi := map[string]int{"id": member.ID}
+		join_res.ID = member.ID
+		join_res.AccountID = account.ID
+		join_res.Name = googleAccount.Name
+		join_res.Image = googleAccount.Picture
 
-		api := APIFormat{"success", 1, 0, responseApi}
+		//responseApi := map[string]int{"id": member.ID}
+
+		api := APIFormat{"success", 1, 0, join_res}
 		return c.JSON(http.StatusOK, &api)
 	}
 }

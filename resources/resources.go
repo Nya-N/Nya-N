@@ -8,7 +8,8 @@ import (
 	"os"
 )
 
-const date_format string = "2006/01/02"
+const date_time_format_for_client string = "2006/01/02 15:04"
+const date_time_format string = "2006-01-02 15:04"
 
 type Resource struct {
 	DB *gorm.DB
@@ -19,6 +20,12 @@ type APIFormat struct {
 	Version   int         `json:"version"`
 	ErrorCode int         `json:"error_code"`
 	Response  interface{} `json:"response"`
+}
+
+type AccountAPI struct {
+	ID    int	`json:"id"`
+	Name  string 	`json:"name"`
+	Image string 	`json:"image"`
 }
 
 type EventListAPI struct {
@@ -55,10 +62,24 @@ type JoinRequest struct {
 	Name    string `json:"name"`
 }
 
+type JoinResponce struct {
+	ID int    `json:"id"`
+	AccountID  int    `json:"account_id"`
+	Name    string `json:"name"`
+	Image    string `json:"image"`
+}
+
 type CommentRequest struct {
 	EventID int    `json:"event_id"`
 	Name    string `json:"name"`
 	Body    string `json:"body"`
+}
+
+type CommentResponce struct {
+	ID int    `json:"id"`
+	AccountID  int    `json:"account_id"`
+	Name    string `json:"name"`
+	Image    string `json:"image"`
 }
 
 func (resource *Resource) getEventResponse(event model.Event) EventResponse {
@@ -69,7 +90,7 @@ func (resource *Resource) getEventResponse(event model.Event) EventResponse {
 		Capacity:    event.Capacity,
 		Admin:       event.Admin,
 		Members:     event.Members,
-		StartDate:   event.StartDate.Format(date_format),
+		StartDate:   event.StartDate.Format(date_time_format_for_client),
 		Place:       event.Place,
 		Description: event.Description,
 		Comments:    event.Comments,

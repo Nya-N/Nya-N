@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	"github.com/syo-sa1982/GoNTAkun/services"
 )
 
 func (resource *Resource) GetEvents() echo.HandlerFunc {
@@ -85,9 +86,30 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 		log.Println("Start CreateEvent")
 		var (
 			db = resource.DB
+			googleAccount = model.GoogleAccount{}
+			account = model.Account{}
 		)
 		db = resource.SetDBConnection()
 		defer db.Close()
+
+		// クッキーからIDを取得する
+		strId := ""
+		id , _:= c.Cookie("id")
+		if id != nil && id.Value() != "" {
+			// IDを複合する
+			strId = services.DecrypterBase64(id.Value())
+		}
+
+		if strId == "" {
+			// TODO: エラー処理
+			//return
+		} else {
+			// アカウントテーブルを取得
+			db.Model(account).Where("id = ?", strId, ).Find(&account)
+
+			// googleアカウントテーブルを取得
+			db.Model(googleAccount).Where("g_id = ?", account.GID, ).Find(&googleAccount)
+		}
 
 		u := new(EventRequest)
 
@@ -95,14 +117,14 @@ func (resource *Resource) CreateEvent() echo.HandlerFunc {
 			return err
 		}
 
-		t, _ := time.Parse(date_format, u.StartDate)
+		t, _ := time.Parse(date_time_format, u.StartDate)
 
 		event := model.Event{
 			Name:        u.Name,
 			Image:       u.Image,
 			StartDate:   t,
 			Capacity:    u.Capacity,
-			Admin:       model.Member{Name: u.Admin, AdminStatus: 1},
+			Admin:       model.Member{AccountId: account.ID, Name: googleAccount.Name, Picture: googleAccount.Picture, AdminStatus: 1},
 			Place:       u.Place,
 			Description: u.Description,
 			Comments:    []model.Comment{},
@@ -135,7 +157,7 @@ func (resource *Resource) UpdateEvent() echo.HandlerFunc {
 
 		db.Model(event).Where(c.Param("id")).Find(&event)
 
-		t, _ := time.Parse(date_format, u.StartDate)
+		t, _ := time.Parse(date_time_format, u.StartDate)
 
 		event.Name = u.Name
 		event.StartDate = t

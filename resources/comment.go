@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"github.com/syo-sa1982/GoNTAkun/model"
 	"log"
+	"github.com/syo-sa1982/GoNTAkun/services"
 )
 
 
@@ -13,9 +14,31 @@ func (resource *Resource) CreateComment() echo.HandlerFunc {
 		log.Println("Start CreateComment")
 		var (
 			db = resource.DB
+			googleAccount = model.GoogleAccount{}
+			account = model.Account{}
+			comment_res = CommentResponce{}
 		)
 		db = resource.SetDBConnection()
 		defer db.Close()
+
+		// クッキーからIDを取得する
+		strId := ""
+		id , _:= c.Cookie("id")
+		if id != nil && id.Value() != "" {
+			// IDを複合する
+			strId = services.DecrypterBase64(id.Value())
+		}
+
+		if strId == "" {
+			// TODO: エラー処理
+			//return
+		} else {
+			// アカウントテーブルを取得
+			db.Model(account).Where("id = ?", strId, ).Find(&account)
+
+			// googleアカウントテーブルを取得
+			db.Model(googleAccount).Where("g_id = ?", account.GID, ).Find(&googleAccount)
+		}
 
 		u := new(CommentRequest)
 		if err := c.Bind(u); err != nil {
@@ -23,7 +46,9 @@ func (resource *Resource) CreateComment() echo.HandlerFunc {
 		}
 
 		comment := model.Comment{
-			Name:u.Name,
+			AccountId: account.ID,
+			Name: googleAccount.Name,
+			Picture: googleAccount.Picture,
 			EventID:u.EventID,
 			Body:u.Body,
 		}
@@ -31,9 +56,14 @@ func (resource *Resource) CreateComment() echo.HandlerFunc {
 
 		log.Println(comment)
 
-		responseApi := map[string]int{"id": comment.ID}
+		comment_res.ID = comment.ID
+		comment_res.AccountID = account.ID
+		comment_res.Name = googleAccount.Name
+		comment_res.Image = googleAccount.Picture
 
-		api := APIFormat{"success", 1, 0, responseApi}
+		//responseApi := map[string]int{"id": comment.ID}
+
+		api := APIFormat{"success", 1, 0, comment_res}
 		return c.JSON(http.StatusOK, &api)
 	}
 }

@@ -135,9 +135,17 @@ module.exports = {
 	view: function(ctrl) {
 		var model = ctrl.vm.model();
 
+		if (ctrl.vm.account().id != model.admin.account_id()) {
+			return <div>
+				{/*navbar*/}
+				<div>{ m.component(Navbar, ctrl.vm.account()) }</div>
+				<div>不正なアクセスです</div>
+				</div>;
+		}
+
 		return <div>
 			{/*navbar*/}
-			<div>{ m.component(Navbar) }</div>
+			<div>{ m.component(Navbar, ctrl.vm.account()) }</div>
 
 			<div class="container" style="padding-top:30px" id="root">
 				<h1>イベント編集</h1>
@@ -159,6 +167,7 @@ module.exports = {
 						prop:  model.admin.name,
 						error: ctrl.validator.hasError('admin'),
 						placeholder: "主催者",
+						readonly: true,
 					}) }
 
 				</div>
@@ -210,7 +219,11 @@ module.exports = {
 				</div>
 
 				<div>
-					<button type="button" class="btn btn-lg btn-success" onclick={ ctrl.onconfirm }>編集</button>
+					<button
+						type="button"
+						class="btn btn-lg btn-success"
+						onclick={ ctrl.onconfirm }
+						disabled={ ctrl.vm.account().id ? false : true }>編集</button>
 				</div>
 
 				{/* BEGIN: 確認画面モーダル */}

@@ -6,17 +6,9 @@
  */
 
 // API URL
-var api_url = "api/event";
-
+var api_url = "api/account";
 
 var m = require('../mithril');
-
-// コメント モデル
-var CommentModel = require('./comment');
-
-// コメント モデル
-var JoinModel = require('./join');
-
 
 
 // コンストラクタ
@@ -26,71 +18,26 @@ var Model = function (data, isInitial) {
 	if( ! data) {
 		data = {};
 	}
+
 	self.id          = m.prop(data.id);
 	self.name        = m.prop(data.name        || "");
-	self.place       = m.prop(data.place       || "");
-	self.image       = m.prop(data.image);
-	self.capacity    = m.prop(data.capacity    || "");
-	self.start_date  = m.prop(data.start_date  || "");
-	self.description = m.prop(data.description || "");
+	self.image       = m.prop(data.image    || "");
 
-	// 主催者
-	if(data.admin) {
-		self.admin = {
-			name:m.prop(data.admin.name),
-			account_id:m.prop(data.admin.account_id),
-		}
-	} else {
-		self.admin = {
-			name:m.prop(""),
-			account_id:m.prop(0),
-		};
-	}
-
-	// 場所
-	if(data.place) {
-		self.place = {
-			name: m.prop(data.place),
-		};
-	}
-	else {
-		self.place = {
-			name: m.prop(""),
-		};
-	}
-
-	// 参加者一覧
-	if(data.members) {
-		self.members = [];
-		data.members.forEach(function(member) {
-			self.members.push(new JoinModel(member));
-		});
-	}
-
-	// コメント一覧
-	if(data.comments) {
-		self.comments = [];
-		data.comments.forEach(function(comment) {
-			self.comments.push(new CommentModel(comment));
-		});
-	}
-
-	self.isInitial = m.prop(true); // サーバーにレコードが存在しない
 };
 
 // サーバからJSONを読み込む
-Model.read = function (id) {
+Model.read = function(id) {
 	return m.request({
 		method: "GET",
-		url: api_url + "/" + id,
-		type: Model
+		url: api_url,
+		type: this.Model
 	})
 	.then(function(model) {
-		model.isInitial(false); // サーバーにレコードが存在する
-
 		return model;
 	});
 };
+
+
 
 // サーバにJSONを保存
 Model.prototype.save = function () {

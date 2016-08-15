@@ -38,14 +38,11 @@ module.exports = {
 					return "イベント名は50文字以内でお願いします";
 				}
 			},
-			admin: function (admin) {
-				if (!admin.name()) {
-					return "主催者を入力してください";
-				}
-				if(admin.name().length > 20) {
-					return "主催者は20文字以内でお願いします";
-				}
-			},
+			// admin: function (admin) {
+			// 	if (!self.vm.account().name) {
+			// 		return "主催者を入力してください";
+			// 	}
+			// },
 			start_date: function (start_date) {
 				if (!start_date) {
 					return "日時を入力してください";
@@ -127,7 +124,7 @@ module.exports = {
 
 		return <div>
 			{/*navbar*/}
-			<div>{ m.component(Navbar) }</div>
+			<div>{ m.component(Navbar, ctrl.vm.account()) }</div>
 
 			<div class="container" style="padding-top:30px" id="root">
 				<h1>イベントを新規作成</h1>
@@ -146,9 +143,10 @@ module.exports = {
 				<div class="form-group">
 					<label for="EventAdmin">主催者</label>
 					{ m.component(FormInputComponent, {
-						prop:  ctrl.vm.model.admin.name,
+						prop:  m.prop(ctrl.vm.account().name),
 						error: ctrl.validator.hasError('admin'),
 						placeholder: "主催者",
+						readonly: true,
 					}) }
 
 				</div>
@@ -200,7 +198,11 @@ module.exports = {
 				</div>
 
 				<div>
-					<button type="button" class="btn btn-lg btn-success" onclick={ ctrl.onconfirm }>イベントを新規作成</button>
+					<button
+						type="button"
+						class="btn btn-lg btn-success"
+						onclick={ ctrl.onconfirm }
+						disabled={ ctrl.vm.account().id ? false : true }>イベントを新規作成</button>
 				</div>
 
 				{/* BEGIN: 確認画面モーダル */}
@@ -222,7 +224,7 @@ module.exports = {
 									</div>
 									<div class="form-group">
 										<label>主催者</label>
-										<div class="form-control-static">{ model.admin.name() }</div>
+										<div class="form-control-static">{ ctrl.vm.account().name }</div>
 									</div>
 
 									<div class="form-group">

@@ -8,7 +8,9 @@
 var m = require('../../mithril');
 
 module.exports = {
-	controller: function() {},
+	controller: function() {
+
+	},
 	view: function(ctrl, args) {
 		// プロパティ
 		var prop = args.prop;
@@ -27,6 +29,10 @@ module.exports = {
 					value: prop(),
 					config: args.config
 				});
+
+		if (args.readonly) {
+			inputElement.attrs.readonly = true;
+		}
 
 		return <div class={ error ? "form-group has-error has-feedback" : "form-group"}>
 		  	{ inputElement }

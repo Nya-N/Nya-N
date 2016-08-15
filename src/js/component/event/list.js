@@ -35,7 +35,7 @@ module.exports = {
 		// HTML
 		return <div>
 			{/*navbar*/}
-			<div>{ m.component(Navbar) }</div>
+			<div>{ m.component(Navbar, ctrl.vm.account()) }</div>
 
 			<div class="container" style="padding-top:30px" id="root">
 				{

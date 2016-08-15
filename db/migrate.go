@@ -43,4 +43,16 @@ func main() {
 		db.DropTable(&model.Comment{})
 	}
 	db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").CreateTable(&model.Comment{})
+
+	log.Println("Account")
+	if db.HasTable(&model.Account{}) {
+		db.DropTable(&model.Account{})
+	}
+	db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").CreateTable(&model.Account{})
+
+	log.Println("GoogleAccount")
+	if db.HasTable(&model.GoogleAccount{}) {
+		db.DropTable(&model.GoogleAccount{})
+	}
+	db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").CreateTable(&model.GoogleAccount{})
 }

@@ -10,3 +10,6 @@ Godeps/Readme
 vendor/
 
 public/js/app.*
+
+resources/client_secret.json
+

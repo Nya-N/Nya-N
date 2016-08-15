@@ -19,10 +19,14 @@ var Model = function (data, isInitial) {
 	}
 	// JOIN ID
 	this.id = m.prop(data.id);
+	// account_id
+	this.account_id = m.prop(data.account_id);
 	// イベントID
 	this.event_id = m.prop(data.event_id);
 	// 参加者の名前
 	this.name = m.prop(data.name || "");
+	// 画像
+	this.image = m.prop(data.image || "");
 };
 
 // サーバからJSONを読み込む
@@ -56,4 +60,3 @@ Model.prototype.destroy = function () {
 };
 
 module.exports = Model;
-
