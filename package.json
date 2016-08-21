@@ -1,33 +1,33 @@
 {
   "name": "GoATND",
   "version": "0.0.1",
-  "description": "cure3",
+  "description": "an event management system by golang",
   "scripts": {
     "watch": "gulp watch",
     "start": "gulp build"
   },
-  "author": "syo-sa1982, tbebepan, konaka-h, sairoutine",
+  "author": "syo-sa1982, tbebepan, konaka-h, keisuke-mori, sairoutine",
   "license": "MIT",
   "devDependencies": {
-    "browserify": "^12.0.1",
-    "chai": "^3.5.0",
-    "easymock": "^0.2.17",
-    "gulp": "^3.9.0",
-    "gulp-mocha": "^2.2.0",
-    "gulp-msx": "^0.4.0",
-    "gulp-notify": "^2.2.0",
-    "gulp-plumber": "^1.0.1",
-    "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^1.5.1",
-    "gulp-watch": "^4.3.5",
-    "mocha": "^2.4.5",
-    "run-sequence": "^1.1.5",
-    "sinon": "^1.17.3",
-    "vinyl-source-stream": "^1.1.0"
+    "browserify": "12.0.1",
+    "chai": "3.5.0",
+    "easymock": "0.2.17",
+    "gulp": "3.9.0",
+    "gulp-mocha": "2.2.0",
+    "gulp-msx": "0.4.0",
+    "gulp-notify": "2.2.0",
+    "gulp-plumber": "1.0.1",
+    "gulp-rename": "1.2.2",
+    "gulp-uglify": "1.5.1",
+    "gulp-watch": "4.3.5",
+    "mocha": "2.4.5",
+    "run-sequence": "1.1.5",
+    "sinon": "1.17.3",
+    "vinyl-source-stream": "1.1.0"
   },
   "repository": {},
   "dependencies": {
-    "mithril": "~0.2.2-rc.1",
-    "mithril-validator": "^1.1.0"
+    "mithril": "0.2.5",
+    "mithril-validator": "1.1.0"
   }
 }
