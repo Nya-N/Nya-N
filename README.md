@@ -1,1 +1,3 @@
-# GoNTAkun
+# GoATND
+
+某イベントサービスを真似たWebサービスです。
