@@ -1,7 +1,6 @@
 # GoATND
 GoATND is a simple, powerful event management platform.
 
-![GoATND Screenshot](docs/top.png)
 
 
 
