@@ -1,5 +1,5 @@
-# GoATND
-GoATND is a simple, powerful event management platform.
+# Nya-N
+Nya-N is a simple, powerful event management platform.
 
 
 
